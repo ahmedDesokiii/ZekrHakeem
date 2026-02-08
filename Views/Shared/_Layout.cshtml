@@ -1,0 +1,421 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>@ViewData["Title"] - ZekrHakeem_v11</title>
+    <link rel="icon" type="image/x-icon" href="~/zk.ico">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ZekrHakeem_v11.styles.css" asp-append-version="true" />
+    <link href="~/sweetalert2/sweetalert2.css" rel="stylesheet" />
+    <link href="~/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+    <link href="~/css/bootswatchtheme.css" rel="stylesheet" />
+
+    <!-- custom font css : ah-desoki -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Beiruti:wght@200..900&display=swap" rel="stylesheet">
+
+    <!-- custom datatable css : ah-desoki -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+
+
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+     <script src="https://cdn.datatables.net/plug-ins/2.3.4/api/sum().js"></script>
+
+    <!-- custom datatable js : ah-desoki -->
+    <script src="https://code.jquery.com/jquery-3.7.1.js" asp-append-version="true"></script> 
+    <script src=" https://cdn.datatables.net/2.3.4/js/dataTables.js" asp-append-version="true"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js   "></script>
+    <script src="https://cdn.datatables.net/datetime/1.5.6/js/dataTables.dateTime.min.js "></script>
+
+
+
+
+    <!-- Swiper JS CSS-->
+    <link rel="stylesheet" href="css/swiper-bundle.min.css">
+
+    <!-- Scroll Reveal -->
+    <link rel="stylesheet" href="css/scrollreveal.min.js">
+
+    <!-- Boxicons -->
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+
+    <!-- CSS -->
+    @* <link rel="stylesheet" href="css/style.css"> *@
+
+
+    <script defer src="https://cdn.jsdelivr.net/npm/coreui/coreui-pro@5.10.0/dist/js/coreui.bundle.min.js"></script>
+
+</head>
+<body class=" " style="background: #FBF8EF;">
+    <header dir="rtl">
+        <!-- Navbar -->
+        <div class="" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-0  mb-0 pb-0">
+
+                <div class="container-fluid bg-transparent">
+                    <!-- Navbar brand -->
+                    <a class="navbar-brand mt-2 mt-lg-0 mb-0" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/zekr.png" alt="zh Logo" style="height: 80px !important;" />
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between ">
+                        <ul class="navbar-nav flex-grow-1 font-weight-bold">
+                            <!-- Right links -->
+                            <li class="nav-item">
+                                <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Home" asp-action="Index">@ResourceApp_Ar.LayoutPage_NavHome_lnk</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    الذكر الحكيم
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#about">عن جمعية الذكر الحكيم</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" target="_blank" href="https://www.quranumluj.org.sa">منصة الجمعية</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#">موقع الجمعية علي الخريطة</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#vision">الرؤية و الرسالة</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#managment">إدارة الجمعية</a></li>
+                                </ul>
+                            </li>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <li class="nav-item ">
+                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Centers" asp-action="Centers">@ResourceApp_Ar.LayoutPage_NavCenters_lnk</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Districts" asp-action="Districts">@ResourceApp_Ar.LayoutPage_NavDistricts_lnk</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Locations" asp-action="Locations">@ResourceApp_Ar.LayoutPage_NavLocations_lnk</a>
+                                </li>
+
+                                <li class="nav-item dropdown" dir="rtl">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavProgs_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp" >
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="Progs">  قائمة البرامج النوعية <i class="bi bi-collection-fill fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">   قائمة الحلقات النوعية  <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs"> طلاب  الحلقات النوعية  <i class="bi bi-people fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="StudentsWithEpisodeProg">  اسناد الطلاب للحلقات النوعية <i class="bi bi-person-rolodex fs-5 px-2"></i> </a></li>
+
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavEpisodes_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Episodes" asp-action="Episodes">  حلقات اساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">   حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i> </a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavStudents_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">  طلاب حلقات اساسية  <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">  طلاب حلقات نوعية  <i class="bi bi-people fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        التقارير
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="TeachersAttendance">حضور و انصراف المعلمين <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
+                                        @* <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsLastLessons">االدروس المطلوبة من الطلاب <i class="bi bi-clipboard-data fs-5 px-2"></i></a></li> *@
+                                        <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsDailyEvaluations"> التقييم اليومي للطــلاب <i class="bi bi-bar-chart-line-fill fs-5 px-2"></i></a></li>
+                                       
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        خدمات اخري
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات اولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+
+                            }
+
+                            else if (User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Centers" asp-action="Centers">@ResourceApp_Ar.LayoutPage_NavCenters_lnk</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Districts" asp-action="Districts">@ResourceApp_Ar.LayoutPage_NavDistricts_lnk</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Locations" asp-action="Locations">@ResourceApp_Ar.LayoutPage_NavLocations_lnk</a>
+                                </li>
+
+                                <li class="nav-item dropdown" dir="rtl">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavProgs_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp" dir="rtl">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="Progs">  قائمة البرامج النوعية <i class="bi bi-collection-fill fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">   قائمة الحلقات النوعية  <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs"> طلاب  الحلقات النوعية  <i class="bi bi-people fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="StudentsWithEpisodeProg">  اسناد الطلاب للحلقات النوعية <i class="bi bi-person-rolodex fs-5 px-2"></i> </a></li>
+
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavEpisodes_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Episodes" asp-action="Episodes">  حلقات اساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">   حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i> </a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavStudents_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">  طلاب حلقات اساسية  <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">  طلاب حلقات نوعية  <i class="bi bi-people fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        التقارير
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="TeachersAttendance">حضور و انصراف المعلمين <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
+                                        @* <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsLastLessons">الدروس المطلوبة من الطلاب <i class="bi bi-clipboard-data fs-5 px-2"></i></a></li> *@
+                                        <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsDailyEvaluations"> التقييم اليومي للطــلاب <i class="bi bi-bar-chart-line-fill fs-5 px-2"></i></a></li>
+
+
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        خدمات اخري
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات اولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+                            }
+                            else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavEpisodes_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Episodes" asp-action="Episodes">  حلقات اساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i> </a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">   حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i> </a></li>
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link  dropdown-toggle  fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdownEp" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        @ResourceApp_Ar.LayoutPage_NavStudents_lnk
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEp">
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">  طلاب حلقات اساسية  <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark-emphasis" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">  طلاب حلقات نوعية  <i class="bi bi-people fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        التقارير
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Reports" asp-action="SingleTeacherAttendanceByTeacher"> حضور و انصراف المعلم <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsLastLessons_Teacher">الدروس المطلوبة من الطلاب <i class="bi bi-clipboard-data fs-5 px-2"></i></a></li>
+                                        @* <li><a class="dropdown-item text-dark pb-2" asp-area="" asp-controller="Reports" asp-action="StudentsDailyEvaluations_Teacher"> التقييم اليومي للطــلاب <i class="bi bi-bar-chart-line-fill fs-5 px-2"></i></a></li> *@
+                                    </ul>
+                                </li>
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        خدمات اخري
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات اولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
+                                        <li><a class="dropdown-item text-dark" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
+                                    </ul>
+                                </li>
+                            }
+                            else if (User.IsInRole(Roles.Parent.ToString()))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents" onclick="ParentResetStudentData()">ابنــائي</a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="" asp-action=""> مبادرات </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="" asp-action=""> ساهم معنا </a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="" asp-action=""> تبرع الآن</a>
+                                </li>
+                                <li class="nav-item ">
+                                    <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="" asp-action=""> تواصل معنا </a>
+                                </li>
+                            }
+
+                            <!-- Right links -->
+                           
+                        </ul>
+                        <partial name="_LoginPartial" />
+                    </div>
+                   
+                </div>
+                <br>
+
+            </nav>
+            <!-- Navbar -->
+            <div class="p-0 m-0">
+                <img src="~/images/msqwv.png" alt="wave" class="mb-0" style="width:100%" />
+            </div>
+        </div>
+        
+    </header>
+     <div class="pt-0" style="background: #FBF8EF;">
+        <div class="">
+            <main role="main" class="pb-3 mb-3">
+                @RenderBody()
+               
+            </main>
+        </div>
+    </div>
+   
+
+<!-- Footer Section -->
+@* <footer class="section footer finalfoot border-top mt-3">
+    <div class="footer-container container">
+        <div class="footer-content">
+            <a href="#" class="logo-content flex">
+                <i class='bx bx-coffee logo-icon'></i>
+                <span class="logo-text">Coffee.</span>
+            </a>
+
+            <p class="content-description">Coffee is a cafe that serve many variant of coffee and other dishes with very comfortable place.</p>
+
+            <div class="footer-location flex">
+                <i class='bx bx-map map-icon'></i>
+
+                <div class="location-text">
+                    USA Californa 65 South Fifth St.Sicklerville, NJ 08081
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-linkContent">
+            <ul class="footer-links">
+                <h4 class="footerLinks-title">Facility</h4>
+
+                <li><a href="#" class="footer-link">Private Room</a></li>
+                <li><a href="#" class="footer-link">Meeting Room</a></li>
+                <li><a href="#" class="footer-link">Event Room</a></li>
+                <li><a href="#" class="footer-link">Creative Studio</a></li>
+                <li><a href="#" class="footer-link">Custom Room</a></li>
+            </ul>
+            <ul class="footer-links">
+                <h4 class="footerLinks-title">Facility</h4>
+
+                <li><a href="#" class="footer-link">Coffee</a></li>
+                <li><a href="#" class="footer-link">Beverages</a></li>
+                <li><a href="#" class="footer-link">Dishes</a></li>
+            </ul>
+            <ul class="footer-links">
+                <h4 class="footerLinks-title">Support</h4>
+
+                <li><a href="#" class="footer-link">About Us</a></li>
+                <li><a href="#" class="footer-link">FAQs</a></li>
+                <li><a href="#" class="footer-link">Private Policy</a></li>
+                <li><a href="#" class="footer-link">Help Us</a></li>
+            </ul>
+        </div>
+    </div>
+    &copy; 2025 -  جميع الحقوق محفوظة لدي  - <a asp-area="" asp-controller="Home" asp-action="index">الذكر الحكيم</a>
+
+</footer> *@
+
+@*     <footer>
+        <hr class="mb-2">
+        <p class="text-center">
+            &copy; 2025 -  جميع الحقوق محفوظة لدي  - <a  asp-area="" asp-controller="Home" asp-action="index">الذكر الحكيم</a>
+
+       </p>
+
+    </footer> *@
+
+
+
+
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
+  
+    <script src="~/js/site.js"      asp-append-version="true"></script>
+    <script src="~/js/Roles.js" asp-append-version="true"></script>
+    <script src="~/js/Centers.js"   asp-append-version="true"></script>
+    <script src="~/js/Districts.js"   asp-append-version="true"></script>
+    <script src="~/js/Locations.js" asp-append-version="true"></script>
+    <script src="~/js/Students.js"  asp-append-version="true"></script>
+    <script src="~/js/Episodes.js"  asp-append-version="true"></script>
+    <script src="~/js/SelectedEpisode.js" asp-append-version="true"></script>
+   
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+   
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <!-- تضمين مكتبة خرائط جوجل -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDy2BMMMCDn3JczdO1y8hZRYQkf8dDS4x0&callback=initMap" async defer asp-append-version="true"></script>
+    @*API Key Vedio : https://www.youtube.com/watch?app=desktop&v=o_PnCJSqsEs&t=0s*@
+    @*API Key Vedio : https://www.youtube.com/watch?v=QQ_8X59gloM*@
+    
+    @* <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDy2BMMMCDn3JczdO1y8hZRYQkf8dDS4x0&callback=initMap&v=weekly&solution_channel=GMP_CCS_geocodingservice_v2" async defer></script> *@
+    @* <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBtL7Fg-vi8y8u5OWdAx34WZXzUBqOM1CE&callback=initMap&v=weekly&solution_channel=GMP_CCS_geocodingservice_v2" async defer></script> *@
+    <script src="~/sweetalert2/sweetalert2.all.js"></script>
+    <script src="~/sweetalert2/sweetalert2.all.min.js"></script>
+    <script src="~/sweetalert2/sweetalert2.esm.all.js"></script>
+    <script src="~/sweetalert2/sweetalert2.esm.all.min.js"></script>
+    <script src="~/sweetalert2/sweetalert2.esm.js"></script>
+    <script src="~/sweetalert2/sweetalert2.esm.min.js"></script>
+    <script src="~/sweetalert2/sweetalert2.js"></script>
+    <script src="~/sweetalert2/sweetalert2.min.js"></script>
+    @* <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.2/fc-5.0.4/sc-2.4.3/sb-1.8.2/sp-2.3.3/sl-3.0.0/datatables.min.js" asp-append-version="true"></script> *@
+
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

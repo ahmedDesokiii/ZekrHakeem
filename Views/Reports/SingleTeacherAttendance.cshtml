@@ -1,0 +1,209 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Select Student";
+    int cNo = 0;
+
+    var utcTime = DateTime.UtcNow;
+    //var currentTime = utcTime.UTCToRegionalTime("Asia/Riyadh").TimeOfDay;
+
+    var epStartTime_Fajr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.FajrTime);
+    var epEndTime_Fajr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndFajrTime);
+
+
+    var epStartTime_Sunrise = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.SunriseTime);
+    var epEndTime_Sunrise = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndSunriseTime);
+
+    var epStartTime_Zohr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.ZohrTime);
+    var epEndTime_Zohr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndZohrTime);
+
+    var epStartTime_Asr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.AsrTime);
+    var epEndTime_Asr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndAsrTime);
+
+    var epStartTime_Mghrb = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.MghrbTime);
+    var epEndTime_Mghrb = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndMghrbTime);
+
+    var epStartTime_Isha = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.IshaTime);
+    var epEndTime_Isha = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndIshaTime);
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="card w-100 border-0">
+        <div class="card-header shadow text-center bg-dark rounded-top-3 text-white py-1"><span class="text-center fw-bolder fs-3"> حضور وانصراف معلم/ @Model.ReportVM.Teacher.FullName</span><i class="text-white mt-1 me-2 bi bi-box-arrow-in-down"></i></div>
+        <div class="card-body border-0" dir="rtl">
+            <div>
+                @if (!Model.ReportVM.TeacherAttendances.Any())
+                {
+                    <div class="alert  alert-warning mt-5">
+                        <h4 class="alert-heading">No Attendances!</h4>
+                        <p class="mb-0">No Attendances where added yet.</p>
+                    </div>
+                }
+                else
+                {
+                    <table border="0" cellspacing="5" cellpadding="5">
+                        <tbody>
+                            <tr>
+                                <td>بداية الفترة</td>
+                                <td><input type="text" readonly id="minTea" name="minTea"></td>
+                            </tr>
+                            <tr>
+                                <td>نهاية الفترة</td>
+                                <td><input type="text" readonly id="maxTea" name="maxTea"></td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                    <table id="exampleTea" class="table-hover display nowrap w-100 p-2 table-bordered border-primary-subtle">
+                        <thead>
+                            <tr class="text-center fs-5 p-2">
+                                <td class="text-center px-1 bg-danger-subtle fw-bold"></td>
+                                <td class="text-center px-1 bg-danger-subtle fw-bold">تاريخ </td>
+                                <td class="text-center px-1 bg-danger-subtle fw-bold"> الحلقة</td>
+                                <td class="text-center px-1 bg-danger-subtle fw-bold"> الحضور</td>
+                                <td class="text-center px-1 bg-danger-subtle fw-bold"> الانصراف</td>
+                                <td class="text-center px-1 bg-danger-subtle fw-bold"> التقييم</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.ReportVM.TeacherAttendances)
+                            {
+                               
+                                <tr class="text-center fs-5">
+                                    @{
+                                        cNo++;
+                                        string attendState_in = "";
+                                        string attendState_out = "";
+                                        @*Teacher Attend State In*@
+                                        @*حاضر*@
+                                        @if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && item.Att_In >= epStartTime_Fajr && item.Att_In <= epStartTime_Fajr.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && item.Att_In >= epStartTime_Sunrise && item.Att_In <= epStartTime_Sunrise.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && item.Att_In >= epStartTime_Zohr && item.Att_In <= epStartTime_Zohr.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && item.Att_In >= epStartTime_Asr && item.Att_In <= epStartTime_Asr.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && item.Att_In >= epStartTime_Mghrb && item.Att_In <= epStartTime_Mghrb.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && item.Att_In >= epStartTime_Isha && item.Att_In <= epStartTime_Isha.AddMinutes(45))
+                                        {
+                                            attendState_in = "حاضر";
+                                        }
+                                        @*متأخر*@
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && item.Att_In >= epStartTime_Fajr.AddMinutes(45) && item.Att_In <= epEndTime_Fajr)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && item.Att_In >= epStartTime_Sunrise.AddMinutes(45) && item.Att_In <= epEndTime_Sunrise)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && item.Att_In >= epStartTime_Zohr.AddMinutes(45) && item.Att_In <= epEndTime_Zohr)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && item.Att_In >= epStartTime_Asr.AddMinutes(45) && item.Att_In <= epEndTime_Asr)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && item.Att_In >= epStartTime_Mghrb.AddMinutes(45) && item.Att_In <= epEndTime_Mghrb)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && item.Att_In >= epStartTime_Isha.AddMinutes(45) && item.Att_In <= epEndTime_Isha)
+                                        {
+                                            attendState_in = "متأخر";
+                                        }
+                                        @*Teacher Attend State Out*@
+                                        @*انصراف مبكر*@
+                                        @if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && item.Att_Out <= epEndTime_Fajr.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && item.Att_Out <= epEndTime_Sunrise.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && item.Att_Out <= epEndTime_Zohr.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && item.Att_Out <= epEndTime_Asr.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && item.Att_Out <= epEndTime_Mghrb.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+                                        else if (item.Episode.AttendType.Contains("حضوري") && item.Episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && item.Att_Out <= epEndTime_Isha.AddMinutes(-10) && item.Att_Out != item.Att_In)
+                                        {
+                                            attendState_out = "انصراف مبكر";
+                                        }
+
+                                    }
+                                    <td class="text-center px-0 fw-bold fs-6">@cNo</td>
+                                    <td class="text-center px-0" style="font-size:14px">
+                                        @item.Att_In.ToString("dddd")
+                                        <br class=" my-0 py-0 px-0 mx-auto w-75">
+                                        @item.Att_In.ToString("yyyy-MM-dd")
+                                    </td>
+                                    <td class="text-center px-0 fw-bold" style="font-size:14px">@item.Episode.Name</td>
+                                    <td class="text-center px-0 " style="font-size:14px">
+                                        @item.Att_In.ToString("hh:mm tt")
+                                        <br class=" my-0 py-0 px-0 mx-auto w-75">
+
+                                        @if (attendState_in.Contains("حاضر"))
+                                        {
+                                            <span class="text-center px-0 fw-bold text-success">@attendState_in</span>
+                                        }
+                                        else if (attendState_in.Contains("متأخر"))
+                                        {
+                                            <span class="text-center px-0 fw-bold text-warning">@attendState_in</span>
+                                        }
+                                    </td>
+                                    <td class="text-center px-0 fw-bold" style="font-size:13px">
+                                        @item.Att_Out.ToString("hh:mm tt")
+                                        <br class=" my-0 py-0 px-0 mx-auto w-75">
+                                        @if (attendState_out.Contains("انصراف مبكر"))
+                                        {
+                                            <span class="text-center px-0 fw-bold text-danger">@attendState_out</span>
+                                        }
+                                    </td>
+
+
+                                    @if (item.Att_In == item.Att_Out)
+                                    {
+                                        <td class="fw-bold px-0 bg-light text-danger"><i class="bi bi-x-circle-fill fs-3 text-danger"></i></td>
+                                    }
+                                    else
+                                    {
+                                        <td class="fw-bold px-0 text-success bg-light"><i class="bi bi-check-circle fs-3 text-success fw-bold"></i></td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/js/Reports_TeacherAttendance.js"></script>
+

@@ -1,0 +1,336 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Students Evaluations";
+    int cNo = 0;
+    int[] attx = { 0, 0, 0, 0, 0, 0 };
+    int totalAttend = 0;
+}
+<div class="card w-100 border-0">
+    <div class="card-header shadow text-center bg-dark rounded-top-3 text-white py-1"> <h3 class="fw-bold">تقييمات الطلاب</h3></div>
+    <form asp-action="StudentsEvaluations" asp-controller="Reports" method="post">
+        <div class="row mb-3 justify-content-center align-items-center align-content-center">
+
+            <div class="col-sm-4 ms-3">
+                <div id="demo-output" class="rounded-4"></div>
+            </div>
+            <div class="col-sm-3">
+                <div class="form-group d-flex" dir="rtl">
+                    <table class="border-0 justify-content-center mx-auto align-items-center text-center mb-4">
+                        <tbody>
+                            <tr class="text-center p-2">
+
+                                <td class="text-center  p-2">
+                                    <span class="input-group-text bg-dark text-white fs-6 fw-bold ">بداية من</span>
+                                    <input type="date" id="startDate" name="start" class="form-control text-center bg-light fs-6 fw-bold" asp-for="@Model.ReportVM.StartDate">
+                                </td>
+                                <td class="text-center p-2">
+                                    <span class="input-group-text bg-dark text-white fs-6 fw-bold ">نهاية إلي</span>
+                                    <input type="date" id="endDate" name="end" class="form-control text-center bg-light fs-6 fw-bold" asp-for="@Model.ReportVM.EndDate">
+                                </td>
+                            </tr>
+                            <tr class="text-center p-2">
+                                <td class="text-center p-2" colspan="2">
+
+                                    <div class="text-center text-lg-start  ">
+                                        <button id="evsubmit" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg text-white w-100"
+                                                style="background-color:#328E6E;">
+                                            عرض تقييمات الطلاب
+                                        </button>
+                                    </div>
+
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+            <div class="col-sm-4 me-3">
+                <div id="demo-output2" class="rounded-4"></div>
+            </div>
+
+        </div>
+
+    </form>
+    <hr>
+    <div class="card-body border-0" dir="rtl">
+        @if (!Model.ReportVM.AllStudentsMen.Any())
+        {
+            <div class="alert  alert-warning mt-5">
+                <h4 class="alert-heading">No Attendances!</h4>
+                <p class="mb-0">No Attendances where added yet.</p>
+            </div>
+        }
+        else
+        {
+            <table id="example" class="table table-hover display nowrap table-bordered justify-content-center align-items-center text-center align-content-center border-primary-subtle">
+                <thead>
+
+                    <tr class="text-center p-2 fs-5">
+                        <td class="text-center bg-danger-subtle fw-bold" rowspan="2"></td>
+                        <td class="text-center bg-danger-subtle fw-bold" rowspan="2">اسم الطالب </td>
+                        <td class="text-center bg-danger-subtle fw-bold" hidden rowspan="2">اول تقييم</td>
+                        <td class="text-center bg-danger-subtle fw-bold" hidden rowspan="2">اخر تقييم</td>
+
+                        <td class="text-center bg-danger-subtle fw-bold" colspan="7">حالة الحضور</td>
+
+                        <td class="text-center bg-danger-subtle fw-bold" rowspan="2"> الحلقة</td>
+                        <td class="text-center bg-danger-subtle fw-bold" rowspan="2">الخطة</td>
+
+                        <td class="text-center bg-danger-subtle fw-bold" colspan="6">حالة الحفظ</td>
+                        <td class="text-center bg-danger-subtle fw-bold" colspan="6">حالة المراجعة</td>
+                        <td class="text-center bg-danger-subtle fw-bold" colspan="6">حالة الربط</td>
+                    </tr>
+
+                    <tr class="text-center p-1 fw-bold ">
+
+                        <td class="text-center p-1 bg-danger-subtle text-danger" style="font-size:13px">لم يقيم</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">حاضر</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">متأخر</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">مستأذن</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">غ بإذن</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">غائب </td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">اجمالي </td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأوجه</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأجزاء</td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأوجه</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأجزاء</td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">سورة</td>
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">آية</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأوجه</td>
+                        <td class="text-center p-1 bg-danger-subtle text-warning fs-6">الأجزاء</td>
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var stu in Model.ReportVM.AllStudentsMen)
+                    {
+                        if (Model.ReportVM.CountAttend_0.GetValueOrDefault(stu) != null)
+                            attx[0] = Convert.ToInt32(Model.ReportVM.CountAttend_0.GetValueOrDefault(stu));
+                        if (Model.ReportVM.CountAttend_1.GetValueOrDefault(stu) != null)
+                            attx[1] = Convert.ToInt32(Model.ReportVM.CountAttend_1.GetValueOrDefault(stu));
+                        if (Model.ReportVM.CountAttend_2.GetValueOrDefault(stu) != null)
+                            attx[2] = Convert.ToInt32(Model.ReportVM.CountAttend_2.GetValueOrDefault(stu));
+                        if (Model.ReportVM.CountAttend_3.GetValueOrDefault(stu) != null)
+                            attx[3] = Convert.ToInt32(Model.ReportVM.CountAttend_3.GetValueOrDefault(stu));
+                        if (Model.ReportVM.CountAttend_4.GetValueOrDefault(stu) != null)
+                            attx[4] = Convert.ToInt32(Model.ReportVM.CountAttend_4.GetValueOrDefault(stu));
+
+
+                        totalAttend = attx[0] + attx[1] + attx[2] + attx[3] + attx[4];
+
+                        @*   if (Model.CountAttend_5.GetValueOrDefault(stu) == null)
+                            attx[5] = 0;
+                        else
+                            attx[5] = Convert.ToInt32(Model.CountAttend_5.GetValueOrDefault(stu)); *@
+
+
+
+                        cNo++;
+                        <tr class="text-center p-0">
+
+                            <td class="p-0 text-center">@cNo</td>
+                            <td class="p-1 text-center">
+                                <a target="_blank" class="link-underline-light fw-bold fs-6" asp-controller="Students" asp-action="SelectedStudent" asp-route-Id="@stu.Id">
+                                    @stu.Name
+                                </a>
+                                <hr class="p-0 m-0">
+                                <span class="text-secondary" style="font-size:14px">@stu.Nationality.Name</span>
+                            </td>
+
+                            @* <td class="p-0 text-center" hidden>-</td>
+                            <td class="p-0 text-center" hidden>-</td> *@
+
+                            <td class="p-0 text-center" hidden>@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_Date.Date.ToString("yyyy-MM-dd")</td>
+                            <td class="p-0 text-center" hidden>@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_Date.Date.ToString("yyyy-MM-dd")</td>
+
+
+
+                            <td class="p-0 text-center fw-bold">@attx[5]</td>
+                            <td class="p-0 text-center">@attx[0]</td>
+                            <td class="p-0 text-center">@attx[1]</td>
+                            <td class="p-0 text-center">@attx[2]</td>
+                            <td class="p-0 text-center">@attx[3]</td>
+                            <td class="p-0 text-center">@attx[4]</td>
+                            <td class="p-0 text-center bg-light text-primary fw-bold fs-6">@totalAttend</td>
+
+
+
+                            <td class="p-1 text-center">
+                                <span class=" fw-bold">@stu.StEpisode.Name</span>
+                                <hr class="p-0 m-0">
+                                <span class="text-secondary" style="font-size:14px">@stu.StEpisode.ApplicationUser.FullName</span>
+                            </td>
+                            <td class="p-0 text-center fw-bold" style="font-size:14px">@stu.PlanData.Name</td>
+
+
+
+
+                            @* <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td> *@
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_SaveSurahNameFrom</td>
+                            <td class="p-0 text-center">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_SaveAyahIdFrom</td>
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_SaveSurahNameTo</td>
+                            <td class="p-0 text-center">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_SaveAyahIdTo</td>
+
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            @* 
+                            <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.SavePages.GetValueOrDefault(stu))</td>
+                            <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.SaveSections.GetValueOrDefault(stu))</td>
+ *@
+                            @* <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td> *@
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevSurahNameFrom</td>
+                            <td class="p-0 text-center">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevAyahIdFrom</td>
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevSurahNameTo</td>
+                            <td class="p-0 text-center">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevAyahIdTo</td>
+
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+
+                            @*  <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.RevPages.GetValueOrDefault(stu))</td>
+                            <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.RevSections.GetValueOrDefault(stu))</td>
+ *@
+                            @* <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td> *@
+
+
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtSurahNameFrom</td>
+                            <td class="p-0 text-center">@Model.ReportVM.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtAyahIdFrom</td>
+                            <td class="p-0 text-center" style="font-size:14px">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtSurahNameTo</td>
+                            <td class="p-0 text-center">@Model.ReportVM.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtAyahIdTo</td>
+
+                            <td class="p-0 text-center">-</td>
+                            <td class="p-0 text-center">-</td>
+                            @* <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.RabtPages.GetValueOrDefault(stu))</td>
+                            <td class="p-0 text-center bg-light text-primary fw-bold fs-6 ">@String.Format("{0:0.00}", Model.RabtSections.GetValueOrDefault(stu))</td>
+                         *@
+                        </tr>
+                        @*
+                                        @if (stu.PlanData.Name.Equals("الخطة المفتوحة"))
+                                    {
+                                        <td colspan="4" class="text-danger p-1"> لا يوجد مراجعة</td>
+                                    }
+                                    else
+                                    {
+                                        <td class="p-1">@Model.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevSurahNameFrom</td>
+                                        <td class="p-1">@Model.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevAyahIdFrom</td>
+                                        <td class="p-1">@Model.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevSurahNameTo</td>
+                                        <td class="p-1">@Model.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RevAyahIdTo</td>
+
+
+                                    }
+                                    @if (stu.PlanData.Name.Equals("الخطة العامة") || stu.PlanData.Name.Equals("الخطة المفتوحة"))
+                                    {
+                                        <td colspan="4" class="text-danger p-1"> لا يوجد ربط</td>
+                                    }
+                                    else if (stu.PlanData.Name.Equals("الذكر الحكيم"))
+                                    {
+                                        <td class="p-1">@Model.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtSurahNameFrom</td>
+                                        <td class="p-1">@Model.FristEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtAyahIdFrom</td>
+                                        <td class="p-1">@Model.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtSurahNameTo</td>
+                                        <td class="p-1">@Model.LastEvaluateOfStudents.GetValueOrDefault(stu).Ev_RabtAyahIdTo</td>
+
+                                    }
+                                   *@
+
+
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586">اجمالي البيانات</th>
+                        <th hidden></th>
+                        <th hidden></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                    </tr>
+                </tfoot>
+                @* <tfoot>
+                                        <tr class="text-center p-2 fs-6 fw-bold">
+
+                                            <td class="text-center bg-danger-subtle fw-bold" colspan="2">اجمالي البيانات</td>
+                                            <td class="text-center bg-danger-subtle fw-bold" hidden></td>
+                                            <td class="text-center bg-danger-subtle fw-bold" hidden></td>
+
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                            <td class="text-center  bg-danger-subtle fs-6"></td>
+                                        </tr>
+                                    </tfoot> *@
+            </table>
+        }
+    </div>
+</div>
+
+
+<script src="~/js/Reports.js"></script>

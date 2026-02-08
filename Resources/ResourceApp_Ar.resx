@@ -1,0 +1,1053 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CentersModal_AddNewCenter_lbl" xml:space="preserve">
+    <value>اضافة مركز تعليمي </value>
+  </data>
+  <data name="CentersModal_CenterDescription_lbl" xml:space="preserve">
+    <value>وصف المركز</value>
+  </data>
+  <data name="CentersModal_CenterDescription_txt" xml:space="preserve">
+    <value>وصف المركز</value>
+  </data>
+  <data name="CentersModal_CenterName_lbl" xml:space="preserve">
+    <value>اسم المركز</value>
+  </data>
+  <data name="CentersModal_CenterName_txt" xml:space="preserve">
+    <value>ادخل اسم المركز</value>
+  </data>
+  <data name="CentersModal_CentersMenSupervisor_option" xml:space="preserve">
+    <value>مشرف المركز</value>
+  </data>
+  <data name="CentersModal_CentersMen_lbl" xml:space="preserve">
+    <value>مشرف المركز</value>
+  </data>
+  <data name="CentersModal_CentersWomenSupervisor_option" xml:space="preserve">
+    <value>مشرفة المركز</value>
+  </data>
+  <data name="CentersModal_CentersWomen_lbl" xml:space="preserve">
+    <value>مشرفة المركز</value>
+  </data>
+  <data name="CentersModal_CenterType_lbl" xml:space="preserve">
+    <value>نوع المركز</value>
+  </data>
+  <data name="CentersModal_CenterType_txt" xml:space="preserve">
+    <value>نوع المركز</value>
+  </data>
+  <data name="CentersModal_EditCenter_lbl" xml:space="preserve">
+    <value>تعديل بيانات مركز تعليمي</value>
+  </data>
+  <data name="CentersPage_AddCenter_btn" xml:space="preserve">
+    <value>اضافة مركز تعليمي</value>
+  </data>
+  <data name="CentersPage_centerName_CentersTable" xml:space="preserve">
+    <value>اسم المركز</value>
+  </data>
+  <data name="CentersPage_CentersMain_lbl" xml:space="preserve">
+    <value>المراكز التعليمية</value>
+  </data>
+  <data name="CentersPage_Center_tab" xml:space="preserve">
+    <value> قائمة المراكز التعليمية</value>
+  </data>
+  <data name="DistrictsModal_AddNewDistrict_lbl" xml:space="preserve">
+    <value>اضافة حي جديد</value>
+  </data>
+  <data name="DistrictsModal_DistrictDescription_lbl" xml:space="preserve">
+    <value>وصف الحي</value>
+  </data>
+  <data name="DistrictsModal_DistrictDescription_txt" xml:space="preserve">
+    <value>ادخل بيانات عن الحي</value>
+  </data>
+  <data name="DistrictsModal_DistrictName_lbl" xml:space="preserve">
+    <value>اسم الحي</value>
+  </data>
+  <data name="DistrictsModal_DistrictName_txt" xml:space="preserve">
+    <value>ادخل اسم الحي</value>
+  </data>
+  <data name="DistrictsModal_EditDistrict_lbl" xml:space="preserve">
+    <value>تعديل بيانات حي</value>
+  </data>
+  <data name="DistrictsPage_AddDistrict_btn" xml:space="preserve">
+    <value>اضافة حي</value>
+  </data>
+  <data name="DistrictsPage_DistrictName_DistrictsTable" xml:space="preserve">
+    <value>اسم الحي</value>
+  </data>
+  <data name="DistrictsPage_DistrictsMain_lbl" xml:space="preserve">
+    <value>الأحياء و المناطق</value>
+  </data>
+  <data name="DistrictsPage_Districts_tab" xml:space="preserve">
+    <value>قائمة الأحياء</value>
+  </data>
+  <data name="EpisodesModal_AddNewEpisode_lbl" xml:space="preserve">
+    <value>اضافة حلقة جديدة</value>
+  </data>
+  <data name="EpisodesModal_EditEpisode_lbl" xml:space="preserve">
+    <value>تعديل بيانات الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeAttendType_lbl" xml:space="preserve">
+    <value>نوع الحضور</value>
+  </data>
+  <data name="EpisodesModal_EpisodeAttend_option" xml:space="preserve">
+    <value>حضوري</value>
+  </data>
+  <data name="EpisodesModal_EpisodeDescription_txt" xml:space="preserve">
+    <value>وصف الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeEndTime_lbl" xml:space="preserve">
+    <value>نهاية الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeName_lbl" xml:space="preserve">
+    <value>اسم الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeName_txt" xml:space="preserve">
+    <value>اسم الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodePeriod_lbl" xml:space="preserve">
+    <value>الفترة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeRemote_option" xml:space="preserve">
+    <value>عن بعد</value>
+  </data>
+  <data name="EpisodesModal_EpisodeStartTime_lbl" xml:space="preserve">
+    <value>بداية الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeTitle_lbl" xml:space="preserve">
+    <value>نـوع الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpisodeTitle_txt" xml:space="preserve">
+    <value>نوع الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpLocationMen_lbl" xml:space="preserve">
+    <value>المسجد</value>
+  </data>
+  <data name="EpisodesModal_EpLocationMen_txt" xml:space="preserve">
+    <value>حدد المسجد</value>
+  </data>
+  <data name="EpisodesModal_EpLocationWomen_lbl" xml:space="preserve">
+    <value>الدار</value>
+  </data>
+  <data name="EpisodesModal_EpLocationWomen_txt" xml:space="preserve">
+    <value>حدد الدار</value>
+  </data>
+  <data name="EpisodesModal_EpTeacherMen_lbl" xml:space="preserve">
+    <value>معلم الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpTeacherMen_txt" xml:space="preserve">
+    <value>حدد المعلم</value>
+  </data>
+  <data name="EpisodesModal_EpTeacherWomen_lbl" xml:space="preserve">
+    <value>معلمة الحلقة</value>
+  </data>
+  <data name="EpisodesModal_EpTeacherWomen_txt" xml:space="preserve">
+    <value>حدد المعلمة</value>
+  </data>
+  <data name="EpisodesModal_LimitStudents_lbl" xml:space="preserve">
+    <value> عدد طلاب</value>
+  </data>
+  <data name="EpisodesModal_LimitStudents_txt" xml:space="preserve">
+    <value>ارقام فقط</value>
+  </data>
+  <data name="EpisodesPage_AddEpisode_btn" xml:space="preserve">
+    <value>اضافة حلقة</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_Table" xml:space="preserve">
+    <value>بــــدأ الحلقــة</value>
+  </data>
+  <data name="EpisodesPage_episodeName_EpisodesTable" xml:space="preserve">
+    <value>اسم الحلقة</value>
+  </data>
+  <data name="EpisodesPage_EpisodesMain_lbl" xml:space="preserve">
+    <value>الحلقات</value>
+  </data>
+  <data name="EpisodesPage_EpisodeTypes_btn" xml:space="preserve">
+    <value>انواع الحلقات</value>
+  </data>
+  <data name="EpisodesPage_Episode_tab" xml:space="preserve">
+    <value>قائمة الحلقات</value>
+  </data>
+  <data name="EpisodesPage_PrayerTimes_btn" xml:space="preserve">
+    <value>مواقيت الصلاة</value>
+  </data>
+  <data name="EpisodesPage_StudentsCount_EpisodesTable" xml:space="preserve">
+    <value>عدد الطلاب</value>
+  </data>
+  <data name="EpisodeTypesModal_AddEpisodeType_btn" xml:space="preserve">
+    <value>اضافة نوع جديد للحلقات</value>
+  </data>
+  <data name="EpisodeTypesModal_AddNewEpType_lbl" xml:space="preserve">
+    <value>اضافة نوع جديد للحلقات</value>
+  </data>
+  <data name="EpisodeTypesModal_EditEpType_lbl" xml:space="preserve">
+    <value>تعديل بيانات انواع الحلقات</value>
+  </data>
+  <data name="EpisodeTypesModal_EpisodeType_lbl" xml:space="preserve">
+    <value>نوع الحلقة</value>
+  </data>
+  <data name="EpisodeTypesModal_EpisodeType_txt" xml:space="preserve">
+    <value>ادخل نوع الحلقة</value>
+  </data>
+  <data name="HomePage_Welcome" xml:space="preserve">
+    <value>مرحبا بكم ف تطبيق الذكر الحكيم </value>
+  </data>
+  <data name="LayoutPage_LogOut_lnk" xml:space="preserve">
+    <value>خروج</value>
+  </data>
+  <data name="LayoutPage_NavCenters_lnk" xml:space="preserve">
+    <value>المـراكز</value>
+  </data>
+  <data name="LayoutPage_NavDistricts_lnk" xml:space="preserve">
+    <value>الأحـياء</value>
+  </data>
+  <data name="LayoutPage_NavEpisodes_lnk" xml:space="preserve">
+    <value>الحلقـات</value>
+  </data>
+  <data name="LayoutPage_NavHome_lnk" xml:space="preserve">
+    <value>الرئيسية</value>
+  </data>
+  <data name="LayoutPage_NavLocations_lnk" xml:space="preserve">
+    <value>الأمــاكن</value>
+  </data>
+  <data name="LayoutPage_NavStudents_lnk" xml:space="preserve">
+    <value>الطلاب</value>
+  </data>
+  <data name="LayoutPage_Register_lnk" xml:space="preserve">
+    <value>تسجيل</value>
+  </data>
+  <data name="LayoutPage_SignIn_lnk" xml:space="preserve">
+    <value>دخــول</value>
+  </data>
+  <data name="LocationsModal_AddNewLocation_lbl" xml:space="preserve">
+    <value>اضافة مكان لحضور الحلقات</value>
+  </data>
+  <data name="LocationsModal_AvilableCenters_lbl" xml:space="preserve">
+    <value>المراكز المتاحة</value>
+  </data>
+  <data name="LocationsModal_AvilableCenters_option" xml:space="preserve">
+    <value>حدد المركز</value>
+  </data>
+  <data name="LocationsModal_AvilableDistricts_lbl" xml:space="preserve">
+    <value>الأحياء المتاحة</value>
+  </data>
+  <data name="LocationsModal_AvilableDistricts_option" xml:space="preserve">
+    <value>حدد الحي المناسب</value>
+  </data>
+  <data name="LocationsModal_EditLocation_lbl" xml:space="preserve">
+    <value>تعديل اماكن حضور الجلسات</value>
+  </data>
+  <data name="LocationsModal_LocationDescription_lbl" xml:space="preserve">
+    <value>وصف المكان</value>
+  </data>
+  <data name="LocationsModal_LocationDescription_txt" xml:space="preserve">
+    <value>وصف المكان</value>
+  </data>
+  <data name="LocationsModal_LocationName_lbl" xml:space="preserve">
+    <value>اسم المكان</value>
+  </data>
+  <data name="LocationsModal_LocationName_txt" xml:space="preserve">
+    <value>اسم المسجد او مكان الحضور</value>
+  </data>
+  <data name="LocationsPage_AddLocation_btn" xml:space="preserve">
+    <value>اضافة مكان لحضور الحلقات</value>
+  </data>
+  <data name="LocationsPage_EpisodesCount_LocationsTable" xml:space="preserve">
+    <value>عدد الحلقات</value>
+  </data>
+  <data name="LocationsPage_locationName_LocationsTable" xml:space="preserve">
+    <value>اسم المكان</value>
+  </data>
+  <data name="LocationsPage_LocationsMain_lbl" xml:space="preserve">
+    <value>المساجد و اماكن حضور الحلقات</value>
+  </data>
+  <data name="LocationsPage_Location_tab" xml:space="preserve">
+    <value>قائمة اماكن حضور الحلقات</value>
+  </data>
+  <data name="Modal_Cancle_btn" xml:space="preserve">
+    <value>إالغاء</value>
+  </data>
+  <data name="Modal_SaveEdit_btn" xml:space="preserve">
+    <value>حفظ التعديلات</value>
+  </data>
+  <data name="Modal_Save_btn" xml:space="preserve">
+    <value>حفظ البيانات</value>
+  </data>
+  <data name="Page_DeleteBtn_Table" xml:space="preserve">
+    <value>حذف</value>
+  </data>
+  <data name="Page_DetailsBtn_Table" xml:space="preserve">
+    <value>تفاصيل</value>
+  </data>
+  <data name="Page_EditBtn_Table" xml:space="preserve">
+    <value>تعديل</value>
+  </data>
+  <data name="Page_PauseBtn_Table" xml:space="preserve">
+    <value>ايقاف مؤقت</value>
+  </data>
+  <data name="Page_ResumeBtn_Table" xml:space="preserve">
+    <value>إعادة تشغيل</value>
+  </data>
+  <data name="PhotoAllowedFileExtensions" xml:space="preserve">
+    <value>الامتدادات المسموحة</value>
+  </data>
+  <data name="PhotoMaxSize" xml:space="preserve">
+    <value>بمساحة</value>
+  </data>
+  <data name="PlansModal_AddNewPlan_lbl" xml:space="preserve">
+    <value>اضافة خطة تعليمية</value>
+  </data>
+  <data name="PlansModal_EditPlan_lbl" xml:space="preserve">
+    <value>تعديل بيانات الخطة</value>
+  </data>
+  <data name="PlansModal_PlanDescription_lbl" xml:space="preserve">
+    <value>وصف الخطة</value>
+  </data>
+  <data name="PlansModal_PlanDescription_txt" xml:space="preserve">
+    <value>ادخل معلومات عن الخطة (اختياري)</value>
+  </data>
+  <data name="PlansModal_PlanName_lbl" xml:space="preserve">
+    <value>اسم الخطة</value>
+  </data>
+  <data name="PlansModal_PlanName_txt" xml:space="preserve">
+    <value>ادخل اسم الخطة</value>
+  </data>
+  <data name="PlansPage_AddPlan_btn" xml:space="preserve">
+    <value>اضافة خطة </value>
+  </data>
+  <data name="PlansPage_PlanName_PlansTable" xml:space="preserve">
+    <value>اسم الخطة</value>
+  </data>
+  <data name="PlansPage_PlansMain_lbl" xml:space="preserve">
+    <value>الخطط التعليمية</value>
+  </data>
+  <data name="PlansPage_Plan_tab" xml:space="preserve">
+    <value>قائمة الخطط التعليمية</value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_CenterName_card" xml:space="preserve">
+    <value>المركز التعليمي</value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_EpisodesCenter_card" xml:space="preserve">
+    <value>حلقات المركز</value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_LocationsCenterMen_card" xml:space="preserve">
+    <value>مساجد المركز</value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_LocationsCenterWomen_card" xml:space="preserve">
+    <value>دور المركز</value>
+  </data>
+  <data name="SelectedPlanPage_MainHeader_PlanName_card" xml:space="preserve">
+    <value>اسم الخطة </value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_StudentsCenter_card" xml:space="preserve">
+    <value>طــلاب المركز</value>
+  </data>
+  <data name="SelectedCenterPage_MainHeader_Supervisor_card" xml:space="preserve">
+    <value>مشرف المركز</value>
+  </data>
+  <data name="SelectedCenterPage_SmallHeader_EpisodesLocation_card" xml:space="preserve">
+    <value>حلقات</value>
+  </data>
+  <data name="SelectedCenterPage_SmallHeader_StudentsLocation_card" xml:space="preserve">
+    <value>طلاب</value>
+  </data>
+  <data name="SelectedEpisodePage_EpisodeInfo_tab" xml:space="preserve">
+    <value>معلومات عن الحلقة</value>
+  </data>
+  <data name="SelectedEpisodePage_FinishEpisodeEvaluations_btn" xml:space="preserve">
+    <value>حفظ تقييمات الطلاب</value>
+  </data>
+  <data name="SelectedEpisodePage_FinishEpisode_btn" xml:space="preserve">
+    <value>انهاء الحلقة</value>
+  </data>
+  <data name="SelectedEpisodePage_ListStudent_tab" xml:space="preserve">
+    <value>قائمة طلاب الحلقة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_EpisodesLocationMen_card" xml:space="preserve">
+    <value>حلقات المسجد</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_EpisodesLocationWomen_card" xml:space="preserve">
+    <value>حلقات الدار</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_LocationNameMen_card" xml:space="preserve">
+    <value>اســـم المسجد</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_LocationNameWomen_card" xml:space="preserve">
+    <value>اســـم الــدار</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_StudentsLocationMen_card" xml:space="preserve">
+    <value>طــلاب المسجد</value>
+  </data>
+  <data name="SelectedLocationCenterPage_MainHeader_StudentsLocationWomen_card" xml:space="preserve">
+    <value>طــلاب الدار</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_EpisodeTime_lbl" xml:space="preserve">
+    <value>وقت الحلقة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_EpStudents_lbl" xml:space="preserve">
+    <value>طلاب الحلقة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_LimitStudents_lbl" xml:space="preserve">
+    <value>اقصي عدد طلاب</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_PhoneNumber_card" xml:space="preserve">
+    <value>رقم الجوال</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_TeacherNameMen_card" xml:space="preserve">
+    <value>اسم المعلم</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_TeacherNameWomen_card" xml:space="preserve">
+    <value>اسم المعلمة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallHeader_TeacherEpisodeMen_card" xml:space="preserve">
+    <value>معلم الحلقة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallHeader_TeacherEpisodeWomen_card" xml:space="preserve">
+    <value>معلمة الحلقة</value>
+  </data>
+  <data name="SelectedLocationPage_MainHeader_DistrictName_card" xml:space="preserve">
+    <value>اسم الحي</value>
+  </data>
+  <data name="StudentHealthModal_AddNewStHealth_lbl" xml:space="preserve">
+    <value>اضافة حالة صحية </value>
+  </data>
+  <data name="StudentHealthModal_EditStudent_lbl" xml:space="preserve">
+    <value>تعديل الحالة الصحية</value>
+  </data>
+  <data name="StudentHealthModal_HealthName_lbl" xml:space="preserve">
+    <value>الحالة الصحية</value>
+  </data>
+  <data name="StudentHealthModal_HealthName_txt" xml:space="preserve">
+    <value>ادخل الحالة الصحية</value>
+  </data>
+  <data name="StudentNationalitiesModal_AddNewStNationality_lbl" xml:space="preserve">
+    <value>اضافة جنسية جديدة</value>
+  </data>
+  <data name="StudentNationalitiesModal_EditStudent_lbl" xml:space="preserve">
+    <value>تعديل بيانات الجنسية</value>
+  </data>
+  <data name="StudentNationalitiesModal_NationalityName_lbl" xml:space="preserve">
+    <value>الجنسية</value>
+  </data>
+  <data name="StudentNationalitiesModal_NationalityName_txt" xml:space="preserve">
+    <value>ادخل جنسية الطالب</value>
+  </data>
+  <data name="StudentsModal_AddNewStudent_lbl" xml:space="preserve">
+    <value>اضافة طالب جديد</value>
+  </data>
+  <data name="StudentsModal_EditStudent_lbl" xml:space="preserve">
+    <value>تعديل بيانات طالب</value>
+  </data>
+  <data name="StudentsModel_EducationType_lbl" xml:space="preserve">
+    <value>نوع التعليم</value>
+  </data>
+  <data name="StudentsModel_EducationType_select" xml:space="preserve">
+    <value>حدد نوع التعليم</value>
+  </data>
+  <data name="StudentsModel_ParentIdentityNum_lbl" xml:space="preserve">
+    <value>هوية ولي الأمر</value>
+  </data>
+  <data name="StudentsModel_ParentIdentityNum_txt" xml:space="preserve">
+    <value>ادخل هوية ولي الأمر</value>
+  </data>
+  <data name="StudentsModel_ParentPhoneNum_lbl" xml:space="preserve">
+    <value>جوال ولي الأمر</value>
+  </data>
+  <data name="StudentsModel_ParentPhoneNum_txt" xml:space="preserve">
+    <value>ادخل جوال ولي الأمر</value>
+  </data>
+  <data name="StudentsModel_StEpisode_lbl" xml:space="preserve">
+    <value>اسم الحلقة</value>
+  </data>
+  <data name="StudentsModel_StEpisode_select" xml:space="preserve">
+    <value>حدد الحلقة المتاحة  </value>
+  </data>
+  <data name="StudentsModel_StLevel_lbl" xml:space="preserve">
+    <value>المستوي</value>
+  </data>
+  <data name="StudentsModel_StLevel_select" xml:space="preserve">
+    <value>حدد المستوي المناسب للطالب</value>
+  </data>
+  <data name="StudentsModel_StPlan_lbl" xml:space="preserve">
+    <value>الخطة الدراسية</value>
+  </data>
+  <data name="StudentsModel_StPlan_select" xml:space="preserve">
+    <value>حدد الخطة الدراسية</value>
+  </data>
+  <data name="StudentsModel_StSorah_lbl" xml:space="preserve">
+    <value>اسم السورة</value>
+  </data>
+  <data name="StudentsModel_StSorah_select" xml:space="preserve">
+    <value>حدد السورة </value>
+  </data>
+  <data name="StudentsModel_StudentAdress_lbl" xml:space="preserve">
+    <value>عنوان الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentAdress_txt" xml:space="preserve">
+    <value>ادخل عنوان الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentBirthDate_lbl" xml:space="preserve">
+    <value>ميلاد الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentBirthDate_txt" xml:space="preserve">
+    <value>ادخل تاريخ ميلاد الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentCategory_lbl" xml:space="preserve">
+    <value>نوع الهوية</value>
+  </data>
+  <data name="StudentsModel_StudentCategory_select" xml:space="preserve">
+    <value>حدد نوع الهوية </value>
+  </data>
+  <data name="StudentsModel_StudentGender_lbl" xml:space="preserve">
+    <value>الجنس</value>
+  </data>
+  <data name="StudentsModel_StudentGender_select" xml:space="preserve">
+    <value>حدد نوع الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentHealth_lbl" xml:space="preserve">
+    <value>الحالة الصحية</value>
+  </data>
+  <data name="StudentsModel_StudentHealth_select" xml:space="preserve">
+    <value>حدد الحالة الصحية للطالب</value>
+  </data>
+  <data name="StudentsModel_StudentIdentityNum_lbl" xml:space="preserve">
+    <value>هوية الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentIdentityNum_txt" xml:space="preserve">
+    <value>ادخل رقم هوية الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentName_lbl" xml:space="preserve">
+    <value>اسم الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentName_txt" xml:space="preserve">
+    <value>ادخل اسم الطالب الرباعي</value>
+  </data>
+  <data name="StudentsModel_StudentNationality_lbl" xml:space="preserve">
+    <value>الجنسية</value>
+  </data>
+  <data name="StudentsModel_StudentNationality_select" xml:space="preserve">
+    <value>حدد جنسية الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentNotes_lbl" xml:space="preserve">
+    <value>ملاحظات</value>
+  </data>
+  <data name="StudentsModel_StudentNotes_txt" xml:space="preserve">
+    <value>ادخل ملاحظات عن الطالب</value>
+  </data>
+  <data name="StudentsModel_StudentPhoto_lbl" xml:space="preserve">
+    <value>صورة الطالب</value>
+  </data>
+  <data name="StudentsPage_AddStudent_btn" xml:space="preserve">
+    <value>اضافة طالب جديد</value>
+  </data>
+  <data name="StudentsPage_StEpisodeName_StudentsTable" xml:space="preserve">
+    <value>اسم الحلقة</value>
+  </data>
+  <data name="StudentsPage_studentName_StudentsTable" xml:space="preserve">
+    <value>اسم الطالب</value>
+  </data>
+  <data name="StudentsPage_StudentsHealth_btn" xml:space="preserve">
+    <value>الحالات الصحية</value>
+  </data>
+  <data name="StudentsPage_StudentsMain_lbl" xml:space="preserve">
+    <value>طلاب الحلقة</value>
+  </data>
+  <data name="StudentsPage_StudentsNationalities_btn" xml:space="preserve">
+    <value>جنسيات الطلاب</value>
+  </data>
+  <data name="StudentsPage_Student_tab" xml:space="preserve">
+    <value>قائمة الطلاب</value>
+  </data>
+  <data name="SelectedPlanPage_SmallHeader_LessonsOfLevel_card" xml:space="preserve">
+    <value>عدد الدروس</value>
+  </data>
+  <data name="SelectedPlanPage_SmallHeader_StudentsLevel_card" xml:space="preserve">
+    <value>عدد الطلاب</value>
+  </data>
+  <data name="SelectedLevelPlanPage_SmallBody_Lesson_End_lbl" xml:space="preserve">
+    <value>الي</value>
+  </data>
+  <data name="SelectedLevelPlanPage_SmallBody_Lesson_Start_lbl" xml:space="preserve">
+    <value>من</value>
+  </data>
+  <data name="SelectedLevelPlanPage_SmallBody_LessonSave_lbl" xml:space="preserve">
+    <value>الحفظ</value>
+  </data>
+  <data name="SelectedLevelPlanPage_SmallBody_LessonRabt_lbl" xml:space="preserve">
+    <value>الربط</value>
+  </data>
+  <data name="SelectedLevelPlanPage_SmallBody_LessonRev_lbl" xml:space="preserve">
+    <value>المراجعة</value>
+  </data>
+  <data name="SelectedLevelPlanPage_MainHeader_LevelName_card" xml:space="preserve">
+    <value>اسم المستوي</value>
+  </data>
+  <data name="SelectedEpisodesPage_Period_card" xml:space="preserve">
+    <value>موعد الحلقة</value>
+  </data>
+  <data name="LayoutPage_NavPlans_lnk" xml:space="preserve">
+    <value>الخطط</value>
+  </data>
+  <data name="StudentsModel_saveDir_select" xml:space="preserve">
+    <value>حدد اتجاه الحفظ</value>
+  </data>
+  <data name="StudentsModel_Verse_select" xml:space="preserve">
+    <value>رقم الآية</value>
+  </data>
+  <data name="StudentsModel_Dir_select" xml:space="preserve">
+    <value>حدد الاتجاه</value>
+  </data>
+  <data name="StudentsModel_StLesson_select" xml:space="preserve">
+    <value>حدد السورة</value>
+  </data>
+  <data name="PlansPage_SmallHeader_LevelsOfPlan_card" xml:space="preserve">
+    <value>مستويات الخطة</value>
+  </data>
+  <data name="PlanPage_SmallHeader_StudentsPlan_card" xml:space="preserve">
+    <value>طلاب الخطة</value>
+  </data>
+  <data name="EpisodesPage_epLocation_EpisodesTable" xml:space="preserve">
+    <value>اسم المسجد</value>
+  </data>
+  <data name="EpisodesPage_episodeTime_EpisodesTable" xml:space="preserve">
+    <value>موعد الحلقة</value>
+  </data>
+  <data name="EpisodesPage_AssigningTeachers_btn" xml:space="preserve">
+    <value>اسناد المعلمين للحلقات</value>
+  </data>
+  <data name="teachersPage_teachersMain_lbl" xml:space="preserve">
+    <value>المعلمين</value>
+  </data>
+  <data name="teachersPage_teacher_tab" xml:space="preserve">
+    <value>قائمة المعلمين</value>
+  </data>
+  <data name="teachersPage_teacherName_teachersTable" xml:space="preserve">
+    <value>اسم المعلم</value>
+  </data>
+  <data name="StudentsPage_Demand_AddStudent_btn" xml:space="preserve">
+    <value>طلب إضافة طالب جديد</value>
+  </data>
+  <data name="LayoutPage_NavTeachers_lnk" xml:space="preserve">
+    <value>المعلمين</value>
+  </data>
+  <data name="DemandsModel_CurrentEpisodeName_lbl" xml:space="preserve">
+    <value>اسم الحلقة الحالية</value>
+  </data>
+  <data name="DemandsModel_NewEpisodeName_lbl" xml:space="preserve">
+    <value>اسم الحلقة الجديدة</value>
+  </data>
+  <data name="DemandsModel_StudentName_lbl" xml:space="preserve">
+    <value>اسم الطالب</value>
+  </data>
+  <data name="DemandsModel_RequestTransfer" xml:space="preserve">
+    <value>طلب نقل طالب من الحلقة</value>
+  </data>
+  <data name="DemandsModel_TransferReason_txt" xml:space="preserve">
+    <value>ادخل اسباب النقل ...</value>
+  </data>
+  <data name="DemandsModel_HolidayReason_txt" xml:space="preserve">
+    <value>ادخل اسباب الأجازة ...</value>
+  </data>
+  <data name="DemandsModel_RequestDate_lbl" xml:space="preserve">
+    <value>تاريخ الطلب</value>
+  </data>
+  <data name="DemandsModel_TransferReason_lbl" xml:space="preserve">
+    <value>اسباب النقل</value>
+  </data>
+  <data name="DemandsModel_HolidayReason_lbl" xml:space="preserve">
+    <value>اسباب الاجازة</value>
+  </data>
+  <data name="DemandsModel_SaveDemand_btn" xml:space="preserve">
+    <value>حفظ بيانات الطلب</value>
+  </data>
+  <data name="DemandsModel_RequestHoliday" xml:space="preserve">
+    <value>طلب اجازة</value>
+  </data>
+  <data name="DemandsModel_HolidayPeriod_lbl" xml:space="preserve">
+    <value>فترة الاجازة</value>
+  </data>
+  <data name="DemandsModel_Episode_lbl" xml:space="preserve">
+    <value>مكان النقل من حلقة لـ حلقة</value>
+  </data>
+  <data name="DemandsModel_AskReason_lbl" xml:space="preserve">
+    <value>اسباب الإذن</value>
+  </data>
+  <data name="DemandsModel_AskReason_txt" xml:space="preserve">
+    <value>ادخل اسباب الإذن ...</value>
+  </data>
+  <data name="DemandsModel_RequestAsk" xml:space="preserve">
+    <value>طلب إذن</value>
+  </data>
+  <data name="DemandsModel_AskReason" xml:space="preserve">
+    <value>ادخل اسباب الإذن ...</value>
+  </data>
+  <data name="EpisodesPage_Teacher_EpisodesTable" xml:space="preserve">
+    <value>اسم المعلم</value>
+  </data>
+  <data name="SelectedEpisode_TeacherName_lbl" xml:space="preserve">
+    <value>اسم معلم الحلقة</value>
+  </data>
+  <data name="SelectedEpisode_EpisodeAttendType_lbl" xml:space="preserve">
+    <value>الحضور</value>
+  </data>
+  <data name="SelectedEpisodes_Students_lbl" xml:space="preserve">
+    <value>الطلاب</value>
+  </data>
+  <data name="SelectedEpisode_TeacherAttendIn_card" xml:space="preserve">
+    <value>حضـــور المعلم</value>
+  </data>
+  <data name="SelectedEpisode_TeacherAttendOut_card" xml:space="preserve">
+    <value>انصراف المعلم</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_AutoFinish" xml:space="preserve">
+    <value>إنهاء تلقائي</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_NotStart" xml:space="preserve">
+    <value>لم تبـــــدأ بعد</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_Continue" xml:space="preserve">
+    <value>حلقة مستمرة</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_ManualFinish" xml:space="preserve">
+    <value>إنهــــاء يدوي</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_Table_Sup" xml:space="preserve">
+    <value>معلــــم متأخر</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_ManualFinish_sup" xml:space="preserve">
+    <value>يــدوي</value>
+  </data>
+  <data name="EpisodesPage_DetailsBtn_AutoFinish_sup" xml:space="preserve">
+    <value>تلقائي</value>
+  </data>
+  <data name="StudentsModel_StVerse_select" xml:space="preserve">
+    <value>الآية</value>
+  </data>
+  <data name="StudentsModel_StVerse_lbl" xml:space="preserve">
+    <value>رقم الآية</value>
+  </data>
+  <data name="ReportModel_Episode_select" xml:space="preserve">
+    <value>حدد الحلقة</value>
+  </data>
+  <data name="LoginPage_UserNameOrEmail_lbl" xml:space="preserve">
+    <value>اسم المستخدم  |  البريد الالكتروني</value>
+  </data>
+  <data name="LoginPage_UserNameOrEmail_txt" xml:space="preserve">
+    <value>name@example.com  |  username</value>
+  </data>
+  <data name="LoginPage_MainLoginTitle_lbl" xml:space="preserve">
+    <value>تسجيل  دخول المستخدم</value>
+  </data>
+  <data name="LoginPage_Password_txt" xml:space="preserve">
+    <value>ادخل كلمة مرور قوية </value>
+  </data>
+  <data name="LoginPage_Password_lbl" xml:space="preserve">
+    <value>كلمة المـــرور</value>
+  </data>
+  <data name="LoginPage_ForgotPassword" xml:space="preserve">
+    <value>نسيت كلمة المرور ؟</value>
+  </data>
+  <data name="LoginPage_RememberMe_lbl" xml:space="preserve">
+    <value>تـذكــرني </value>
+  </data>
+  <data name="LoginPage_Register" xml:space="preserve">
+    <value>تسجيل حساب جديد</value>
+  </data>
+  <data name="LoginPage_Login_btn" xml:space="preserve">
+    <value>تسجيل الدخول</value>
+  </data>
+  <data name="Register_MainLoginTitle_lbl" xml:space="preserve">
+    <value>إنشـــاء حساب جديد</value>
+  </data>
+  <data name="Register_btn" xml:space="preserve">
+    <value>تسجيل البيانات</value>
+  </data>
+  <data name="Register_ConfirmPassword_txt" xml:space="preserve">
+    <value>اعد ادخـــال كلمة المرور</value>
+  </data>
+  <data name="Register_ConfirmPassword_lbl" xml:space="preserve">
+    <value>إعادة كلمة المرور</value>
+  </data>
+  <data name="Register_Password_lbl" xml:space="preserve">
+    <value>كلمة المـرور</value>
+  </data>
+  <data name="Register_Password_txt" xml:space="preserve">
+    <value>ادخل كلمة مرور قوية</value>
+  </data>
+  <data name="Register_Email_txt" xml:space="preserve">
+    <value>name@example.com</value>
+  </data>
+  <data name="Register_Email_lbl" xml:space="preserve">
+    <value>البريد الإلكتروني</value>
+  </data>
+  <data name="Register_Gender_txt" xml:space="preserve">
+    <value>حدد الجنس</value>
+  </data>
+  <data name="Register_Gender_lbl" xml:space="preserve">
+    <value>الجـــــنـس</value>
+  </data>
+  <data name="Register_PhoneNum_lbl" xml:space="preserve">
+    <value>رقم الجــوال</value>
+  </data>
+  <data name="Register_PhoneNum_txt" xml:space="preserve">
+    <value>ادخل رقم الجـــوال</value>
+  </data>
+  <data name="Register_IdentityNum_lbl" xml:space="preserve">
+    <value>رقم الهــوية</value>
+  </data>
+  <data name="Register_IdentityNum_txt" xml:space="preserve">
+    <value>ادخل رقم الهــوية</value>
+  </data>
+  <data name="Register_FullName_lbl" xml:space="preserve">
+    <value>الإســم الكامل</value>
+  </data>
+  <data name="Register_FullName_txt" xml:space="preserve">
+    <value>ادخل الإسم كــاملاً</value>
+  </data>
+  <data name="EpisodesOfStudentsPage_EpisodesMain_lbl" xml:space="preserve">
+    <value>طلاب الحلقــات</value>
+  </data>
+  <data name="EpisodesOfStudentsPage_EpisodesOfStudent_tab" xml:space="preserve">
+    <value>قائمة حلقــات الطلاب</value>
+  </data>
+  <data name="PageEpisodesOfStudents_Details_btn" xml:space="preserve">
+    <value>طلاب الحلقة</value>
+  </data>
+  <data name="SelectedEpisodeStudentsPage_Studentslist_tab" xml:space="preserve">
+    <value>قائمة طلاب حلقة </value>
+  </data>
+  <data name="ProgsPage_ProgsMain_lbl" xml:space="preserve">
+    <value>البرامج النوعية</value>
+  </data>
+  <data name="ProgsPage_AddProg_btn" xml:space="preserve">
+    <value>اضافة برنامج</value>
+  </data>
+  <data name="ProgsPage_Prog_tab" xml:space="preserve">
+    <value>قائمة البرامج النوعية</value>
+  </data>
+  <data name="ProgsModal_AddNewProg_lbl" xml:space="preserve">
+    <value>اضافة برنامج نوعي</value>
+  </data>
+  <data name="ProgsModal_ProgName_lbl" xml:space="preserve">
+    <value>اسم البرنامج</value>
+  </data>
+  <data name="ProgsModal_ProgName_txt" xml:space="preserve">
+    <value>ادخل اسم البرنامج</value>
+  </data>
+  <data name="ProgsModal_ProgType_lbl" xml:space="preserve">
+    <value>نوع البرنامج</value>
+  </data>
+  <data name="ProgsModal_ProgDescription_lbl" xml:space="preserve">
+    <value>تفاصيل البرنامج</value>
+  </data>
+  <data name="ProgsModal_ProgDescription_txt" xml:space="preserve">
+    <value>ادخل تفاصيل البرنامج</value>
+  </data>
+  <data name="ProgsModal_EditProg_lbl" xml:space="preserve">
+    <value>تعديل بيانات برنامج نوعي</value>
+  </data>
+  <data name="ProgsModal_ProgKind_lbl" xml:space="preserve">
+    <value>نوع الخطة</value>
+  </data>
+  <data name="ProgEpisodesPage_ProgEpisodesMain_lbl" xml:space="preserve">
+    <value>الحلقات النوعية</value>
+  </data>
+  <data name="ProgEpisodesPage_AddProgEpisode_btn" xml:space="preserve">
+    <value>اضافة حلقة نوعية</value>
+  </data>
+  <data name="ProgEpisodesPage_AssigningStudents_btn" xml:space="preserve">
+    <value>اسناد الطلاب للحلقة</value>
+  </data>
+  <data name="ProgEpisodesModal_AddNewProgEpisode_lbl" xml:space="preserve">
+    <value>اضافة حلقة نوعية</value>
+  </data>
+  <data name="ProgEpisodesPage_ProgEpisode_tab" xml:space="preserve">
+    <value>قائمة الحلقات النوعية</value>
+  </data>
+  <data name="LayoutPage_NavProgs_lnk" xml:space="preserve">
+    <value>البرامج النوعية</value>
+  </data>
+  <data name="ProgsModal_ProgStart_lbl" xml:space="preserve">
+    <value>بداية فترة البرنامج</value>
+  </data>
+  <data name="ProgsModal_ProgEnd_lbl" xml:space="preserve">
+    <value>نهاية فترة البرنامج</value>
+  </data>
+  <data name="EpisodeProgsPage_EpisodeProgsMain_lbl" xml:space="preserve">
+    <value>الحلقات النوعية</value>
+  </data>
+  <data name="LayoutPage_NavEpisodeProgs_lnk" xml:space="preserve">
+    <value>حلقات نوعية</value>
+  </data>
+  <data name="EpisodesProgsModal_ProgName_lbl" xml:space="preserve">
+    <value>اسم البرنامج</value>
+  </data>
+  <data name="EpisodesProgsModal_StartSurah_lbl" xml:space="preserve">
+    <value>بداية من سورة</value>
+  </data>
+  <data name="EpisodesProgsModal_EndSurah_lbl" xml:space="preserve">
+    <value>نهاية بـسورة</value>
+  </data>
+  <data name="SelectedLocationCenterPage_SmallBody_EpLocation_lbl" xml:space="preserve">
+    <value>مكان الحلقة</value>
+  </data>
+  <data name="SelectedProgEp_SmallBody_SaveDir_lbl" xml:space="preserve">
+    <value>اتجاه المصحف</value>
+  </data>
+  <data name="SelectedProgEp_SmallBody_StartSurah_lbl" xml:space="preserve">
+    <value>سورة البدأ</value>
+  </data>
+  <data name="SelectedProgEp_SmallBody_EndSurah_lbl" xml:space="preserve">
+    <value>سورة الانتهاء</value>
+  </data>
+  <data name="EpisodeProgsModal_predicationstudents_lbl" xml:space="preserve">
+    <value>اسناد الطلاب للحلقات</value>
+  </data>
+  <data name="EpisodeProgsOfStudentProgsPage_EpisodesMain_lbl" xml:space="preserve">
+    <value>طلاب الحلقات النوعية</value>
+  </data>
+  <data name="StudentProgsPage_StudentProgsMain_lbl" xml:space="preserve">
+    <value>طلاب الحلقة النوعية</value>
+  </data>
+  <data name="SelectedEpisodeProgStudentProgsPage_StudentProgslist_tab" xml:space="preserve">
+    <value>قائمة طلاب الحلقة النوعية</value>
+  </data>
+  <data name="DemandsPage_DemandsMain_lbl" xml:space="preserve">
+    <value>طلبات اولياء الأمور</value>
+  </data>
+  <data name="DemandsPage_Demands_tab" xml:space="preserve">
+    <value>قائمة طلبات اولياء الأمور</value>
+  </data>
+  <data name="DemandsModel_RequestEditPersonal" xml:space="preserve">
+    <value>تعديل بيانات متاحة للطالب</value>
+  </data>
+  <data name="DemandsModel_complaintReason" xml:space="preserve">
+    <value>ادخل اسباب الشكوي ...</value>
+  </data>
+  <data name="DemandsModel_complaintReason_lbl" xml:space="preserve">
+    <value>اسباب الشكوي</value>
+  </data>
+  <data name="DemandsModel_complaintReason_txt" xml:space="preserve">
+    <value>ادخل اسباب الشكوي ...</value>
+  </data>
+  <data name="StudentsPage_AssignStudentsToEpisodes_btn" xml:space="preserve">
+    <value>اسناد الطلاب للحلقات</value>
+  </data>
+  <data name="StudentsPage_TeacherName_StudentsTable" xml:space="preserve">
+    <value>معلم الحلقة</value>
+  </data>
+</root>

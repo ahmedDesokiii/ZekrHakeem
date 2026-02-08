@@ -1,0 +1,245 @@
+﻿@inject IAuthorizationService AuthorizationService
+
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Districts";
+    int cNo = 0;
+    var DistrictsData = Model.DistrictVM.Districts;
+    var CenterData = Model.DistrictVM.Centers;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    DistrictsData = Model.DistrictVM.Districts;
+    CenterData = Model.DistrictVM.Centers;
+}
+
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    DistrictsData = Model.DistrictVM.Districts;
+    CenterData = Model.DistrictVM.CentersForMen;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    DistrictsData = Model.DistrictVM.Districts;
+    CenterData = Model.DistrictVM.CentersForWomen;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.DistrictsPage_DistrictsMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Districts.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                        class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                    <i class="bi bi-plus-circle-dotted fs-5 ps-2 rounded-3"></i> @ResourceApp_Ar.DistrictsPage_AddDistrict_btn
+                                </button>
+                            }
+                            <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary text-white">
+                                    خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                        {
+                                            @*  <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#prayerTimes">
+                                                @ResourceApp_Ar.EpisodesPage_PrayerTimes_btn
+                                            </a> *@
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body" style="background: #FBF8EF;">
+                        <!-- Tab links -->
+                        <div class="tab" style="background: #CBF7DC;">
+                            <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'Districts')" id="defaultOpen">@ResourceApp_Ar.DistrictsPage_Districts_tab</button>
+
+                        </div>
+
+                        <!-- Tab content -->
+                        @if (!DistrictsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Districts!</h4>
+                                <p class="mb-0">No Districts where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <table id="tableDistrict" class="table-hover display   w-100 p-2 table-bordered border-primary-subtle">
+                                <thead>
+                                    <tr class="text-center fs-5 ">
+                                        <td class="text-center py-2 px-1 bg-dark text-white fw-bold"> </td>
+
+                                        <td class="text-center py-2 px-1 bg-dark text-white fw-bold">@ResourceApp_Ar.DistrictsPage_DistrictName_DistrictsTable </td>
+                                        <td class="text-center py-2 px-1 bg-dark text-white fw-bold"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var district in DistrictsData)
+                                    {
+                                        cNo++;
+                                        <tr class="text-center fs-5">
+                                            <td class="text-center py-0 fw-bold fs-6">
+                                                <img src="~/images/distrlogo.png" alt="dis" height="45"><br>@cNo
+                                            </td>
+                                            <td class="text-center py-0 fs-6 fw-bold" style="font-size:13px">
+                                                @district.Name 
+                                            </td>
+                                           
+                                            <td class="text-center py-0 fs-6 fw-bold" style="font-size:13px">
+                                                <a class="btn btn-success  btn-sm rounded-3" href="#">
+                                                    <i class="bi bi-box-arrow-in-right fs-6 ps-2 btn-sm"></i><br> @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                </a>
+                                                
+                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Districts.Edit).Result.Succeeded)
+                                                {
+                                                    
+                                                    <a class="btn btn-outline-warning fs-6 btn-sm rounded-3" onclick="Edit('@district.Id', '@district.Name','@district.Description')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                        <i class="bi bi-pencil-square fs-6 ps-2 btn-sm"></i><br>  @ResourceApp_Ar.Page_EditBtn_Table
+                                                    </a>
+                                                }
+                                                
+                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Districts.Delete).Result.Succeeded)
+                                                {
+                                                    <br>
+                                                    <a class="btn btn-danger btn-sm fs-6 rounded-3" onclick="Delete('@district.Id')">
+                                                        <i class="bi bi-trash fs-6 ps-2 btn-sm"></i><br> @ResourceApp_Ar.Page_DeleteBtn_Table
+                                                    </a>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+
+
+                    </div>
+
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.DistrictsModal_AddNewDistrict_lbl</h5>
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/distrlogo.png" />
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Save" asp-controller="Districts" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DistrictVM.NewDistrict.Id" id="DistrictId" />
+
+                    <div class="input-group">
+                        <span class="input-group-text">@ResourceApp_Ar.DistrictsModal_DistrictName_lbl</span>
+                        <input type="text" class="form-control" asp-for="@Model.DistrictVM.NewDistrict.Name" required style="border-left:solid 3px red" id="DistrictName" placeholder="@ResourceApp_Ar.DistrictsModal_DistrictName_txt" />
+                    </div>
+                    <span asp-validation-for="@Model.DistrictVM.NewDistrict.Name" class="text-danger"></span>
+
+                    <div class="input-group mt-2">
+                        <span class="input-group-text pe-3">@ResourceApp_Ar.DistrictsModal_DistrictDescription_lbl</span>
+                        <textarea class="form-control" asp-for="@Model.DistrictVM.NewDistrict.Description" id="description" placeholder=" @ResourceApp_Ar.DistrictsModal_DistrictDescription_txt" rows="4" cols="50"></textarea>
+                        <span asp-validation-for="DistrictVM.NewDistrict.Description" class="text-danger"></span>
+                    </div>
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/Districts.js"></script>
+    <script>
+
+        let lbTitleEditDistrict = '@Html.Raw(ResourceApp_Ar.DistrictsModal_EditDistrict_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewDistrict = '@Html.Raw(@ResourceApp_Ar.DistrictsModal_AddNewDistrict_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+        let lbTitleMsgDelete = '@Html.Raw("حذف الحي")';
+        let lbTextMsgDelete = '@Html.Raw("هل تريد حذف الحي ؟")';
+        let lbconfirmButtonText = '@Html.Raw("نعم , احذف!")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+        let lbTitleDeletedOk = '@Html.Raw("تم الحذف")';
+        let lbMsgDeletedOkDistrict = '@Html.Raw("تم حذف الحي من القائمة !")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+   }
+

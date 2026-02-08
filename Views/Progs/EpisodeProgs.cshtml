@@ -1,0 +1,1270 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "EpisodeProgs";
+    var EpisodeProgsData = Model.EpProgVM.EpisodeProgs;
+    int cNo = 0;
+    var i = 0;
+    var j = 0;
+    //var pr = 0;
+
+    var utcTime = DateTime.UtcNow;
+    //var pcTime = utcTime.UTCToSystemTime();
+    //var saTime = utcTime.UTCToRegionalTime("Asia/Riyadh");
+    var currentTime = utcTime.UTCToRegionalTime("Asia/Riyadh").TimeOfDay;
+
+    var epStartTime_Fajr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.FajrTime).TimeOfDay;
+    var epEndTime_Fajr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndFajrTime).TimeOfDay;
+
+    var epStartTime_Sunrise = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.SunriseTime).TimeOfDay;
+    var epEndTime_Sunrise = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndSunriseTime).TimeOfDay;
+
+    var epStartTime_Zohr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.ZohrTime).TimeOfDay;
+    var epEndTime_Zohr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndZohrTime).TimeOfDay;
+
+    var epStartTime_Asr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.AsrTime).TimeOfDay;
+    var epEndTime_Asr = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndAsrTime).TimeOfDay;
+
+    var epStartTime_Mghrb = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.MghrbTime).TimeOfDay;
+    var epEndTime_Mghrb = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndMghrbTime).TimeOfDay;
+
+    var epStartTime_Isha = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.IshaTime).TimeOfDay;
+    var epEndTime_Isha = Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI.EndIshaTime).TimeOfDay;
+
+
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgs;
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsForMen;
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsForWomen;
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithSupervisor;
+else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithSupervisor;
+else if (User.IsInRole(Roles.Teacher.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithTeacher;
+else if (User.IsInRole(Roles.TeacherWomen.ToString()))
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithTeacher;
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 d-flex">
+                    <h1 class="m-0 text-dark ms-5">@ResourceApp_Ar.EpisodeProgsPage_EpisodeProgsMain_lbl</h1>
+
+                    @*  <a onclick="getLocation()" class="btn btn-outline-success rounded-circle border-0 fw-bold" style=" -webkit-transform: rotate(45deg);transform: rotate(45deg);">
+                        <i class="fs-1 fw-bold bi bi-arrow-clockwise"></i>
+                    </a> *@
+
+                    <input hidden type="text" id="userLat">
+                    <input hidden type="text" id="userLng">
+                    <br>
+                    <input hidden type="text" id="intimeEpLat" value="@Model.EpProgVM.EpisodeProgInTime.EpProgLocation.Latitude">
+                    <input hidden type="text" id="intimeEpLng" value="@Model.EpProgVM.EpisodeProgInTime.EpProgLocation.Longitude">
+                    <br>
+                    <input hidden type="text" id="intimeEpId" value="@Model.EpProgVM.EpisodeProgInTime.Id">
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header py-2">
+                        <!-- Button trigger modal -->
+                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Create).Result.Succeeded)
+                        {
+                            <button type="button"
+                                    class="btn btn-outline-primary rounded-3"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#exampleModal"
+                                    onclick="Rest()"
+                                    id="addEpisodeProgBtn">
+                                <i class="bi bi-plus-circle-dotted fs-5 ps-2"></i> @ResourceApp_Ar.EpisodesPage_AddEpisode_btn
+                            </button>
+                        }
+                           
+                            <div class="btn-group  position-absolute start-0 ms-4 " dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary text-white">
+                                    خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+
+                                         <a class="dropdown-item text-dark fw-bold" asp-action="StudentsWithEpisodeProg" asp-controller="Progs" >
+                                        <i class="bi bi-person-rolodex fs-5 pe-2"></i> @ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn
+                                        </a>
+
+                                        @*
+                                        <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#AddStudentsEpProg">
+                                            <i class="bi bi-person-fill-add fs-5 pe-2"></i> اسنـاد الطلاب للحلقة
+                                        </a>
+                                        <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#ListEpTypes">
+                                            <i class="bi bi-border-width fs-6 pe-2"></i> @ResourceApp_Ar.EpisodeProgsPage_EpisodeProgTypes_btn
+                                        </a>
+                                        <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#AssignTeachersToEpisodeProgs">
+                                            <i class="bi bi-microsoft-teams fs-6 pe-2"></i> @ResourceApp_Ar.EpisodeProgsPage_AssigningTeachers_btn
+                                        </a> *@
+
+                                    </div>
+                                </div>
+                            </div>
+                        
+                    </div>
+
+                    <!-- /.card-header -->
+
+                    <div class="card-body" style="background: #FBF8EF;">
+
+                        <!-- Tab links -->
+                        <div class="tab bg-danger-subtle" >
+                            <button class="tablinks fw-bold bg-danger-subtle fs-6"  onclick="openCity(event, 'EpisodeProgs')" id="defaultOpen">@ResourceApp_Ar.EpisodesPage_Episode_tab</button>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks fw-bold bg-danger-subtle fs-6" onclick="openCity(event, 'LogEpisodeProgs')" id="defaultTow">Log EpisodeProgs</button>
+                            }
+                        </div>
+                        <!-- Tab content -->
+                        @if (!EpisodeProgsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No EpisodeProgs!</h4>
+                                <p class="mb-0">No EpisodeProgs where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div class="align-content-center mt-2 align-items-center justify-content-center row " style="background: #FBF8EF;">
+
+                                    @foreach (var episode in EpisodeProgsData)
+                                    {
+                                        cNo++;
+                                        <div class="col-sm-3  mb-3">
+                                            <div class="card  text-center" style="background: #FBF8EF;">
+
+                                                <img class="card-img-top bg-transparent  mx-auto " src="~/images/epproglogo.png" style="height:100px;width:auto" alt="zhcenter">
+                                                <div class="card-header bg-dark fs-4 text-white fw-bold">@episode.Name</div>
+                                                <div class="card-body w-100  ">
+
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</span>
+                                                        <input type="text" class="form-control" readonly value="@episode.ApplicationUser.FullName" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</span>
+                                                        <input type="text" class="form-control" readonly value="@episode.Period" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</span>
+                                                        <input type="text" class="form-control" readonly value="@episode.EpProgLocation.Name" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_StudentsCount_EpisodesTable</span>
+                                                        <input type="text" class="form-control" readonly value="@episode.StudentProgs.Count() " />
+                                                    </div>
+                                                    <div>
+                                                        <input hidden id="epLat_@cNo" type="text" value="@episode.EpProgLocation.Latitude">
+                                                        <input hidden id="epLng_@cNo" type="text" value="@episode.EpProgLocation.Longitude">
+                                                        <input hidden id="epis_@cNo" type="text" value="@episode.Id">
+                                                    </div>
+
+                                                </div>
+                                                <div class="card-footer bg-white d-flex ">
+
+                                                    @if (episode.AttendType.Contains("عن بعد"))
+                                                    {
+                                                        if (episode.IsAvilable)
+                                                        {
+                                                            if (!episode.Status)
+                                                            {
+                                                                <a class="btn btn-outline-info" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table</a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a class="btn btn-outline-info " asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table</a>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="button" class="btn btn-outline-dark" disabled asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id" value="@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table" />
+                                                        }
+                                                    }
+                                                    else if (episode.AttendType.Contains("حضوري"))
+                                                    {
+                                                        #region Dark [لم تبدأ بعد]
+                                                        if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && (currentTime < epStartTime_Fajr))
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && (currentTime < epStartTime_Sunrise))
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && (currentTime < epStartTime_Zohr))
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime < epStartTime_Asr)
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && (currentTime < epStartTime_Mghrb))
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5 rounded-3"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && (currentTime < epStartTime_Isha))
+                                                        {
+                                                            <a class="btn btn-outline-info disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-dash-circle-dotted ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                            </a>
+                                                        }
+                                                        #endregion
+                                                        #region Success [ابدأ الحلقة]
+                                                        if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period == Model.EpProgVM.EpisodeProgInTime.Period)
+                                                        {
+                                                            <a class="btn btn-success col btn-sm rounded-3" style="visibility:hidden" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id" id="startepi_">
+                                                                <i class="bi bi-fingerprint ps-2 fs-5"></i> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Table
+                                                            </a>
+                                                        }
+                                                        #endregion
+                                                        #region Warning [حلقة مستمرة]
+                                                        if (!episode.ManualFinished && episode.IsAvilable && episode.Status && episode.Period == Model.EpProgVM.EpisodeProgInTime.Period)
+                                                        {
+                                                            <a class="btn btn-warning col btn-sm rounded-3" style="visibility:hidden" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id" id="startepi_">
+                                                                <i class="bi bi-hourglass-split ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                            </a>
+                                                        }
+                                                        #endregion
+                                                        #region Danger_Manual [انهاء يدوي]
+
+                                                        if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && episode.ManualFinished && currentTime > epStartTime_Fajr)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && episode.ManualFinished && currentTime > epStartTime_Sunrise)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && episode.ManualFinished && currentTime > epStartTime_Zohr)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && episode.ManualFinished && currentTime > epStartTime_Asr)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && episode.ManualFinished && currentTime > epStartTime_Mghrb)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && episode.ManualFinished && currentTime > epStartTime_Isha)
+                                                        {
+                                                            <a class="btn btn-danger disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish
+                                                            </a>
+                                                        }
+
+                                                        #endregion
+                                                        #region Danger_Auto [انهاء تلقائي]
+
+                                                        if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && currentTime > epEndTime_Fajr && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && currentTime > epEndTime_Sunrise && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && currentTime > epEndTime_Zohr && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime > epEndTime_Asr && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && currentTime > epEndTime_Mghrb && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+                                                        else if (episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && currentTime > epEndTime_Isha && !episode.ManualFinished)
+                                                        {
+                                                            <a class="btn btn-outline-danger  disabled col btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-ban-fill ps-2 fs-5"></i>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish
+                                                            </a>
+                                                        }
+
+                                                        #endregion
+                                                    }
+                                                    
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Edit).Result.Succeeded)
+                                                    {
+                                                        <a class="btn btn-outline-warning p-2 btn-sm  rounded-3" onclick="Edit('@episode.Id', '@episode.Name','@episode.AttendType','@episode.Description','@episode.EpProgLocationId','@episode.ApplicationUserId','@episode.EpProgLocation.Latitude','@episode.EpProgLocation.Longitude','@episode.EpProgLocation.Type','@episode.Period','@episode.EpProgId','@episode.SaveDir','@episode.StartSurah','@episode.EndSurah')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                            <i class="bi bi-pencil-square fs-6 ps-2"></i>@ResourceApp_Ar.Page_EditBtn_Table
+                                                        </a>
+                                                    }
+
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Pause).Result.Succeeded)
+                                                    {
+                                                        if (episode.PauseState > 0)
+                                                        {
+                                                            <a id="pauseEpisodeProg" class="btn btn-outline-dark btn-sm rounded-3" onclick="Pause('@episode.Id')">
+                                                                <i class="bi bi-pause-circle fs-6 ps-2"></i> @ResourceApp_Ar.Page_PauseBtn_Table
+                                                            </a>
+
+                                                            @*  if ((episode?.Status) == false)
+                                                                            {
+                                                                                <input type="button" id="pauseEpisodeProg" class="btn btn-outline-dark" onclick="Pause('@episode.Id')" value=" @ResourceApp_Ar.Page_PauseBtn_Table" />
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="button" disabled id="pauseEpisodeProg" class="btn btn-outline-dark" onclick="Pause('@episode.Id')" value=" @ResourceApp_Ar.Page_PauseBtn_Table" />
+                                                                            } *@
+                                                        }
+                                                        else
+                                                        {
+                                                            <a id="pauseEpisodeProg" class="btn btn-outline-success btn-sm rounded-3" onclick="Resume('@episode.Id')">
+                                                                <i class="bi bi-play-circle fs-6 ps-2"></i>  @ResourceApp_Ar.Page_ResumeBtn_Table
+                                                            </a>
+                                                        }
+                                                    }
+
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Delete).Result.Succeeded)
+                                                    {
+                                                        <a class="btn btn-danger p-2 btn-sm rounded-3" onclick="Delete('@episode.Id')">
+                                                            <i class="bi bi-trash fs-6 ps-2"></i>@ResourceApp_Ar.Page_DeleteBtn_Table
+                                                        </a>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else if (!User.IsInRole(Roles.Teacher.ToString()) || !User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div id="EpisodeProgs" class="tabcontent ps-0 pe-0">
+                                    <table id="tableEpisodeProg" class="table table-hover mt-4  ">
+                                        <thead>
+                                            <tr class="fw-bolder">
+
+                                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</td>
+                                                <td class="text-center p-0">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</td>
+                                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</td>
+                                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</td>
+                                                <td class="align-items-end p-0"></td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var episode in EpisodeProgsData)
+                                            {
+                                                cNo++;
+
+                                                <tr>
+
+
+                                                    <td class="text-center">
+                                                        <img src="~/images/epproglogo.png" alt="dis" height="45">
+                                                        <br>
+                                                        @episode.Name
+                                                    </td>
+                                                    <td class="text-center">@episode.ApplicationUser.FullName</td>
+                                                    <td class="text-center">@episode.Period</td>
+                                                    <td class="text-center">@episode.EpProgLocation.Name</td>
+                                                    
+                                                    <td class="text-center">
+                                                        @if (episode.AttendType.Contains("عن بعد"))
+                                                        {
+                                                            if (episode.IsAvilable)
+                                                            {
+                                                                if (!episode.Status)
+                                                                {
+                                                                    <a class="btn btn-outline-info btn-sm" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <a class="btn btn-outline-info btn-sm" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table</a>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="button" class="btn btn-outline-dark btn-sm" disabled asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id" value="@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table" />
+                                                            }
+                                                        }
+                                                        else if (episode.AttendType.Contains("حضوري"))
+                                                        {
+                                                            #region Dark [لم تبدأ بعد]
+                                                            if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && (currentTime < epStartTime_Fajr))
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted fs-6"></i><br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && (currentTime < epStartTime_Sunrise))
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted fs-6"></i><br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && (currentTime < epStartTime_Zohr))
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime < epStartTime_Asr)
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted  fs-6"><br></i>  @ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && (currentTime < epStartTime_Mghrb))
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && (currentTime < epStartTime_Isha))
+                                                            {
+                                                                <a class="btn btn-outline-info btn-sm ps-1 rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-dash-circle-dotted fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_NotStart
+                                                                </a>
+                                                            }
+
+                                                            #endregion
+                                                            #region Success [معلم متأخر]
+                                                            if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && currentTime >= epStartTime_Fajr && currentTime <= epEndTime_Fajr)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && currentTime >= epStartTime_Sunrise && currentTime <= epEndTime_Sunrise)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && currentTime >= epStartTime_Zohr && currentTime <= epEndTime_Zohr)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime >= epStartTime_Asr && currentTime <= epEndTime_Asr)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && currentTime >= epStartTime_Mghrb && currentTime <= epEndTime_Mghrb)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && !episode.Status && !episode.ManualFinished && episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && currentTime >= epStartTime_Isha && currentTime <= epEndTime_Isha)
+                                                            {
+                                                                <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-clock-history  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_Table_Sup
+                                                                </a>
+                                                            }
+
+                                                            #endregion
+                                                            #region Warning [وقت دخول المعلم الحلقة]
+                                                            if (episode.Period == null) { }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && currentTime > epStartTime_Fajr && currentTime < epEndTime_Fajr)
+                                                            {
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@* حضور : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss")</span> *@ 
+                                                                                                            <i class="bi bi-hourglass-split fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+                                                            }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && currentTime > epStartTime_Sunrise && currentTime < epEndTime_Sunrise)
+                                                            {
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@* حضور : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss")</span> *@ 
+                                                                                                            <i class="bi bi-hourglass-split fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+
+                                                            }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && currentTime > epStartTime_Zohr && currentTime < epEndTime_Zohr)
+                                                            {
+
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">@* حضور : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss") </span>*@ 
+                                                                                                                                <i class="bi bi-hourglass-split fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+
+                                                            }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime > epStartTime_Asr && currentTime < epEndTime_Asr)
+                                                            {
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    @*حضور  : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss")</span> *@ 
+                                                                                                                                    <i class="bi bi-hourglass-split  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+
+                                                            }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && currentTime > epStartTime_Mghrb && currentTime < epEndTime_Mghrb)
+                                                            {
+
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    @*حضور : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss")</span>*@
+                                                                    <i class="bi bi-hourglass-split  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+
+                                                            }
+                                                            else if (episode.IsAvilable && episode.Status && episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && currentTime > epStartTime_Isha && currentTime < epEndTime_Isha)
+                                                            {
+
+                                                                <a class="btn btn-warning btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    @*حضور : <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("hh:mm:ss")</span>*@
+                                                                    <i class="bi bi-hourglass-split  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_Continue
+                                                                </a>
+
+                                                            }
+
+                                                            #endregion
+                                                            #region Danger_Manual [وقت خروج المعلم من الحلقة]
+
+                                                            if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* &nbsp;&nbsp; <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+                                                            else if (!episode.Status && episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill   fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+                                                            else if (!episode.Status && episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+                                                            else if (!episode.Status && episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+                                                            else if (!episode.Status && episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill   fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+                                                            else if (!episode.Status && episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill   fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_ManualFinish  @* <span class="text-black fw-normal">@Model.TeacherAttendance.Att_In.ToString("h:mm")</span> *@
+                                                                </a>
+                                                            }
+
+                                                            #endregion
+                                                            #region Danger_Auto [انهاء تلقائي]
+
+                                                            if (episode.Period.Contains(PrayerTimesPeriods.الفجر.ToString()) && currentTime > epEndTime_Fajr && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Fajr
+                                                                </a>
+
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.الشروق.ToString()) && currentTime > epEndTime_Sunrise && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Sunrise
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.الظهر.ToString()) && currentTime > epEndTime_Zohr && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Zohr
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.العصر.ToString()) && currentTime > epEndTime_Asr && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i> <br>@ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Asr
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.المغرب.ToString()) && currentTime > epEndTime_Mghrb && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Mghrb
+                                                                </a>
+                                                            }
+                                                            else if (episode.Period.Contains(PrayerTimesPeriods.العشاء.ToString()) && currentTime > epEndTime_Isha && !episode.ManualFinished)
+                                                            {
+                                                                <a class="btn btn-outline-danger  btn-sm rounded-3" asp-action="SelectedEpisodeProg" asp-route-Id="@episode.Id">
+                                                                    <i class="bi bi-ban-fill  fs-6"></i><br> @ResourceApp_Ar.EpisodesPage_DetailsBtn_AutoFinish_sup  @epEndTime_Isha
+                                                                </a>
+                                                            }
+
+                                                            #endregion
+                                                        }
+
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Edit).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-outline-warning btn-sm rounded-3" onclick="Edit('@episode.Id', '@episode.Name','@episode.AttendType','@episode.Description','@episode.EpProgLocationId','@episode.ApplicationUserId','@episode.EpProgLocation.Latitude','@episode.EpProgLocation.Longitude','@episode.EpProgLocation.Type','@episode.Period','@episode.EpProgId','@episode.SaveDir','@episode.StartSurah','@episode.EndSurah')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                                <i class="bi bi-pencil-square fs-6 "></i><br>@ResourceApp_Ar.Page_EditBtn_Table
+                                                            </a>
+                                                        }
+
+
+
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Pause).Result.Succeeded)
+                                                        {
+                                                            if (episode.PauseState > 0)
+                                                            {
+                                                                <a id="pauseEpisodeProg" class="btn btn-outline-dark btn-sm rounded-3" onclick="Pause('@episode.Id')">
+                                                                    <i class="bi bi-pause-circle fs-6 "></i> <br>@ResourceApp_Ar.Page_PauseBtn_Table
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a id="pauseEpisodeProg" class="btn btn-outline-success btn-sm rounded-3" onclick="Resume('@episode.Id')">
+                                                                    <i class="bi bi-play-circle fs-6"></i><br>  @ResourceApp_Ar.Page_ResumeBtn_Table
+                                                                </a>
+                                                            }
+                                                        }
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.Delete).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-danger btn-sm rounded-3" onclick="Delete('@episode.Id')">
+                                                                <i class="bi bi-trash fs-6 "></i> <br>@ResourceApp_Ar.Page_DeleteBtn_Table
+                                                            </a>
+                                                        }
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                        }
+
+                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.ProgEpisodes.DeleteLog).Result.Succeeded)
+                        {
+                            <div id="LogEpisodeProgs" class="tabcontent">
+                                <table id="tableLogEpisodeProg" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr class="bg-primary fw-bolder text-white">
+                                            <td>#</td>
+                                            <td>EpisodeProg Name</td>
+                                            <td>ActionName</td>
+                                            <td>Date</td>
+                                            <td>UserName</td>
+                                            <td>Events</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.EpProgVM.LogEpisodeProgs)
+                                        {
+                                            <tr>
+                                                <td>#</td>
+                                                <td>@item.EpisodeProg.Name</td>
+                                                <td>@item.Action</td>
+                                                <td>@item.Date</td>
+                                                <td>@userManager.FindByIdAsync(item.UserId.ToString()).Result?.FullName</td>
+
+                                                <td>
+                                                    <input type="button" class="btn btn-danger p-2 btn-sm" onclick="DeleteLog('@item.Id')" value="Delete" />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- reset episode daily -->
+
+        <form asp-action="ResetEpisodeProgEveryDay" asp-controller="EpisodeProgs" method="post" id="resetEp_form"> </form>
+
+
+        <!-- end reset episode daily -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+<!-- EpisodeProg Modal -->
+<div class="modal fade bd-example-modal-lg" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header d-flex">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.EpisodesModal_AddNewEpisode_lbl</h5>
+                
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/epproglogo.png" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SaveEpisodeProg" asp-controller="Progs" method="post" enctype="multipart/form-data">
+                   @*  <div class="form-group mb-2">
+                        <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/ep.svg" />
+                        
+                    </div> *@
+
+                    <div><input type="text" hidden class="input-group" id="EpisodeProgId" asp-for="EpProgVM.NewEpisodeProg.Id" ></div>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text bg-info-subtle ps-2">@ResourceApp_Ar.EpisodesModal_EpisodeName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="EpProgVM.NewEpisodeProg.Name" id="EpisodeProgName" style="border-left:solid 3px red" placeholder="@ResourceApp_Ar.EpisodesModal_EpisodeName_txt" />
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="progId">@ResourceApp_Ar.EpisodesProgsModal_ProgName_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="progId"  asp-items="@Model.EpProgVM.Progs" asp-for="EpProgVM.NewEpisodeProg.EpProgId" onchange="" style="border-left:solid 3px red">
+                                    <option selected disabled value="">حدد البرنامج</option>
+                                </select>
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.EpProgId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="AttendType">@ResourceApp_Ar.EpisodesModal_EpisodeAttendType_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="AttendType" asp-for="EpProgVM.NewEpisodeProg.AttendType" onchange="SelectType()" style="border-left:solid 3px red">
+                                    <option selected value="حضوري">حضوري</option>
+                                    <option value="عن بعد">عن بعد </option>
+                                </select>
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.AttendType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <input type="text" class="form-control" asp-for="EpProgVM.NewEpisodeProg.Status" id="Status" hidden value="false" />
+                        <span asp-validation-for="EpProgVM.NewEpisodeProg.Status" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" id="lblPrayerTime" for="prayerTime">@ResourceApp_Ar.EpisodesModal_EpisodePeriod_lbl</label>
+                                <small class="form-text text-muted me-2 " id="timer">بتوقيت أملج</small>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="prayerTime" onchange="selectPrayerTime()" asp-for="@Model.EpProgVM.NewEpisodeProg.Period" style="border-left:solid 3px red">
+                                    <option selected disabled value="">مواقيت الصلاة</option>
+                                    <option id="FajrTime" value="الفجر" startEpTime="@Model.EpProgVM.PrayerTimesAPI.FajrTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndFajrTime">الفجر</option>
+                                    <option id="SunriseTime" value="الشروق" startEpTime="@Model.EpProgVM.PrayerTimesAPI.SunriseTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndSunriseTime">الشروق</option>
+                                    <option id="ZohrTime" value="الظهر" startEpTime="@Model.EpProgVM.PrayerTimesAPI.ZohrTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndZohrTime">الظهر</option>
+                                    <option id="AsrTime" value="العصر" startEpTime="@Model.EpProgVM.PrayerTimesAPI.AsrTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndAsrTime">العصر</option>
+                                    <option id="MghrbTime" value="المغرب" startEpTime="@Model.EpProgVM.PrayerTimesAPI.MghrbTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndMghrbTime">المغرب</option>
+                                    <option id="IshaTime" value="العشاء" startEpTime="@Model.EpProgVM.PrayerTimesAPI.IshaTime" endEpTime="@Model.EpProgVM.PrayerTimesAPI.EndIshaTime">العشاء</option>
+
+                                </select>
+                                <span asp-validation-for="@Model.EpProgVM.NewEpisodeProg.Period" class="text-danger"></span>
+                              
+                                <div class="input-group input-group-sm my-1 ">
+                                    <span class="input-group-text ms-3 ps-3" style="padding-right:6px" id="lblST">@ResourceApp_Ar.EpisodesModal_EpisodeStartTime_lbl</span>
+                                    <input type="time" class="form-control" disabled id="starttime">
+                                </div>
+
+                                <div class="input-group input-group-sm mb-2 ">
+                                    <span class="input-group-text ms-3" style="padding-right:10px" id="lblET">@ResourceApp_Ar.EpisodesModal_EpisodeEndTime_lbl</span>
+                                    <input type="time" class="form-control" disabled id="endtime">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                   
+                    <hr />
+                    @if (User.IsInRole(Roles.Admin.ToString()))
+                    {
+                        <div class="input-group mb-2" id="locc">
+                            <label class="input-group-text" for="LocationType">Location Type</label>
+                            <select class="form-select" id="LocationType" onchange="SelectType()">
+                                <option selected disabled>select location type</option>
+                                <option value="mosque">locations for men </option>
+                                <option value="dar">locations for women </option>
+                            </select>
+                        </div>
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsM" for="locationsM">@ResourceApp_Ar.EpisodesModal_EpLocationMen_lbl</label>
+                            <select class="form-select" id="locationsM" onchange="selectMLocId(@Model.EpProgVM.LVM.LocationsForMen.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationMen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsForMen)
+                                {
+                                    <option id="m_@j" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    j++;
+                                }
+                            </select>
+
+                            <label class="input-group-text bg-info-subtle w-auto" id="lblteachersM" for="teachersM">@ResourceApp_Ar.EpisodesModal_EpTeacherMen_lbl</label>
+                            <select class="form-select" id="teachersM" asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherMen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersMen)
+                                {
+                                    <option id="tm_@j" value="@teacher.Id">@teacher.FullName</option>
+                                    j++;
+                                }
+                            </select>
+                            <span asp-validation-for="EpProgVM.NewEpisodeProg.ApplicationUserId" class="text-danger"></span>
+                        </div>
+                        <div class="input-group input-group-sm mb-2">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsW" for="locationsW">@ResourceApp_Ar.EpisodesModal_EpLocationWomen_lbl</label>
+                            <select class="form-select" id="locationsW" onchange="selectWLocId(@Model.EpProgVM.LVM.LocationsForWomen.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationWomen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsForWomen)
+                                {
+                                    <option id="w_@i" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    i++;
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto bg-info-subtle" id="lblteachersW" for="teachersW">@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_lbl</label>
+                            <select class="form-select" id="teachersW" asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersWomen)
+                                {
+                                    <option id="tw_@i" value="@teacher.Id">@teacher.FullName</option>
+                                    i++;
+                                }
+                            </select>
+                            <span asp-validation-for="EpProgVM.NewEpisodeProg.ApplicationUserId" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.Supervisor.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="LocationType" hidden value="mosque" />
+                        </div>
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsM" for="locationsM">@ResourceApp_Ar.EpisodesModal_EpLocationMen_lbl</label>
+                            <select class="form-select" id="locationsM" asp-for="EpProgVM.NewEpisodeProg.EpProgLocationId" onchange="selectMLocId(@Model.EpProgVM.LVM.LocationsForMen.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationMen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsForMen)
+                                {
+                                    <option id="m_@j" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    j++;
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto bg-info-subtle" id="lblteachersM" for="teachersM">@ResourceApp_Ar.EpisodesModal_EpTeacherMen_lbl</label>
+                            <select class="form-select" id="teachersM" asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherMen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersMen)
+                                {
+                                    <option id="tm_@j" value="@teacher.Id">@teacher.FullName</option>
+                                    j++;
+                                }
+                            </select>
+                            <span asp-validation-for="EpProgVM.NewEpisodeProg.ApplicationUserId" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden value="dar" id="LocationType" />
+                        </div>
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsW" for="locationsW">@ResourceApp_Ar.EpisodesModal_EpLocationWomen_lbl</label>
+                            <select class="form-select" id="locationsW" asp-for="EpProgVM.NewEpisodeProg.EpProgLocationId" onchange="selectWLocId(@Model.EpProgVM.LVM.LocationsForWomen.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationWomen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsForWomen)
+                                {
+                                    <option id="w_@i" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    i++;
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto bg-info-subtle" id="lblteachersW" for="teachersW">@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_lbl</label>
+                            <select class="form-select" id="teachersW" asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersWomen)
+                                {
+                                    <option id="tw_@i" value="@teacher.Id">@teacher.FullName</option>
+                                    i++;
+                                }
+                            </select>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden value="mosque" id="LocationType" />
+                        </div>
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsM" for="locationsM">@ResourceApp_Ar.EpisodesModal_EpLocationMen_lbl</label>
+                            <select class="form-select" id="locationsM" onchange="selectMLocId(@Model.EpProgVM.LVM.LocationsWithSupervisor.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationMen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsWithSupervisor)
+                                {
+                                    <option id="m_@j" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    j++;
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto bg-info-subtle" id="lblteachersM" for="teachersM">@ResourceApp_Ar.EpisodesModal_EpTeacherMen_lbl</label>
+                            <select class="form-select" id="teachersM" asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherMen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersMen)
+                                {
+                                    <option id="tm_@j" value="@teacher.Id">@teacher.FullName</option>
+                                    j++;
+                                }
+                            </select>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden value="dar" id="LocationType" />
+                        </div>
+                        <div class="input-group input-group-sm mb-1">
+                            <label class="input-group-text w-auto bg-info-subtle" id="lbllocationsW" for="locationsW">@ResourceApp_Ar.EpisodesModal_EpLocationWomen_lbl</label>
+                            <select class="form-select" id="locationsW" onchange="selectWLocId(@Model.EpProgVM.LVM.LocationsWithSupervisor.Count())" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpLocationWomen_txt</option>
+                                @foreach (var location in Model.EpProgVM.LVM.LocationsWithSupervisor)
+                                {
+                                    <option id="w_@i" value="@location.Id" lat="@location.Latitude" lng="@location.Longitude">
+                                        @location.Name
+                                    </option>
+                                    i++;
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto bg-info-subtle" id="lblteachersW" for="teachersW">@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_lbl</label>
+                            <select class="form-select" id="teachersW " asp-for="EpProgVM.NewEpisodeProg.ApplicationUserId" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.EpisodesModal_EpTeacherWomen_txt</option>
+                                @foreach (var teacher in Model.EpProgVM.TeachersWomen)
+                                {
+                                    <option id="tw_@i" value="@teacher.Id">@teacher.FullName</option>
+                                    i++;
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-12 col-12">
+                                <div>
+                                    <input type="text" class="form-control  mb-2" id="txtLatitudeEp" readonly hidden asp-for="EpProgVM.NewEpisodeProg.EpProgLocation.Latitude" />
+                                    <input type="text" class="form-control  mb-2" id="txtLongitudeEp" readonly hidden asp-for="EpProgVM.NewEpisodeProg.EpProgLocation.Longitude" />
+                                </div>
+                                <div id="mapEp" style=" width: 100%;height: 300px;margin-top: 5px;border: 1px solid #ddd;"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" hidden asp-for="@Model.EpProgVM.NewEpisodeProg.EpProgLocationId" id="EpLocId" />
+            </div>
+                    <hr />
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="saveDir">اتجاه المصحف </label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="saveDir" asp-for="EpProgVM.NewEpisodeProg.SaveDir" onchange="SelectEpSaveDir()" style="border-left:solid 3px red">
+                                   @*  <option selected disabled id="selectedLbl" value="">@ResourceApp_Ar.StudentsModel_Dir_select</option> *@
+                                    <option selected id="saveDire_ctp" value="ctp">من البقرة للناس</option>
+                                    <option id="saveDire_ptc" value="ptc">من الناس للبقرة</option>
+                                </select>
+                                 <span asp-validation-for="EpProgVM.NewEpisodeProg.SaveDir" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="startsurah">@ResourceApp_Ar.EpisodesProgsModal_StartSurah_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8 d-flex">
+                                <select class="form-select text-center" id="startsurah_ctp" asp-items="@Model.EpProgVM.Surahs_ctp" asp-for="EpProgVM.NewEpisodeProg.StartSurah" onchange="" style="border-left:solid 3px red">
+                                    <option selected disabled value="">حدد السورة</option>
+                                </select>
+                                <select class="form-select text-center" id="startsurah_ptc" asp-items="@Model.EpProgVM.Surahs_ptc" asp-for="EpProgVM.NewEpisodeProg.StartSurah" onchange="" style="visibility:hidden; border-left:solid 3px red">
+                                    <option selected disabled value="">حدد السورة</option>
+                                </select>
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.StartSurah" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="endsurah">@ResourceApp_Ar.EpisodesProgsModal_EndSurah_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8 d-flex">
+                                <select class="form-select text-center" id="endsurah_ctp" asp-items="@Model.EpProgVM.Surahs_ctp" asp-for="EpProgVM.NewEpisodeProg.EndSurah" onchange="" style="border-left:solid 3px red">
+                                    <option selected disabled value="">حدد السورة</option>
+                                </select>
+                                <select class="form-select text-center" id="endsurah_ptc" asp-items="@Model.EpProgVM.Surahs_ptc" asp-for="EpProgVM.NewEpisodeProg.EndSurah" onchange="" style="visibility:hidden;border-left:solid 3px red">
+                                    <option selected disabled value="">حدد السورة</option>
+                                </select>
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.StartSurah" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="description">@ResourceApp_Ar.EpisodesModal_EpisodeDescription_txt</label>
+                            </div>
+                            <div class="col-sm-8 col-8 d-flex">
+                                <textarea class="form-control" asp-for="EpProgVM.NewEpisodeProg.Description" id="description" placeholder=" @ResourceApp_Ar.EpisodesModal_EpisodeDescription_txt" rows="2" cols="50"></textarea>
+                                <span asp-validation-for="EpProgVM.NewEpisodeProg.Description" class="text-danger"></span>
+                               
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- AddStudentsEpProg Modal -->
+<div class="modal fade bd-example-modal-lg" id="AddStudentsEpProg" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header d-flex">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn</h5>
+
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/epproglogo.png" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="" asp-controller="" method="post" enctype="multipart/form-data">
+                  
+                </form>
+
+                <div id="StudentsProg" class="tabcontent ps-0 pe-0">
+                    <table id="tableStudentsProg" class="table table-hover mt-4  ">
+                        <thead>
+                            <tr class="fw-bolder">
+
+                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</td>
+                                <td class="text-center p-0">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</td>
+                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</td>
+                                <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</td>
+                                <td class="align-items-end p-0"></td>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var episode in EpisodeProgsData)
+                            {
+                                cNo++;
+
+                                <tr>
+
+
+                                    <td class="text-center">
+                                        <img src="~/images/epproglogo.png" alt="dis" height="45">
+                                        <br>
+                                        @episode.Name
+                                    </td>
+                                    <td class="text-center">@episode.ApplicationUser.FullName</td>
+                                    <td class="text-center">@episode.Period</td>
+                                    <td class="text-center">@episode.EpProgLocation.Name</td>
+
+                                    <td class="text-center">
+                                        <input type="checkbox" name="name" value="" />
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else if (Context.Session.GetString(Helper.MsgType) == Helper.Warning)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'warning'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+    <script src="~/js/EpisodeProgs.js"></script>
+    <script>
+
+        let lbTitleEditEpisodeProg = '@Html.Raw(ResourceApp_Ar.EpisodesModal_EditEpisode_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewEpisodeProg = '@Html.Raw(ResourceApp_Ar.EpisodesModal_AddNewEpisode_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("Delete EpisodeProg")';
+        let lbTitleMsgPause = '@Html.Raw("Pause EpisodeProg")';
+        let lbTitleMsgResume = '@Html.Raw("Resume EpisodeProg")';
+        let lbTitleMsgDeleteType = '@Html.Raw("Delete EpisodeProg Type")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete EpisodeProgLog")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete EpisodeProg Now ?")';
+        let lbTextMsgPause = '@Html.Raw("Are you sure to Pause EpisodeProg Now ?")';
+        let lbTextMsgResume = '@Html.Raw("Are you sure to Resume EpisodeProg Now ?")';
+        let lbTextMsgDeleteType = '@Html.Raw("Are you sure to delete EpisodeProg type ?")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete EpisodeProg log ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbconfirmButtonTextPause = '@Html.Raw("Yes,Pause it")';
+        let lbconfirmButtonTextResume = '@Html.Raw("Yes,Resume it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("Done !")';
+        let lbTitlePausedOk = '@Html.Raw("Done !")';
+        let lbTitleResumedOk = '@Html.Raw("Done !")';
+        let lbMsgDeletedOkEpisodeProg = '@Html.Raw("EpisodeProg is delete! ")';
+        let lbMsgPausedOkEpisodeProg = '@Html.Raw("EpisodeProg is pause! ")';
+        let lbMsgResumedOkEpisodeProg = '@Html.Raw("EpisodeProg is pause! ")';
+        let lbMsgDeletedOkEpisodeProgtype = '@Html.Raw("EpisodeProgType is delete")';
+        let lbMsgDeletedOkEpisodeProgLog = '@Html.Raw("EpisodeProgLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+    @* <script>
+        function GetLocationStateData(){
+            var epId = $("#ep_"+cNo).val();
+            var epLocState = $("#dist_"+cNo).val();
+
+            $.ajax({
+                url : @Url.Action("UpdateLocationState","EpisodeProgs"),
+                type : 'POST',
+                dataType : 'json',
+                data : {
+                    Id : epId,
+                    Description : epLocState
+                },
+                success : function(response){
+                    console.log("success");
+                }
+            })
+
+        }
+    </script> *@
+}
+

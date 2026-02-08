@@ -1,0 +1,2017 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Episodes Of Students";
+
+    var StudentsData = Model.StudentVM.Students;
+    var EpisodesData = Model.StudentVM.EVM.Episodes;
+    int cNo = 0;
+    int limi = 0;
+    int l = 0;
+    int i = 0;
+
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    StudentsData = Model.StudentVM.Students;
+    EpisodesData = Model.StudentVM.EVM.Episodes;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsForMen;
+    EpisodesData = Model.StudentVM.EVM.EpisodesForMen;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsForWomen;
+    EpisodesData = Model.StudentVM.EVM.EpisodesForWomen;
+}
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()) || User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithSupervisor;
+    EpisodesData = Model.StudentVM.EVM.EpisodesWithSupervisor;
+
+}
+else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithTeacher;
+    EpisodesData = Model.StudentVM.EVM.EpisodesWithTeacher;
+}
+else if (User.IsInRole(Roles.Parent.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithParent;
+}
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 d-flex">
+                    @if (User.IsInRole(Roles.Parent.ToString()))
+                    {
+                        <h1 class="m-0 text-dark ms-5">أبنائي</h1>
+                    }
+                    else
+                    {
+                        <h1 class="m-0 text-dark ms-5">@ResourceApp_Ar.EpisodesOfStudentsPage_EpisodesMain_lbl</h1>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                        <div class="card-header d-flex">
+                            <div class="card-tools d-flex mb-3">
+                                <!-- Button trigger modal -->
+                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Students.Create).Result.Succeeded)
+                                {
+                                    <button type="button"
+                                            class="btn btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                        <i class="bi bi-plus-circle-dotted fs-5 ps-2"></i>   @ResourceApp_Ar.StudentsPage_AddStudent_btn
+                                    </button>
+                                }
+                                <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-primary text-white">
+                                        خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                            {
+                                                <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#ListStNationalities">
+                                                    <i class="bi bi-flag-fill fs-6 pe-2"></i> @ResourceApp_Ar.StudentsPage_StudentsNationalities_btn
+                                                </a>
+                                                <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#ListStHealth">
+                                                    <i class="bi bi-person-wheelchair fs-6 pe-2"></i>  @ResourceApp_Ar.StudentsPage_StudentsHealth_btn
+                                                </a>
+                                            <a class="dropdown-item text-dark fw-bold" asp-controller="Students" asp-action="Students">
+                                                    <i class="bi bi-person-arms-up fs-6 pe-2"></i>  @ResourceApp_Ar.StudentsPage_AssignStudentsToEpisodes_btn
+                                                </a>
+                                            }
+                                            @if (User.IsInRole(Roles.Parent.ToString()))
+                                            {
+                                                <a class="dropdown-item text-dark fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_0">
+                                                @ResourceApp_Ar.StudentsPage_Demand_AddStudent_btn <i class="bi bi-person-video3 fs-6 ps-2"></i>
+                                                </a>
+                                            
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+
+                        <div class="card-body  " style="background: #FBF8EF;">
+                            <!-- Tab links -->
+                            <div class="tab" style="background: #CBF7DC;">
+                                @if (!User.IsInRole(Roles.Parent.ToString()))
+                                {
+                                    <button class="tablinks fs-6 fw-bold" style="background: #CBF7DC;" onclick="openCity(event, 'EpisodesOfStudents')" id="defaultOpen">@ResourceApp_Ar.EpisodesOfStudentsPage_EpisodesOfStudent_tab</button>
+                                }
+                                @if (User.IsInRole(Roles.Admin.ToString()))
+                                {
+                                    <button class="tablinks fs-6 fw-bold" onclick="openCity(event, 'LogStudents')" id="defaultTow">Log Students</button>
+                                }
+                            </div>
+                        <!-- Tab content -->
+                            @if (!StudentsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Students Of Episodes!</h4>
+                                <p class="mb-0">No Students Of Episodes where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (User.IsInRole(Roles.Parent.ToString()))
+                                {
+                                    <div class="wrapper mt-3" dir="rtl">
+                                        <div class="content-header">
+                                            <div class="container-fluid">
+                                                <div class="row mb-2">
+                                                @foreach (var st in Model.StudentVM.StudentsWithParent)
+                                                    {
+                                                        <div class="card col-12 col-sm-4  px-0 mx-auto ">
+                                                            <div class="card-header bg-dark text-center ">
+                                                                <div class="form-group mb-2">
+                                                                    @if(st.Gender.Equals("male"))
+                                                                    {
+                                                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stu.svg" />
+                                                                    }
+                                                                    else if(st.Gender.Equals("female"))
+                                                                    {
+                                                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stuwo.png" />
+                                                                    }
+                                                                    
+                                                                    <span class="text-center text-white fw-bolder fs-5 ">@st.Name</span>
+                                                                </div>
+                                                            </div>
+                                                            <div class="card-body bg-light-subtle">
+
+                                                                <div class="accordion shadow mb-3" id="accordionExamplez_@i">
+                                                                    <div class="accordion-item  bg-danger-subtle py-0">
+                                                                        <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z_@i">
+                                                                            <div class="col-sm-12 col-12">
+                                                                                <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z_@i" aria-expanded="true" aria-controls="collapse_z_@i">
+                                                                                    <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                                </button>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div id="collapse_z_@i" class="accordion-collapse collapse" aria-labelledby="header_z_@i" data-bs-parent="#collapse_z_@i">
+                                                                        @{
+                                                                            i++;
+                                                                        }
+                                                                        <div class="accordion-body  ">
+
+                                                                            <div class="form-group mb-2" id="stName_div">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.Name" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentIdentityNum_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.IdentityNumber" id="stIdNum" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentIdentityNum_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.ParentIdentityNumber" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" id="stParPhone" value="@st.ParentPhoneNumber" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.Nationality.Name" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentHealthModal_HealthName_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.HealthCondition.Name" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        @if (st.Gender.Equals("male"))
+                                                                                        {
+                                                                                            <input type="text" readonly class="form-control text-center p-1" value="ذكر" />
+                                                                                        }
+                                                                                        else if (st.Gender.Equals("female"))
+                                                                                        {
+                                                                                            <input type="text" readonly class="form-control text-center p-1" value="انثي" />
+                                                                                        }
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentBirthDate_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1 " value="@st.BirthDate" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="accordion shadow mb-3" id="accordionExample">
+                                                                    <div class="accordion-item  bg-danger-subtle py-0">
+                                                                        <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                                                            <div class="col-sm-12 col-12">
+                                                                                <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                                                                    <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                                </button>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                                                                        <div class="accordion-body  ">
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1 " value="@st.StEpisode.Name " />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedPlanPage_MainHeader_PlanName_card</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.LevelData.PlanData.Name" />
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedLevelPlanPage_MainHeader_LevelName_card</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.LevelData.Name" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StSorah_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.Save_FromSorh" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">اتجاه الحفظ</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    @if (st.SaveDirection.Equals("ctp"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="من البقرة للناس" />
+                                                                                    }
+                                                                                    else if (st.SaveDirection.Equals("ptc"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="من الناس للبقرة" />
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="accordion shadow mb-3" id="accordionExample2">
+                                                                    <div class="accordion-item  bg-danger-subtle py-0">
+                                                                        <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                                                            <div class="col-sm-12 col-12">
+                                                                                <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                                                                    <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                                </button>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                                                                        <div class="accordion-body  ">
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentAdress_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" id="stAdres" value="@st.Adress" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                            <div class="form-group mb-2">
+                                                                                <div class="row">
+                                                                                    <div class="col-sm-4 col-4">
+                                                                                        <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                                                                    </div>
+                                                                                    <div class="col-sm-8 col-8">
+                                                                                        <input type="text" readonly class="form-control text-center p-1" id="stNot" value="@st.Notes" />
+                                                                                    </div>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="d-flex">
+                                                                    <a class="btn btn-outline-dark ms-2 me-auto" asp-controller="Students" asp-action="SelectedStudent" asp-route-Id="@st.Id">قائمة التقييمات</a>
+
+                                                                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                                        <button id="btnGroupDrop1" hidden type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                        </button>
+                                                                        <button id="btnGroupDrop3" type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_1" onclick="RequestTransfer('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-repeat fs-6 ps-2"></i> طلب نقل
+                                                                            </a>
+                                                                            <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_3" onclick="RequestVacation('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-luggage-fill fs-6 ps-2"></i> طلب اجازة
+                                                                            </a>
+                                                                            
+                                                                            <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_5" onclick="RequestAsk('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-exclamation-octagon fs-6 ps-2"></i> طلب إذن
+                                                                            </a>
+                                                                            <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_6" onclick="RequestEditPersonal('@st.Id', '@st.Name', '@st.IdentityNumber','@st.ParentPhoneNumber','@st.Adress','@st.Notes')">
+                                                                            <i class="bi bi-pencil-square fs-6 ps-2"></i>  تعديل بيانات
+                                                                            </a>
+                                                                            <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_2" onclick=" RequestComplaint('@st.Id', '@st.Name' , '@st.StEpisode.Name' )">
+                                                                                <i class="bi bi-chat-square-quote fs-6 ps-2"></i> طلب شكوي
+                                                                            </a>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="btn-group ms-auto" role="group" aria-label="Button group with nested dropdown" id="stDem_btn">
+                                                                        <button type="button" class="btn btn-info">سجل الطلبات</button>
+                                                                        <div class="btn-group" role="group"> </div>
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div class=" row align-content-center align-items-center justify-content-center mt-2" style="background: #FBF8EF;">
+
+                                    @foreach (var episode in EpisodesData)
+                                    {                                        
+                                        cNo++;
+                                        <div class="col-sm-3 mb-3">
+                                            <a class="btn btn-outline-dark col btn-sm rounded-3" asp-controller="Students" asp-action="SelectedStudentsOfEpisode" asp-route-Id="@episode.Id">
+                                                <div class="accordion shadow mb-3 py-0" id="accordionExample3">
+                                                    <div class="accordion-item  bg-success-subtle text-dark py-0">
+                                                        <div class="accordion-header bg-success-subtle text-dark d-flex py-0" id="header_three">
+                                                            <div class="col-sm-12 col-12">
+                                                                <button class=" collapsed  bg-success-subtle text-dark w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_three" aria-expanded="false" aria-controls="collapse_three">
+                                                                    <span class="text-center fw-bolder fs-4">
+                                                                       طلاب @episode.Name
+                                                                    </span>
+                                                                    <i class="text-dark mt-1 me-2 bi bi-people-fill fs-2"></i>
+                                                                </button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapse_three" class="accordion-collapse collapsed" aria-labelledby="header_three" data-bs-parent="#accordionExample3">
+                                                        <div class="accordion-body">
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.ApplicationUser.FullName" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.Period" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.EpLocation.Name" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_StudentsCount_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.Students.Count() | @episode.LimitStudents " />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+
+                                    }
+                                </div>
+                            }
+                            else if (!User.IsInRole(Roles.Teacher.ToString()) || !User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div id="EpisodesOfStudents" class="tabcontent ps-0 pe-0">
+                                    <table id="tableEpisodeOfStudents" class="table-hover display nowrap  w-100 p-2 table-bordered border-primary-subtle">
+                                        <thead>
+                                            <tr class="text-center fs-5 ">
+                                                <td class="text-center py-2 px-1 bg-dark text-white fw-bold">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable<br>[@ResourceApp_Ar.teachersPage_teacherName_teachersTable]</td>
+                                                <td class="text-center py-2 px-1 bg-dark text-white fw-bold">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable<br>[@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable]</td>
+                                               
+                                                <td class="align-items-end py-2 px-1 bg-dark text-white fw-bold"></td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var episode in EpisodesData)
+                                            {
+                                                cNo++;
+
+                                                <tr>
+
+                                                    <td class="text-center py-0 fw-bold fs-6">
+                                                        <img src="~/images/ep.svg" alt="dis" height="40"><br>
+                                                        @episode.Name<br>
+                                                        @episode.Students.Count() <span class="text-danger">|</span> @episode.LimitStudents <br>
+                                                        [@episode.ApplicationUser.FullName]
+                                                    </td>
+                                                    <td class="text-center p-0  fs-6">@episode.EpLocation.Name <br>[@episode.Period]</td>
+                                                    
+                                                    <td class="text-center p-0  fs-6">
+                                                            <a class="btn btn-outline-success btn-sm rounded-3" asp-controller="Students" asp-action="SelectedStudentsOfEpisode" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-people-fill fs-4"></i><br>@ResourceApp_Ar.PageEpisodesOfStudents_Details_btn </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                           
+                        }
+
+                      
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- reset episode daily -->
+
+        @*
+            <form asp-action="ResetEpisodeEveryDay" asp-controller="Episodes" method="post" id="resetEp_form"> </form>
+        *@
+
+        <!-- end reset episode daily -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+<!-- Modal Student -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header d-flex">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.StudentsModal_AddNewStudent_lbl</h5>
+                @if (User.IsInRole(Roles.Admin.ToString())||User.IsInRole(Roles.Supervisor.ToString())||User.IsInRole(Roles.SupervisorCenterMen.ToString())||User.IsInRole(Roles.Teacher.ToString()))
+                   {
+                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+                   }
+                else if ( User.IsInRole(Roles.SupervisorWomen.ToString()) || User.IsInRole(Roles.SupervisorCenterWomen.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                {
+                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="width:100px;object-fit:contain" src="~/images/stuwo.png" />
+                }
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Save" asp-controller="Students" method="post" enctype="multipart/form-data">
+                 @*    <div class="form-group mb-2">
+                        <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-light" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+                       
+                    </div> *@
+
+                    <div><input type="text" hidden class="input-group" asp-for="StudentVM.NewStudent.Id" id="stId"></div>
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExamplez">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z" aria-expanded="true" aria-controls="collapse_z">
+                                        <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_z" class="accordion-collapse collapsed" aria-labelledby="header_z" data-bs-parent="#accordionExample0">
+                            <div class="accordion-body">
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text bg-info-subtle ps-2">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" asp-for="StudentVM.NewStudent.Name" required id="stName" style="border-left:solid 3px red" placeholder="@ResourceApp_Ar.StudentsModel_StudentName_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stCategory">@ResourceApp_Ar.StudentsModel_StudentCategory_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" required id="stCategory" asp-for="StudentVM.NewStudent.Category" onchange="SelectCategory()" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentCategory_select</option>
+                                                <option value="resident">مقيم - مواطن </option>
+                                                <option value="visitor">زائر </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.Category" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentIdentityNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" readonly class="form-control text-center" required asp-for="StudentVM.NewStudent.IdentityNumber" id="stIdentitynum" placeholder="@ResourceApp_Ar.StudentsModel_StudentIdentityNum_txt" style="border-left:solid 3px red" />
+                                            <span asp-validation-for="StudentVM.NewStudent.IdentityNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentIdentityNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" readonly required asp-for="StudentVM.NewStudent.ParentIdentityNumber" style="border-left:solid 3px red" id="stParentIdentitynum" placeholder="@ResourceApp_Ar.StudentsModel_ParentIdentityNum_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.ParentIdentityNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" required asp-for="StudentVM.NewStudent.ParentPhoneNumber" style="border-left:solid 3px red" id="stParentPhonenum" placeholder="@ResourceApp_Ar.StudentsModel_ParentPhoneNum_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.ParentPhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stNationalityId">@ResourceApp_Ar.StudentsModel_StudentNationality_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" required asp-items="@Model.StudentVM.AvilableNationalities" id="stNationalityId" asp-for="StudentVM.NewStudent.NationalityId" onchange="" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentNationality_select</option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.NationalityId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle"  for="stHealthId">@ResourceApp_Ar.StudentsModel_StudentHealth_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" required asp-items="@Model.StudentVM.AvilableHealthConditions" id="stHealthId" asp-for="StudentVM.NewStudent.HealthConditionId" onchange="" style="border-left:solid 3px red">
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.HealthConditionId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stGender">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" required id="stGender" asp-for="StudentVM.NewStudent.Gender" onchange="" style="border-left:solid 3px red">
+                                                @*  <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentGender_select</option> *@
+                                                <option selected value="male">ذكر </option>
+                                                <option value="female">انثي </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.Gender" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentBirthDate_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 ">
+                                            
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-2 col-2">
+                                           
+                                        </div>
+                                        <div class="col-sm-10 col-10 d-flex">
+                                            <label class="cal" for="txtHijriDate">
+                                                <span class="fs-5 d-flex">
+                                                    
+                                                    <input type="button" id="txtHijriDate" name="selectedDate" class="form-control text-center" style="width:100px;font-size:12px!important" onclick="document.getElementById('stBD').style.visibility='hidden';" />
+                                                    <i class="bi bi-calendar mx-1"></i>
+                                                </span>
+                                            </label>
+                                            <input type="text" id="stBD" readonly class="form-control text-center" style="width:100px;font-size:12px" asp-for="StudentVM.NewStudent.BirthDate" />
+
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4"></div>
+                                        <div class="col-sm-8 col-8">
+                                            <span asp-validation-for="StudentVM.NewStudent.BirthDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExample">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                        <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stEducationType">@ResourceApp_Ar.StudentsModel_EducationType_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stEducationType" asp-for="StudentVM.NewStudent.EducationType" onchange="" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_EducationType_select</option>
+                                                <option value="تحفيظ">تحفيظ </option>
+                                                <option value="عام">عام </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.EducationType" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stEpisodeId">@ResourceApp_Ar.StudentsModel_StEpisode_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stEpisodeId" asp-for="StudentVM.NewStudent.StEpisodeId" onchange="GetLimitStudent(@EpisodesData.Count())" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StEpisode_select</option>
+                                                @foreach (var episode in EpisodesData)
+                                                {
+                                                    <option value="@episode.Id">@episode.Name</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.StEpisodeId" class="text-danger"></span>
+                                        </div>
+
+                                        @foreach (var episode in EpisodesData)
+                                        {
+                                            <input id="eplimit_@limi" hidden value="@episode.Id" limit="@episode.LimitStudents" epin="@episode.Students.Count()" />
+                                            limi++;
+                                        }
+                                    </div>
+                                    <div class="form-group mt-2 mb-1">
+                                        <div class="row">
+                                            <div class="col-sm-4 col-2"></div>
+                                            <div class="col-sm-4 col-4">
+                                                <label class="input-group-text bg-dark-subtle" for="">مقاعد متبقية </label>
+                                            </div>
+                                            <div class="col-sm-4 col-6 d-flex">
+                                                <input type="text" class="input-group-text ms-1" style="width:50px" readonly id="selectin" />
+                                                <small class="form-text text-muted"> من </small>
+                                                <input type="text" class="input-group-text me-1" style="width:50px" readonly id="selectlimit" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1 mb-0">
+                                        <div class="row">
+                                            <div class="col-sm-4 col-4"></div>
+                                            <div class="col-sm-8 col-8">
+                                                <input class="text-danger  bg-transparent text-center fw-bolder border-0" id="stateLimit" disabled value="" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                               
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stPlanId">@ResourceApp_Ar.StudentsModel_StPlan_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stPlanId" onchange="SelectPlan()" style="border-left:solid 3px red" asp-for="StudentVM.NewStudent.PlanDataId">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StPlan_select</option>
+                                                @foreach (var plan in Model.StudentVM.PlansData)
+                                                {
+                                                    <option value="@plan.Id">@plan.Name</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.PlanDataId" class="text-danger"></span>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" id="lblLevel" for="stLevelId" style="visibility:hidden;">>@ResourceApp_Ar.StudentsModel_StLevel_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center px-2" id="saveDir" onchange="SelectSaveDir()" style="border-left:solid 3px red;visibility:hidden">
+                                                <option selected disabled id="selectedLbl" value="">@ResourceApp_Ar.StudentsModel_Dir_select</option>
+                                                <option id="saveDire_ctp" value="ctp">من البقرة للناس</option>
+                                                <option id="saveDire_ptc" value="ptc">من الناس للبقرة</option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.SaveDirection" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" id="lblzhLesson" for="stLevelId" style="visibility:hidden;">اسم الدرس</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center px-2" id="stLevelId" onchange="" asp-for="@Model.StudentVM.NewStudent.LessonDataId" style="border-left:solid 3px red;visibility:hidden">
+                                                <option selected disabled id="selectedLbl" value="">@ResourceApp_Ar.StudentsModel_StLesson_select</option>
+                                                @foreach (var level in Model.StudentVM.LevelsData.Levels)
+                                                {
+                                                    <optgroup id="selectedLevel" value="@level.Id" label="@level.Name">
+                                                        @foreach (var lesson in level.LessonsData)
+                                                        {
+                                                            <option id="lesson_@l" value="@lesson.Id">@lesson.Save_FromSorh | @lesson.Save_FromAyah</option>
+                                                            l++;
+                                                        }
+                                                    </optgroup>
+                                                }
+                                            </select>
+
+                                            <span asp-validation-for="StudentVM.NewStudent.LessonDataId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle " id="lblsurah_ctp" style="visibility:hidden" for="surahId_ctp">@ResourceApp_Ar.StudentsModel_StSorah_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <div class="d-flex">
+                                                <select class="form-select text-center px-2" id="surahId_ctp" asp-for="StudentVM.NewStudent.SurahId" asp-items="@Model.StudentVM.Surahs_ctp" onchange="VisableVerse()" style="border-left:solid 3px red ; visibility:hidden">
+                                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StSorah_select</option>
+                                                </select>
+                                                
+
+                                                <select class="form-select text-center me-1 px-1" id="verseId_ctp" style="border-left:solid 3px red;visibility:hidden;" onchange="GetVerseIdValue_ctp()">
+                                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StVerse_select</option>
+                                                </select>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+
+                               
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle " id="lblsurah_ptc" style="visibility:hidden" for="surahId_ptc">@ResourceApp_Ar.StudentsModel_StSorah_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <div class="d-flex">
+                                                <select class="form-select text-center px-2" id="surahId_ptc" asp-for="StudentVM.NewStudent.SurahId" asp-items="@Model.StudentVM.Surahs_ptc" onchange="VisableVerse()" style="border-left:solid 3px red ; visibility:hidden">
+                                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StSorah_select</option>
+                                                </select>
+                                               
+                                                <select class="form-select text-center me-1 px-1" id="verseId_ptc" style="border-left:solid 3px red;visibility:hidden;" onchange="GetVerseIdValue_ptc()">
+                                                    <option selected disabled value="1">@ResourceApp_Ar.StudentsModel_StVerse_select</option>
+                                                </select>
+                                            </div>
+                                           
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <input type="text" id="sdir" hidden class="form-control text-center" value="" asp-for="StudentVM.NewStudent.SaveDirection" />
+                                    <input type="text" id="surahName" hidden asp-for="@Model.StudentVM.NewStudent.Surah.Name" />
+                                    <input type="text" id="stVerseId" hidden class="form-control text-center" />
+                                    <input type="text" id="verseNum" hidden asp-for="StudentVM.NewStudent.Verse.Num" value="1" />
+                                </div>
+                               
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExample2">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                        <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                            <div class="accordion-body">
+                                <div class="form-group mb-3 input-group-sm  ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentPhoto_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 input-group-sm">
+                                            @*  <input type="file" accept="image/*" asp-for="NewStudent.ProfilePicture" class="form-control" onchange="document.getElementById('stPhoto').src = window.URL.createObjectURL(this.files[0])" /> *@
+                                            <input asp-for="StudentVM.StProfileImage" type="file" class="form-control" id="ProfilePicture"
+                                                   data-rule-extension="@FileSettings.AllowedExtensions.Replace(".",string.Empty)"
+                                                   data-msg-extension="Not Allowed Extension"
+                                                   data-rule-filesize="@FileSettings.MaxFileSizeInByte"
+                                                   data-msg-filesize="Maximun allowed size : @FileSettings.MaxFileSizeInMB MB"
+                                                   onchange="document.getElementById('stPhoto').src = window.URL.createObjectURL(this.files[0])" />
+
+                                            <small dir="rtl" class="form-text text-muted">@ResourceApp_Ar.PhotoAllowedFileExtensions (@FileSettings.AllowedExtensions) | @ResourceApp_Ar.PhotoMaxSize :  @FileSettings.MaxFileSizeInMB  ميجا بايت </small>
+                                            <span asp-validation-for="StudentVM.StProfileImage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentAdress_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 ">
+                                            <textarea class="form-control" asp-for="StudentVM.NewStudent.Adress" id="stAdress" placeholder=" @ResourceApp_Ar.StudentsModel_StudentAdress_txt" rows="1" cols="50"></textarea>
+                                            <span asp-validation-for="StudentVM.NewStudent.Adress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 ">
+                                            <textarea class="form-control" asp-for="StudentVM.NewStudent.Notes" id="stNotes" placeholder=" @ResourceApp_Ar.StudentsModel_StudentNotes_txt" rows="1" cols="50"></textarea>
+                                            <span asp-validation-for="StudentVM.NewStudent.Notes" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.Modal_Save_btn" id="btnSave" onclick="getHijriDate()" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modals Demands -->
+<div class="modal fade" id="exampleModal_0" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h4 class="modal-title" id="title">@ResourceApp_Ar.StudentsModal_AddNewStudent_lbl</h4>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddNewStudentParentRequest" asp-controller="Students" method="post" enctype="multipart/form-data">
+                    <div class="form-group mb-2">
+                        <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-light" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+                        @* <img class="cover-preview d-none" alt="Cover" /> *@
+                    </div>
+
+                    <div><input type="text" hidden class="input-group" asp-for="StudentVM.NewStudent.Id" id="stId"></div>
+
+
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExamplez">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z" aria-expanded="true" aria-controls="collapse_z">
+                                        <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_z" class="accordion-collapse collapse" aria-labelledby="header_z" data-bs-parent="#accordionExample0">
+                            <div class="accordion-body">
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text bg-info-subtle ps-2">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" asp-for="StudentVM.NewStudent.Name" id="stName" style="border-left:solid 3px red" placeholder="@ResourceApp_Ar.StudentsModel_StudentName_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.Name" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stCategoryR">@ResourceApp_Ar.StudentsModel_StudentCategory_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stCategoryR" asp-for="StudentVM.NewStudent.Category" onchange="SelectCategoryR()" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentCategory_select</option>
+                                                <option value="resident">مقيم - مواطن </option>
+                                                <option value="visitor">زائر </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.Category" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentIdentityNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" readonly class="form-control text-center" asp-for="StudentVM.NewStudent.IdentityNumber" id="stIdentitynumR" placeholder="@ResourceApp_Ar.StudentsModel_StudentIdentityNum_txt" style="border-left:solid 3px red" />
+                                            <span asp-validation-for="StudentVM.NewStudent.IdentityNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentIdentityNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" readonly asp-for="StudentVM.NewStudent.ParentIdentityNumber" style="border-left:solid 3px red" id="stParentIdentitynumR" placeholder="@ResourceApp_Ar.StudentsModel_ParentIdentityNum_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.ParentIdentityNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <input type="text" class="form-control text-center" asp-for="StudentVM.NewStudent.ParentPhoneNumber" style="border-left:solid 3px red" id="stParentPhonenum" placeholder="@ResourceApp_Ar.StudentsModel_ParentPhoneNum_txt" />
+                                            <span asp-validation-for="StudentVM.NewStudent.ParentPhoneNumber" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stNationalityId">@ResourceApp_Ar.StudentsModel_StudentNationality_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stNationalityId" asp-for="StudentVM.NewStudent.NationalityId" onchange="" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentNationality_select</option>
+                                                @foreach (var nationality in Model.StudentVM.Nationalities)
+                                                {
+                                                    <option value="@nationality.Id">@nationality.Name</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.NationalityId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stHealthId">@ResourceApp_Ar.StudentsModel_StudentHealth_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stHealthId" asp-for="StudentVM.NewStudent.HealthConditionId" onchange="" style="border-left:solid 3px red">
+
+                                                @foreach (var health in Model.StudentVM.HealthConditions)
+                                                {
+                                                    <option value="@health.Id">@health.Name</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.HealthConditionId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stGender">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stGender" asp-for="StudentVM.NewStudent.Gender" onchange="" style="border-left:solid 3px red">
+                                                @*  <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentGender_select</option> *@
+                                                <option value="male">ذكر </option>
+                                                <option value="female">انثي </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.Gender" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentBirthDate_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 d-flex">
+                                            <input type="date" id="stBDR" class="form-control text-center"  asp-for="StudentVM.NewStudent.BirthDate" />
+                                            <span asp-validation-for="StudentVM.NewStudent.BirthDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExample">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                        <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="form-group mb-2">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stEducationType">@ResourceApp_Ar.StudentsModel_EducationType_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select text-center" id="stEducationType" asp-for="StudentVM.NewStudent.EducationType" onchange="" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_EducationType_select</option>
+                                                <option value="تحفيظ">تحفيظ </option>
+                                                <option value="عام">عام </option>
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.EducationType" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <label class="input-group-text bg-info-subtle" for="stEpisodeId">@ResourceApp_Ar.StudentsModel_StEpisode_lbl</label>
+                                        </div>
+                                        <div class="col-sm-8 col-8">
+                                            <select class="form-select" id="stEpisodeId" asp-for="StudentVM.NewStudent.StEpisodeId" onchange="GetLimitStudent(@EpisodesData.Count())" style="border-left:solid 3px red">
+                                                <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StEpisode_select</option>
+                                                @foreach (var episode in EpisodesData)
+                                                {
+                                                    <option value="@episode.Id" style="font-size:14px">
+                                                        @episode.Name
+                                                        |
+                                                        @episode.EpLocation.District.Name
+                                                        |
+                                                        @episode.EpLocation.Name
+                                                        |
+                                                        @episode.Period
+                                                    </option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="StudentVM.NewStudent.StEpisodeId" class="text-danger"></span>
+                                        </div>
+
+                                        @foreach (var episode in EpisodesData)
+                                        {
+                                            <input id="eplimit_@limi" hidden value="@episode.Id" limit="@episode.LimitStudents" epin="@episode.Students.Count()" />
+                                            limi++;
+                                        }
+                                    </div>
+                                    <div class="form-group mt-2 mb-1">
+                                        <div class="row">
+                                            <div class="col-sm-4 col-2"></div>
+                                            <div class="col-sm-4 col-4">
+                                                <label class="input-group-text bg-dark-subtle" for="">مقاعد متبقية </label>
+                                            </div>
+                                            <div class="col-sm-4 col-6 d-flex">
+                                                <input type="text" class="input-group-text ms-1" style="width:50px" readonly id="selectin" />
+                                                <small class="form-text text-muted"> من </small>
+                                                <input type="text" class="input-group-text me-1" style="width:50px" readonly id="selectlimit" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-1 mb-2">
+                                        <div class="row">
+                                            <div class="col-sm-4 col-4"></div>
+                                            <div class="col-sm-8 col-8">
+                                                <input class="text-danger  bg-transparent text-center fw-bolder border-0" id="stateLimit" disabled value="" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion shadow mb-3 py-0" id="accordionExample2">
+                        <div class="accordion-item  bg-danger-subtle py-0">
+                            <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                <div class="col-sm-12 col-12">
+                                    <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                        <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                    </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                            <div class="accordion-body">
+                                <div class="form-group mb-3 input-group-sm  ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentPhoto_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 input-group-sm">
+                                            @*  <input type="file" accept="image/*" asp-for="NewStudent.ProfilePicture" class="form-control" onchange="document.getElementById('stPhoto').src = window.URL.createObjectURL(this.files[0])" /> *@
+                                            <input asp-for="StudentVM.StProfileImage" type="file" class="form-control" id="ProfilePicture"
+                                                   data-rule-extension="@FileSettings.AllowedExtensions.Replace(".",string.Empty)"
+                                                   data-msg-extension="Not Allowed Extension"
+                                                   data-rule-filesize="@FileSettings.MaxFileSizeInByte"
+                                                   data-msg-filesize="Maximun allowed size : @FileSettings.MaxFileSizeInMB MB"
+                                                   onchange="document.getElementById('stPhoto').src = window.URL.createObjectURL(this.files[0])" />
+
+                                            <small dir="rtl" class="form-text text-muted">@ResourceApp_Ar.PhotoAllowedFileExtensions (@FileSettings.AllowedExtensions) | @ResourceApp_Ar.PhotoMaxSize :  @FileSettings.MaxFileSizeInMB  ميجا بايت </small>
+                                            <span asp-validation-for="StudentVM.StProfileImage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentAdress_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 ">
+                                            <textarea class="form-control" asp-for="StudentVM.NewStudent.Adress" id="stAdress" placeholder=" @ResourceApp_Ar.StudentsModel_StudentAdress_txt" rows="1" cols="50"></textarea>
+                                            <span asp-validation-for="StudentVM.NewStudent.Adress" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group mb-2 ">
+                                    <div class="row">
+                                        <div class="col-sm-4 col-4">
+                                            <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                        </div>
+                                        <div class="col-sm-8 col-8 ">
+                                            <textarea class="form-control" asp-for="StudentVM.NewStudent.Notes" id="stNotes" placeholder=" @ResourceApp_Ar.StudentsModel_StudentNotes_txt" rows="1" cols="50"></textarea>
+                                            <span asp-validation-for="StudentVM.NewStudent.Notes" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.Modal_Save_btn" id="btnSave" onclick="getHijriDate()" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal_1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold" id="title">@ResourceApp_Ar.DemandsModel_RequestTransfer</div>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddTransferRequest" asp-controller="Demands" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DemandVM.NewDemand.StudentId" value="@Model.StudentVM.NewStudent.Id" id="trstId" />
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center p-1" asp-for="@Model.StudentVM.NewStudent.Name" id="trname" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_RequestDate_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center p-1" asp-for="@Model.DemandVM.NewDemand.Request_Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-3">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_CurrentEpisodeName_lbl</span>
+                            </div>
+
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center " asp-for="@Model.DemandVM.NewDemand.OldEpisode" id="trepisode" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group mb-3">
+                        <div class="row">
+                            <div class="col-sm-12 col-12 mb-1">
+                                <span class="input-group-text w-auto text-center bg-danger-subtle fw-bold">@ResourceApp_Ar.DemandsModel_Episode_lbl</span>
+                            </div>
+
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_NewEpisodeName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="" asp-for="@Model.DemandVM.NewDemand.NewEpisode" onchange="">
+                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StEpisode_select</option>
+                                    @foreach (var episode in EpisodesData)
+                                    {
+                                        <option value="@episode.Id">@episode.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.DemandsModel_TransferReason_lbl</span>
+                            </div>
+
+                            <div class="col-sm-8 col-8 ">
+                                <textarea class="form-control" asp-for="@Model.DemandVM.NewDemand.Request_Reason" rows="3" id="stNotes" placeholder=" @ResourceApp_Ar.DemandsModel_TransferReason_txt"></textarea>
+                                <span asp-validation-for="@Model.DemandVM.NewDemand.Request_Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- مربعات نص لعرض الإحداثيات -->
+                    <div>
+                        @*  <label>خط العرض (Latitude):</label> *@
+                        <input type="text" class="form-control  mb-2" id="txtLatitude" readonly asp-for="StudentVM.NewStudent.StEpisode.EpLocation.Latitude" hidden />
+                        @* <label>خط الطول (Longitude):</label> *@
+                        <input type="text" class="form-control  mb-2" id="txtLongitude" readonly asp-for="StudentVM.NewStudent.StEpisode.EpLocation.Latitude" hidden />
+                    </div>
+                    <!-- حاوية الخريطة -->
+                    <div class="col-sm-4 col-4">
+                        <span class="input-group-text ps-2 bg-info-subtle">موقع الحلقة الجديدة</span>
+                    </div>
+                    <div id="map" class="w-100 border-1 rounded-2 " style=" height: 225px"></div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.DemandsModel_SaveDemand_btn" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal_2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold" id="title">طلب اقتراح او شكوي</div>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddComplaintRequest" asp-controller="Demands" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DemandVM.NewDemand.StudentId" value="@Model.StudentVM.NewStudent.Id" id="costId" />
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.StudentVM.NewStudent.Name" id="coname" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_RequestDate_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.Request_Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_CurrentEpisodeName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.NewEpisode" id="coepisodeNew" />
+                                <input type="text" hidden readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.OldEpisode" id="coepisodeOld" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-12 col-12 mb-1">
+                                <span class="input-group-text ps-2 bg-danger-subtle fw-bold">@ResourceApp_Ar.DemandsModel_complaintReason</span>
+                            </div>
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.DemandsModel_complaintReason_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8"></div>
+
+                            <div class="col-sm-12 col-12 ">
+                                <textarea class="form-control" asp-for="@Model.DemandVM.NewDemand.Request_Reason" rows="4" id="stNotes" placeholder=" @ResourceApp_Ar.DemandsModel_complaintReason_txt"></textarea>
+                                <span asp-validation-for="@Model.DemandVM.NewDemand.Request_Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.DemandsModel_SaveDemand_btn" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+ 
+</div>
+<div class="modal fade" id="exampleModal_3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold" id="title">@ResourceApp_Ar.DemandsModel_RequestHoliday</div>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddHolidayRequest" asp-controller="Demands" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DemandVM.NewDemand.StudentId" value="@Model.StudentVM.NewStudent.Id" id="vastId" />
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.StudentVM.NewStudent.Name" id="vaname" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_RequestDate_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center " asp-for="@Model.DemandVM.NewDemand.Request_Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_CurrentEpisodeName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center " asp-for="@Model.DemandVM.NewDemand.NewEpisode" id="vaepisode" />
+                                <input type="text" hidden readonly class="form-control text-center " asp-for="@Model.DemandVM.NewDemand.OldEpisode" id="vaOldEpisode" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group mb-3 ">
+                        <div class="row">
+                            <div class="col-sm-12 col-12 mb-1 ">
+                                <span class="input-group-text bg-danger-subtle fw-bold">@ResourceApp_Ar.DemandsModel_HolidayPeriod_lbl</span>
+                            </div>
+                            <div class="col-sm-2 col-2 ">
+                                <span class="input-group-text bg-info-subtle">من</span>
+                            </div>
+                            <div class="col-sm-4 col-4 ">
+                                <input type="date" class="form-control d-inline w-auto justify-content-center" asp-for="@Model.DemandVM.NewDemand.StartHoliday" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="datetodayfrom" />
+                            </div>
+                            <div class="col-sm-2 col-2">
+                                <span class="input-group-text bg-info-subtle">الي</span>
+                            </div>
+                            <div class="col-sm-4 col-4 ">
+                                <input type="date" class="form-control d-inline w-auto justify-content-center" asp-for="@Model.DemandVM.NewDemand.EndHoliday" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="datetodayto" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.DemandsModel_HolidayReason_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8"></div>
+
+                            <div class="col-sm-12 col-12 ">
+                                <textarea class="form-control" asp-for="@Model.DemandVM.NewDemand.Request_Reason" rows="4" id="stNotes" placeholder=" @ResourceApp_Ar.DemandsModel_HolidayReason_txt"></textarea>
+                                <span asp-validation-for="@Model.DemandVM.NewDemand.Request_Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.DemandsModel_SaveDemand_btn" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal_5" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold" id="title">@ResourceApp_Ar.DemandsModel_RequestAsk</div>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddAskRequest" asp-controller="Demands" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DemandVM.NewDemand.StudentId" value="@Model.StudentVM.NewStudent.Id" id="askstId" />
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.StudentVM.NewStudent.Name" id="askname" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_RequestDate_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.Request_Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_CurrentEpisodeName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                @* <input type="text" readonly class="form-control text-center" asp-for="@Model.NewStudent.StEpisodeId" id="askepisode" /> *@
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.NewEpisode" id="askepisode" />
+                                <input type="text" hidden readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.OldEpisode" id="askOldEpisode" />
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-12 col-12 mb-1">
+                                <span class="input-group-text ps-2 bg-danger-subtle fw-bold">@ResourceApp_Ar.DemandsModel_AskReason</span>
+                            </div>
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.DemandsModel_AskReason_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8"></div>
+
+                            <div class="col-sm-12 col-12 ">
+                                <textarea class="form-control" asp-for="@Model.DemandVM.NewDemand.Request_Reason" rows="4" id="stNotes" placeholder=" @ResourceApp_Ar.DemandsModel_AskReason_txt"></textarea>
+                                <span asp-validation-for="@Model.DemandVM.NewDemand.Request_Reason" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.DemandsModel_SaveDemand_btn" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="exampleModal_6" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-4 fw-bold" id="title">@ResourceApp_Ar.DemandsModel_RequestEditPersonal</div>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AddRequestEditPersonal" asp-controller="Demands" method="post">
+                    <input type="text" hidden class="form-control" asp-for="@Model.DemandVM.NewDemand.StudentId" value="@Model.StudentVM.NewStudent.Id" id="editstId" />
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">@ResourceApp_Ar.DemandsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.StName" value="@Model.StudentVM.NewStudent.Name" id="editname" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center  bg-info-subtle">@ResourceApp_Ar.DemandsModel_RequestDate_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.Request_Date" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">هوية الطالب</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.StIdentityNum" value="@Model.StudentVM.NewStudent.IdentityNumber" id="editstIdentityNum" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">جوال ولي الأمر</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.StParPhoneNum" value="@Model.StudentVM.NewStudent.ParentPhoneNumber" id="editprPhoneNum" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">عنوان الطلاب</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.StAdress" value="@Model.StudentVM.NewStudent.Adress" id="editstAdress" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text w-auto text-center bg-info-subtle">ملاحظات</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text"  class="form-control text-center" asp-for="@Model.DemandVM.NewDemand.StNotes" value="@Model.StudentVM.NewStudent.Notes" id="editstNotes" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">اسباب التعديل</span>
+                            </div>
+                            <div class="col-sm-8 col-8 ">
+                                <textarea class="form-control" asp-for="@Model.DemandVM.NewDemand.Request_Reason" id="" value=""  rows="4" cols="50" placeholder="ادخل اسباب التعديل ..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.DemandsModel_SaveDemand_btn" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modals Student Nationalities -->
+<div class="modal fade" id="ListStNationalities" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1" dir="rtl">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">جنسيات الطلاب</h5>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close" dir="auto"></a>
+            </div>
+            <div class="modal-body">
+                <section class="content" dir="rtl">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex align-items-Episode justify-content-start">
+                                    <div class="card-tools d-inline">
+                                        <button class="btn btn-primary"
+                                                data-bs-target="#SaveNationality"
+                                                data-bs-toggle="modal"
+                                                onclick="RestStNationality()">
+                                            @ResourceApp_Ar.StudentNationalitiesModal_AddNewStNationality_lbl
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+
+                                <div class="card-body">
+
+                                    @foreach (var item in Model.StudentVM.Nationalities)
+                                    {
+                                        <div class="row mb-2">
+                                            <div class="col-sm-8 col-8">
+                                                <span class="input-group-text">@item.Name</span>
+                                            </div>
+                                            <div class="col-sm-4 col-4">
+                                                @* <input type="button" class="btn btn-info px-3 ms-2" value="@ResourceApp_Ar.Page_EditBtn_Table" data-bs-toggle="modal" data-bs-target="#SaveNationality" /> *@
+                                                @* <input type="button" class="btn btn-danger px-3 " onclick="DelNationality('@item.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" /> *@
+                                                <input type="button" class="btn btn-danger px-3 btn-sm" onclick="DelNationality('@item.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" />
+
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SaveNationality" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1" dir="rtl">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="titel">@ResourceApp_Ar.StudentNationalitiesModal_AddNewStNationality_lbl</h1>
+                <button type="button" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close" dir="auto"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SaveNationality" asp-controller="Students" method="post">
+                    <input type="text" class="form-control" asp-for="StudentVM.NewNationality.Id" hidden id="NatId" />
+
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_lbl</span>
+                        <input type="text" class="form-control" asp-for="StudentVM.NewNationality.Name" id="NatName" placeholder="@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_txt" />
+                        <span asp-validation-for="StudentVM.NewNationality.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.Modal_Save_btn" id="btnSaveStNationality" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modals Student Health conditions -->
+<div class="modal fade" id="ListStHealth" aria-hidden="true" aria-labelledby="exampleModalToggleLabel" tabindex="-1" dir="rtl">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">الحالات الصحية</h5>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close" dir="auto"></a>
+            </div>
+            <div class="modal-body">
+                <section class="content" dir="rtl">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header d-flex justify-content-start">
+                                    <div class="card-tools d-inline">
+                                        <button class="btn btn-primary"
+                                                data-bs-target="#SaveHealth"
+                                                data-bs-toggle="modal"
+                                                onclick="RestStHealth()">
+                                            @ResourceApp_Ar.StudentHealthModal_AddNewStHealth_lbl
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- /.card-header -->
+
+                                <div class="card-body">
+
+                                    @foreach (var item in Model.StudentVM.HealthConditions)
+                                    {
+                                        <div class="row mb-2">
+                                            <div class="col-sm-8 col-8">
+                                                <span class="input-group-text">@item.Name</span>
+                                            </div>
+                                            <div class="col-sm-4 col-4">
+                                                @* <input type="button" class="btn btn-info px-3 ms-2" value="@ResourceApp_Ar.Page_EditBtn_Table" data-bs-toggle="modal" data-bs-target="#SaveNationality" /> *@
+                                                @* <input type="button" class="btn btn-danger px-3 " onclick="DelNationality('@item.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" /> *@
+                                                <input type="button" class="btn btn-danger px-3 btn-sm" onclick="DelHealth('@item.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" />
+
+                                            </div>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="SaveHealth" aria-hidden="true" aria-labelledby="exampleModalToggleLabel2" tabindex="-1" dir="rtl">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="titel">@ResourceApp_Ar.StudentHealthModal_AddNewStHealth_lbl</h1>
+                <button type="button" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close" dir="auto"></button>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SaveHealthCondition" asp-controller="Students" method="post">
+                    <input type="text" class="form-control" asp-for="StudentVM.NewHealth.Id" hidden id="HealthId" />
+                    <input type="text" class="form-control" hidden asp-for="StudentVM.NewHealth.Num" id="HealthNum" value="@(Model.StudentVM.HealthConditions.Count())" />
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">@ResourceApp_Ar.StudentHealthModal_HealthName_lbl</span>
+                        <input type="text" class="form-control" asp-for="StudentVM.NewHealth.Name" id="HealthName" placeholder="@ResourceApp_Ar.StudentHealthModal_HealthName_txt" />
+
+                        <span asp-validation-for="StudentVM.NewHealth.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.Modal_Save_btn" id="btnSaveStHealth" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function(){
+            GetVersesBySurah_CTP();
+            GetVersesBySurah_PTC();
+        })
+        $("#surahId_ctp").change(function(){
+            GetVersesBySurah_CTP();
+
+        });
+         var GetVersesBySurah_CTP = function(){
+          $.ajax({
+                url: '@Url.Action("GetVersesBySurah", "Students")',
+                type : 'GET',
+                data:{
+                    surahId:$('#surahId_ctp').val(),
+                },
+                success: function(data){
+                    $('#verseId_ctp').find('option').remove()
+                    $(data).each(
+                        function(index , item){
+                            $("#verseId_ctp").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                        }
+                    )
+                }
+          })
+        }
+
+
+        $("#surahId_ptc").change(function(){
+            GetVersesBySurah_PTC();
+
+        });
+        var GetVersesBySurah_PTC = function(){
+          $.ajax({
+                url: '@Url.Action("GetVersesBySurah", "Students")',
+                type : 'GET',
+                data:{
+                    surahId:$('#surahId_ptc').val(),
+                },
+                success: function(data){
+                    $('#verseId_ptc').find('option').remove()
+                    $(data).each(
+                        function(index , item){
+                            $("#verseId_ptc").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                        }
+                    )
+                }
+          })
+        }
+       
+
+    </script>
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Students.js"></script>
+    <script src="~/js/filesize-validator.js"></script>
+
+    <script>
+        let lbTitleEditStudent = '@Html.Raw(ResourceApp_Ar.StudentsModal_EditStudent_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+
+        let lbAddNewStudent = '@Html.Raw(ResourceApp_Ar.StudentsModal_AddNewStudent_lbl)';
+        let lbAddNewStudentNat = '@Html.Raw(ResourceApp_Ar.StudentNationalitiesModal_AddNewStNationality_lbl)';
+        let lbAddNewStudentHealth = '@Html.Raw(ResourceApp_Ar.StudentHealthModal_AddNewStHealth_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+        let lbTitleMsgDelete = '@Html.Raw("حذف الطالب")';
+        let lbTitleMsgDeleteNat = '@Html.Raw("حذف الجنسية")';
+        let lbTitleMsgDeleteHealth = '@Html.Raw("حذف الحالة الصحية")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete StudentLog")';
+        let lbTextMsgDelete = '@Html.Raw("هل تريد مسح بيانات الطالب ؟")';
+        let lbTextMsgDeleteNat = '@Html.Raw("هل تريد مسح الجنسية ؟")';
+        let lbTextMsgDeleteHealth = '@Html.Raw("هل تريد مسح الحالة الصحية ؟")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Student log ?")';
+        let lbconfirmButtonText = '@Html.Raw("نعم , احذف!")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+        let lbTitleDeletedOk = '@Html.Raw("تم الحذف")';
+        let lbMsgDeletedOkStudent = '@Html.Raw("تم حذف بيانات الطالب وكل التقييمات الخاصة به !")';
+        let lbMsgDeletedOkStudentNat = '@Html.Raw("تم حذف جنسية الطالب من القائمة!")';
+        let lbMsgDeletedOkStudentHealth = '@Html.Raw("تم حذف الحالة الصحية من القائمة !")';
+        let lbMsgDeletedOkStudentLog = '@Html.Raw("StudentLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+
+
+
+    @*  Student BirthDate هجري | ميلادي *@
+    @if (ViewBag.Message != null)
+    {
+        @*  <script type="text/javascript">
+            window.onload = function () {
+                alert("@ViewBag.Message");
+            };
+        </script> *@
+    }
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.1/moment.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment-hijri@2.1.0/moment-hijri.js"></script>
+    <script src="~/js/hijricalenderjs/bootstrap-hijri-datetimepicker.js"></script>
+    <script type="text/javascript">
+        $(function () {
+             $("#txtHijriDate").hijriDatePicker();
+        });
+
+    </script>
+
+
+}

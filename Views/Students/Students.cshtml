@@ -1,0 +1,626 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Episodes Of Students";
+
+    var StudentsData = Model.StudentVM.Students;
+    var EpisodesData = Model.StudentVM.EVM.Episodes;
+    var EpList = Model.StudentVM.EPisodes_List;
+    int cNo = 0;
+    int limi = 0;
+    int l = 0;
+    int i = 0;
+
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    StudentsData = Model.StudentVM.Students;
+    EpisodesData = Model.StudentVM.EVM.Episodes;
+    EpList = Model.StudentVM.EPisodes_List;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsForMen;
+    EpisodesData = Model.StudentVM.EVM.EpisodesForMen;
+    EpList = Model.StudentVM.EPisodesMen_List;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsForWomen;
+    EpisodesData = Model.StudentVM.EVM.EpisodesForWomen;
+    EpList = Model.StudentVM.EPisodesWomen_List;
+}
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()) || User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithSupervisor;
+    EpisodesData = Model.StudentVM.EVM.EpisodesWithSupervisor;
+    EpList = Model.StudentVM.EPisodesSupervisor_List;
+
+}
+else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithTeacher;
+    EpisodesData = Model.StudentVM.EVM.EpisodesWithTeacher;
+}
+else if (User.IsInRole(Roles.Parent.ToString()))
+{
+    StudentsData = Model.StudentVM.StudentsWithParent;
+}
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 d-flex">
+                    @if (User.IsInRole(Roles.Parent.ToString()))
+                    {
+                        <h1 class="m-0 text-dark ms-5">أبنائي</h1>
+                    }
+                    else
+                    {
+                        <h1 class="m-0 text-dark ms-5">@ResourceApp_Ar.SelectedEpisodes_Students_lbl</h1>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex">
+                        <div class="card-tools d-flex mb-3">
+                            <!-- Button trigger modal -->
+                           
+                          
+
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body  " style="background: #FBF8EF;">
+                        <!-- Tab links -->
+                        <div class="tab" style="background: #CBF7DC;">
+                            @if (!User.IsInRole(Roles.Parent.ToString()))
+                            {
+                                <button class="tablinks fs-6 fw-bold" style="background: #CBF7DC;" onclick="openCity(event, 'Students')" id="defaultOpen">@ResourceApp_Ar.StudentsPage_Student_tab</button>
+
+                            }
+                           
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks fs-6 fw-bold" onclick="openCity(event, 'LogStudents')" id="defaultTow">Log Students</button>
+
+                            }
+                        </div>
+                        <!-- Tab content -->
+                        @if (!StudentsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Students Of Episodes!</h4>
+                                <p class="mb-0">No Students Of Episodes where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @if (User.IsInRole(Roles.Parent.ToString()))
+                            {
+                                <div class="wrapper mt-3" dir="rtl">
+                                    <div class="content-header">
+                                        <div class="container-fluid">
+                                            <div class="row mb-2">
+                                                @foreach (var st in Model.StudentVM.StudentsWithParent)
+                                                {
+                                                    <div class="card col-12 col-sm-4  px-0 mx-auto ">
+                                                        <div class="card-header bg-dark text-center ">
+                                                            <div class="form-group mb-2">
+                                                                @if (st.Gender.Equals("male"))
+                                                                {
+                                                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stu.svg" />
+                                                                }
+                                                                else if (st.Gender.Equals("female"))
+                                                                {
+                                                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stuwo.png" />
+                                                                }
+
+                                                                <span class="text-center text-white fw-bolder fs-5 ">@st.Name</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="card-body bg-light-subtle">
+
+                                                            <div class="accordion shadow mb-3" id="accordionExamplez_@i">
+                                                                <div class="accordion-item  bg-danger-subtle py-0">
+                                                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z_@i">
+                                                                        <div class="col-sm-12 col-12">
+                                                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z_@i" aria-expanded="true" aria-controls="collapse_z_@i">
+                                                                                <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                            </button>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div id="collapse_z_@i" class="accordion-collapse collapse" aria-labelledby="header_z_@i" data-bs-parent="#collapse_z_@i">
+                                                                    @{
+                                                                        i++;
+                                                                    }
+                                                                    <div class="accordion-body  ">
+
+                                                                        <div class="form-group mb-2" id="stName_div">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.Name" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentIdentityNum_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.IdentityNumber" id="stIdNum" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentIdentityNum_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.ParentIdentityNumber" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" id="stParPhone" value="@st.ParentPhoneNumber" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.Nationality.Name" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentHealthModal_HealthName_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.HealthCondition.Name" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    @if (st.Gender.Equals("male"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="ذكر" />
+                                                                                    }
+                                                                                    else if (st.Gender.Equals("female"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="انثي" />
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentBirthDate_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1 " value="@st.BirthDate" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="accordion shadow mb-3" id="accordionExample">
+                                                                <div class="accordion-item  bg-danger-subtle py-0">
+                                                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                                                        <div class="col-sm-12 col-12">
+                                                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                                                                <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                            </button>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                                                                    <div class="accordion-body  ">
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1 " value="@st.StEpisode.Name " />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedPlanPage_MainHeader_PlanName_card</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.LevelData.PlanData.Name" />
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedLevelPlanPage_MainHeader_LevelName_card</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.LevelData.Name" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StSorah_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" value="@st.LessonData.Save_FromSorh" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">اتجاه الحفظ</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    @if (st.SaveDirection.Equals("ctp"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="من البقرة للناس" />
+                                                                                    }
+                                                                                    else if (st.SaveDirection.Equals("ptc"))
+                                                                                    {
+                                                                                        <input type="text" readonly class="form-control text-center p-1" value="من الناس للبقرة" />
+                                                                                    }
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="accordion shadow mb-3" id="accordionExample2">
+                                                                <div class="accordion-item  bg-danger-subtle py-0">
+                                                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                                                        <div class="col-sm-12 col-12">
+                                                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                                                                <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                            </button>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                                                                    <div class="accordion-body  ">
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentAdress_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" id="stAdres" value="@st.Adress" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                        <div class="form-group mb-2">
+                                                                            <div class="row">
+                                                                                <div class="col-sm-4 col-4">
+                                                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                                                                </div>
+                                                                                <div class="col-sm-8 col-8">
+                                                                                    <input type="text" readonly class="form-control text-center p-1" id="stNot" value="@st.Notes" />
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="d-flex">
+                                                                <a class="btn btn-outline-dark ms-2 me-auto" asp-controller="Students" asp-action="SelectedStudent" asp-route-Id="@st.Id">قائمة التقييمات</a>
+
+                                                                <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                                                    <button id="btnGroupDrop1" hidden type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                                    </button>
+                                                                    <button id="btnGroupDrop3" type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_1" onclick="RequestTransfer('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-repeat fs-6 ps-2"></i> طلب نقل
+                                                                        </a>
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_3" onclick="RequestVacation('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-luggage-fill fs-6 ps-2"></i> طلب اجازة
+                                                                        </a>
+
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_5" onclick="RequestAsk('@st.Id', '@st.Name', '@st.StEpisode.Name')">
+                                                                            <i class="bi bi-exclamation-octagon fs-6 ps-2"></i> طلب إذن
+                                                                        </a>
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_6" onclick="RequestEditPersonal('@st.Id', '@st.Name', '@st.IdentityNumber','@st.ParentPhoneNumber','@st.Adress','@st.Notes')">
+                                                                            <i class="bi bi-pencil-square fs-6 ps-2"></i>  تعديل بيانات
+                                                                        </a>
+                                                                        <a class="dropdown-item text-primary fw-bold text-end" data-bs-toggle="modal" data-bs-target="#exampleModal_2" onclick=" RequestComplaint('@st.Id', '@st.Name' , '@st.StEpisode.Name' )">
+                                                                            <i class="bi bi-chat-square-quote fs-6 ps-2"></i> طلب شكوي
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="btn-group ms-auto" role="group" aria-label="Button group with nested dropdown" id="stDem_btn">
+                                                                    <button type="button" class="btn btn-info">سجل الطلبات</button>
+                                                                    <div class="btn-group" role="group"> </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div class=" row align-content-center align-items-center justify-content-center mt-2" style="background: #FBF8EF;">
+
+                                    @foreach (var episode in EpisodesData)
+                                    {
+                                        cNo++;
+                                        <div class="col-sm-3 mb-3">
+                                            <a class="btn btn-outline-dark col btn-sm rounded-3" asp-controller="Students" asp-action="SelectedStudentsOfEpisode" asp-route-Id="@episode.Id">
+                                                <div class="accordion shadow mb-3 py-0" id="accordionExample3">
+                                                    <div class="accordion-item  bg-success-subtle text-dark py-0">
+                                                        <div class="accordion-header bg-success-subtle text-dark d-flex py-0" id="header_three">
+                                                            <div class="col-sm-12 col-12">
+                                                                <button class=" collapsed  bg-success-subtle text-dark w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_three" aria-expanded="false" aria-controls="collapse_three">
+                                                                    <span class="text-center fw-bolder fs-4">
+                                                                        طلاب @episode.Name
+                                                                    </span>
+                                                                    <i class="text-dark mt-1 me-2 bi bi-people-fill fs-2"></i>
+                                                                </button>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="collapse_three" class="accordion-collapse collapsed" aria-labelledby="header_three" data-bs-parent="#accordionExample3">
+                                                        <div class="accordion-body">
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.ApplicationUser.FullName" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.Period" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.EpLocation.Name" />
+                                                            </div>
+                                                            <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_StudentsCount_EpisodesTable</span>
+                                                                <input type="text" class="form-control" readonly value="@episode.Students.Count() | @episode.LimitStudents " />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+
+                                    }
+                                </div>
+                            }
+                            else if (!User.IsInRole(Roles.Teacher.ToString()) || !User.IsInRole(Roles.TeacherWomen.ToString()))
+                            {
+                                <div id="Students" class="tabcontent">
+                                    <table id="tableStudents" class="table table-hover mt-4 ">
+                                        <thead>
+                                            <tr class="fw-bolder">
+                                                
+                                                <td></td>
+                                                <td class="text-center">@ResourceApp_Ar.StudentsPage_studentName_StudentsTable</td>
+                                                <td class="text-center">@ResourceApp_Ar.StudentsPage_TeacherName_StudentsTable </td>
+                                                <td class="text-center">الحلقة الحالية </td>
+                                                <td class="text-center">  </td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var student in StudentsData)
+                                            {
+                                                cNo++;
+                                                <tr>
+                                                    
+                                                    @if (student.Gender.Equals("male"))
+                                                    {
+                                                        <td class="text-center px-0"> @cNo <img src="~/images/stu.svg" alt="stu" width="35" height="35"></td>
+                                                    }
+                                                    else if (student.Gender.Equals("female"))
+                                                    {
+                                                        <td class="text-center px-0"> @cNo <img src="~/images/stuwo.png" alt="stu" width="35"></td>
+                                                    }
+                                                    
+                                                    <td class="text-center px-0">@student.Name</td>
+                                                    <td class="text-center px-0">@student.StEpisode.ApplicationUser.FullName</td>
+                                                    <td class="text-center px-0">
+                                                        @student.StEpisode.Name 
+                                                        <hr class="p-0 m-0 w-75 mx-auto" /> 
+                                                        <span class="text-warning fs-5 fw-bold">@student.StEpisode.Students.Count() </span> 
+                                                    </td>
+
+                                                    <td class="text-center px-1">
+                                                        <a style="background-color:#328E6E"
+                                                           class="btn rounded-3 "
+                                                           onclick="Assigned('@student.Id','@student.Name','@student.StEpisode.Name','@student.StEpisode.Students.Count()','@student.StEpisode.ApplicationUser.FullName')"
+                                                           data-bs-toggle="modal" data-bs-target="#assignedModal">
+                                                            <i class="bi bi-person-fill-up fs-5 ps-2"></i><br> نقل الطالب
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                        }
+
+
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+        <!-- reset episode daily -->
+
+        @*
+            <form asp-action="ResetEpisodeEveryDay" asp-controller="Episodes" method="post" id="resetEp_form"> </form>
+        *@
+
+        <!-- end reset episode daily -->
+    </section>
+    <!-- /.content -->
+</div>
+<div class="modal fade" id="assignedModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header d-flex">
+                <h5 class="modal-title" id="title">اسناد الطالب للحلقة</h5>
+                @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorCenterMen.ToString()) || User.IsInRole(Roles.Teacher.ToString()))
+                {
+                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+                }
+                else if (User.IsInRole(Roles.SupervisorWomen.ToString()) || User.IsInRole(Roles.SupervisorCenterWomen.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                {
+                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="width:100px;object-fit:contain" src="~/images/stuwo.png" />
+                }
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="AssignedStudent" asp-controller="Students" method="post" enctype="multipart/form-data">
+                    <div><input type="text" hidden  class="input-group" asp-for="StudentVM.NewStudent.Id" id="studId"></div>
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text fw-bold bg-primary-subtle ps-2">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control fw-bold text-center" asp-for="StudentVM.NewStudent.Name" id="studName"  placeholder="@ResourceApp_Ar.StudentsModel_StudentName_txt" />
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text fw-bold bg-primary-subtle ps-2">الحلقة الحالية</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control fw-bold text-center" id="studCurrentEpName" placeholder="" />
+                                
+                            </div>
+                        </div>
+                    </div>
+                     <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text fw-bold bg-primary-subtle ps-2">طلاب الحلقة الحالية</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control fw-bold text-center" id="studCurrentEpStuents" />
+                            </div>
+                        </div>
+                    </div>
+                     <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text fw-bold bg-primary-subtle ps-2">معلم الحلقة الحالية</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" readonly class="form-control fw-bold text-center" id="epTeacher" />
+
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text fw-bold bg-danger-subtle ps-2"> الحلقة الجديدة</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="studNewEp" asp-for="StudentVM.NewStudent.StEpisodeId" asp-items="EpList" onchange="">
+                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StEpisode_select</option>
+                                </select>
+                                <span asp-validation-for="StudentVM.NewStudent.StEpisodeId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="نقل الطالب" id="btnSave" onclick="" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/js/Students.js"></script>
+}
+

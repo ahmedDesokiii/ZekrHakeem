@@ -1,0 +1,219 @@
+﻿@inject IAuthorizationService AuthorizationService
+
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Demands";
+    int cNo = 0;
+    var DemandsData = Model.DemandVM.Demands;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    DemandsData = Model.DemandVM.Demands;
+}
+
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    DemandsData = Model.DemandVM.DemandsForMen;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    DemandsData = Model.DemandVM.DemandsForWomen;
+}
+else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+{
+    DemandsData = Model.DemandVM.DemandsForTeacher;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.DemandsPage_DemandsMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @* @if (AuthorizationService.AuthorizeAsync(User, Permissions.Demands.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                        class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                    <i class="bi bi-plus-circle-dotted fs-5 ps-2 rounded-3"></i> @ResourceApp_Ar.DemandsPage_AddDemand_btn
+                                </button>
+                            }
+                            <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary text-white">
+                                    خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                        {
+
+                                        }
+                                    </div>
+                                </div>
+                            </div> *@
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body " style="background: #FBF8EF;">
+                        <!-- Tab links -->
+                        <div class="tab" style="background: #CBF7DC;">
+                            <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'Demands')" id="defaultOpen">@ResourceApp_Ar.DemandsPage_Demands_tab</button>
+                        
+                        @if (User.IsInRole(Roles.Admin.ToString()))
+                        {
+                            <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'LogDemands')" id="defaultTow">Log Demands</button>
+                        }
+                        </div>
+                        <!-- Tab content -->
+                        @if (!DemandsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Demands!</h4>
+                                <p class="mb-0">No Demands where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="Demands" class="tabcontent">
+                                <table id="tableDemand" class="table table-hover mt-4  " dir="rtl">
+                                    <thead class="bg-danger-subtle">
+                                        <tr class="fw-bolder">
+                                            <td></td>
+
+                                            <td class="text-center">تاريخ الطلب</td>
+                                            <td class="text-center">نوع الطلب</td>
+                                            <td class="text-center">اسم الطالب</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="">
+                                        @foreach (var dem in DemandsData)
+                                        {
+                                            cNo++;
+                                            <tr class="border-1 align-content-center">
+                                                <td class="text-center">@cNo</td>
+
+                                                <td class="text-center">@Convert.ToDateTime(dem.Request_Date).Date.ToString("yyyy-MM-dd") </td>
+                                                <td class="text-center">@dem.Request_Type</td>
+                                                <td class="text-center">@dem.Student.Name</td>
+                                                <td class="text-center">
+                                                    @if (dem.IsOpened == false)
+                                                    {
+                                                        <a class="btn btn-success  btn-sm rounded-3" asp-action="SelectedDemand" asp-controller="Demands" asp-route-Id="@dem.Id">
+                                                            <i class="bi bi-envelope-fill fs-6 ps-2"></i>  @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                        </a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="btn btn-dark  btn-sm rounded-3" asp-action="SelectedDemand" asp-controller="Demands" asp-route-Id="@dem.Id">
+                                                            <i class="bi bi-envelope-open-fill fs-6 ps-2"></i> @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                        </a>
+                                                    }
+
+
+                                                    @* @if (AuthorizationService.AuthorizeAsync(User, Permissions.Demands.Edit).Result.Succeeded)
+                                                    {
+                                                        <a class="btn btn-outline-warning btn-sm rounded-3" onclick="Edit('@dem.Id', '@dem.Name','@dem.CenterId','@dem.Description')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                            <i class="bi bi-pencil-square fs-6 ps-2 btn-sm"></i>  @ResourceApp_Ar.Page_EditBtn_Table
+                                                        </a>
+                                                    }
+
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Demands.Delete).Result.Succeeded)
+                                                    {
+                                                        <a class="btn btn-danger btn-sm rounded-3" onclick="Delete('@dem.Id')">
+                                                            <i class="bi bi-trash fs-6 ps-2 btn-sm"></i> @ResourceApp_Ar.Page_DeleteBtn_Table
+                                                        </a>
+                                                    } *@
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+
+
+                    </div>
+
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+
+</div>
+
+<!-- Modal -->
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/Demands.js"></script>
+    <script>
+
+      
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+        let lbTitleMsgDelete = '@Html.Raw("Delete Demand")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete Demand ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+        let lbTitleDeletedOk = '@Html.Raw("Done")';
+        let lbMsgDeletedOkDemand = '@Html.Raw("Demand is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+   }
+

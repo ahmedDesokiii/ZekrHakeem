@@ -1,0 +1,184 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Select Student";
+    int cNo = 0;
+    var i = 1;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-12 d-flex">
+                    <div class="card col-sm-12 col-12 ms-3">
+                        <div class="card-header text-center bg-dark">
+                            <div class="form-group mb-2">
+                                <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stu.svg" />
+                                <span class="text-center fw-bolder fs-5 text-white">@Model.StProgVM.NewStudentProg.Name</span>
+                            </div>
+                        </div>
+                        <div class="card-body ">
+                            <div class="accordion shadow mb-3 py-0" id="accordionExamplez">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z" aria-expanded="true" aria-controls="collapse_z">
+                                                <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_z" class="accordion-collapse collapse" aria-labelledby="header_z" data-bs-parent="#accordionExample0">
+                                    <div class="accordion-body">
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StProgVM.NewStudentProg.ParentPhoneNumber" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StProgVM.NewStudentProg.Nationality.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    @if (Model.StProgVM.NewStudentProg.Gender.Equals("male"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="ذكر" />
+                                                    }
+                                                    else if (Model.StProgVM.NewStudentProg.Gender.Equals("female"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="انثي" />
+                                                    }
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                                <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1 " value="@Model.StProgVM.NewStudentProg.EpisodeProg.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                       
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample2">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                                <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                                    <div class="accordion-body">
+                                       
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StProgVM.NewStudentProg.Notes" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample3">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-dark-subtle d-flex py-0" id="header_three">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-dark-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_three" aria-expanded="false" aria-controls="collapse_three">
+                                                <span class="text-center fw-bolder fs-6">التقييمات</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="collapse_three" class="accordion-collapse collapse" aria-labelledby="header_three" data-bs-parent="#accordionExample3">
+                                    <div class="accordion-body">
+                                 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample4">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-dark-subtle d-flex py-0" id="header_four">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-dark-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_four" aria-expanded="false" aria-controls="collapse_four">
+                                                <span class="text-center fw-bolder fs-6">سجل الطلبات</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="collapse_four" class="accordion-collapse collapse" aria-labelledby="header_four" data-bs-parent="#accordionExample4">
+                                    <div class="accordion-body">
+                                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+
+</div>
+<script src="~/js/SelectedStudent.js"></script>
+

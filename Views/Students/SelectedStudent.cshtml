@@ -1,0 +1,560 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Select Student";
+    int cNo = 0;
+    int dNo = 0;
+    var i = 1;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-12 d-flex">
+                    <div class="card col-sm-12 col-12 ms-3">
+                        <div class="card-header text-center bg-dark">
+                            <div class="form-group mb-2">
+                                @if (Model.StudentVM.NewStudent.Gender.Equals("male"))
+                                {
+                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stu.svg" />
+
+                                }
+                                else if (Model.StudentVM.NewStudent.Gender.Equals("female"))
+                                {
+                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="width:80px;object-fit:contain" src="~/images/stuwo.png" />
+
+                                }
+
+                                <span class="text-center fw-bolder fs-5 text-white">@Model.StudentVM.NewStudent.Name</span>
+                            </div>
+                        </div>
+                        <div class="card-body ">
+                            <div class="accordion shadow mb-3 py-0" id="accordionExamplez">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_z">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_z" aria-expanded="true" aria-controls="collapse_z">
+                                                <span class="text-center fw-bolder fs-6">البيانات الشخصية للطالب</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_z" class="accordion-collapse collapse" aria-labelledby="header_z" data-bs-parent="#accordionExample0">
+                                    <div class="accordion-body">
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentIdentityNum_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.IdentityNumber" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentIdentityNum_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.ParentIdentityNumber" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.ParentPhoneNumber" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentNationalitiesModal_NationalityName_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.Nationality.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentHealthModal_HealthName_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.HealthCondition.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    @if (Model.StudentVM.NewStudent.Gender.Equals("male"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="ذكر" />
+                                                    }
+                                                    else if (Model.StudentVM.NewStudent.Gender.Equals("female"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="انثي" />
+                                                    }
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentBirthDate_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1 " value="@Model.StudentVM.NewStudent.BirthDate" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_one">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_one" aria-expanded="false" aria-controls="collapse_one">
+                                                <span class="text-center fw-bolder fs-6"> البيانات التعليمية</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_one" class="accordion-collapse collapse" aria-labelledby="header_one" data-bs-parent="#accordionExample">
+                                    <div class="accordion-body">
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1 " value="@Model.StudentVM.NewStudent.StEpisode.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedPlanPage_MainHeader_PlanName_card</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.SelectedLevelPlanPage_MainHeader_LevelName_card</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.LessonData.LevelData.Name" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StSorah_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.LessonData.Save_FromSorh" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">اتجاه الحفظ</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    @if (Model.StudentVM.NewStudent.SaveDirection.Equals("ctp"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="من البقرة للناس" />
+                                                    }
+                                                    else if (Model.StudentVM.NewStudent.SaveDirection.Equals("ptc"))
+                                                    {
+                                                        <input type="text" readonly class="form-control text-center p-1" value="من الناس للبقرة" />
+                                                    }
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample2">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_tow">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_tow" aria-expanded="false" aria-controls="collapse_tow">
+                                                <span class="text-center fw-bolder fs-6">بيانات اخري</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="collapse_tow" class="accordion-collapse collapse" aria-labelledby="header_tow" data-bs-parent="#accordionExample2">
+                                    <div class="accordion-body">
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentAdress_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.Adress" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="form-group mb-2">
+                                            <div class="row">
+                                                <div class="col-sm-4 col-4">
+                                                    <span class="input-group-text w-auto text-center pe-sm-2 pe-1 p-1 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                                                </div>
+                                                <div class="col-sm-8 col-8">
+                                                    <input type="text" readonly class="form-control text-center p-1" value="@Model.StudentVM.NewStudent.Notes" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample3">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-dark-subtle d-flex py-0" id="header_three">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-dark-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_three" aria-expanded="false" aria-controls="collapse_three">
+                                                <span class="text-center fw-bolder fs-6">التقييمات</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="collapse_three" class="accordion-collapse collapse" aria-labelledby="header_three" data-bs-parent="#accordionExample3">
+                                    <div class="accordion-body">
+                                        <div>
+
+                                            @if (!Model.StudentVM.Evaluations.Any())
+                                            {
+                                                <div class="alert  alert-warning mt-5">
+                                                    <h4 class="alert-heading">No Evaluation!</h4>
+                                                    <p class="mb-0">No Evaluations where added yet.</p>
+                                                </div>
+                                            }
+                                            else
+                                            {
+
+                                                <table border="0" cellspacing="5" cellpadding="5">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>بداية الفترة</td>
+                                                            <td><input type="text" readonly id="min" name="min"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>نهاية الفترة</td>
+                                                            <td><input type="text" readonly id="max" name="max"></td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+
+                                                <table id="example" class="table-hover display nowrap w-100 p-2 table-bordered border-primary-subtle">
+                                                    <thead>
+                                                        <tr class="text-center p-2">
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" rowspan="2"></td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" rowspan="2">تاريخ</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" rowspan="2">حضور</td>
+                                                            @if (Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الخطة المفتوحة"))
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" colspan="5">مقدار</td>
+                                                            }
+                                                            else
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" colspan="5">حفظ</td>
+                                                            }
+                                                            @if (Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الذكر الحكيم"))
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" colspan="5">ربط</td>
+                                                            }
+                                                            @if (!Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الخطة المفتوحة"))
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" colspan="5">مراجعة</td>
+                                                            }
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" rowspan="2">ملاحظات</td>
+                                                        </tr>
+                                                        <tr class="text-center p-2">
+
+                                                            <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fw-bold">تقييم</td>
+                                                            @if (Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الذكر الحكيم"))
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">تقييم</td>
+                                                            }
+                                                            @if (!Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الخطة المفتوحة"))
+                                                            {
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">سورة</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">اية</td>
+                                                                <td class="text-center p-2 bg-danger-subtle fw-bold">تقييم</td>
+                                                            }
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Model.StudentVM.Evaluations)
+                                                        {
+
+                                                            //attendance
+                                                            var attend = item.Ev_Attend; var result_attend = string.Empty;
+                                                            if (attend == 0) result_attend = "حاضر";
+                                                            else if (attend == 1) result_attend = "متأخر";
+                                                            else if (attend == 2) result_attend = "مستأذن";
+                                                            else if (attend == 3) result_attend = "غائب بإذن";
+                                                            else if (attend == 4) result_attend = "غائب";
+
+                                                            //Save
+                                                            var save = item.Ev_Save; var result_save = string.Empty;
+                                                            if (save == 10 || save == 9) result_save = "ممتاز";
+                                                            else if (save == 7 || save == 8) result_save = "جيد جدا";
+                                                            else if (save == 6) result_save = "جيد";
+                                                            else if (save == 5) result_save = "مقبول";
+                                                            else if (save > 0 && save < 5) result_save = "غير مقبول";
+                                                            else if (save == 0) result_save = "غائب";
+                                                            else if (save < 0) result_save = "لم يقيم ";
+
+                                                            //Rabt
+                                                            var rabt = item.Ev_Rabt; var result_rabt = string.Empty;
+                                                            if (rabt == 10 || rabt == 9) result_rabt = "ممتاز";
+                                                            else if (rabt == 7 || rabt == 8) result_rabt = "جيد جدا";
+                                                            else if (rabt == 6) result_rabt = "جيد";
+                                                            else if (rabt == 5) result_rabt = "مقبول";
+                                                            else if (rabt > 0 && rabt < 5) result_rabt = "غير مقبول";
+                                                            else if (rabt == 0) result_rabt = "غائب";
+                                                            else if (rabt < 0) result_rabt = "لم يقيم ";
+
+                                                            //Rev
+                                                            var rev = item.Ev_Rev; var result_rev = string.Empty;
+                                                            if (rev == 10 || rev == 9) result_rev = "ممتاز";
+                                                            else if (rev == 7 || rev == 8) result_rev = "جيد جدا";
+                                                            else if (rev == 6) result_rev = "جيد";
+                                                            else if (rev == 5) result_rev = "مقبول";
+                                                            else if (rev > 0 && rev < 5) result_rev = "غير مقبول";
+                                                            else if (rev == 0) result_rev = "غائب";
+                                                            else if (rev < 0) result_rev = "لم يقيم ";
+
+
+                                                            <tr class="text-center">
+                                                                @{
+                                                                    cNo++;
+                                                                }
+                                                                <td class="text-center">@cNo</td>
+                                                                <td class="text-center">@item.Ev_Date.ToString("yyyy-MM-dd")</td>
+                                                                <td class="text-center">@result_attend</td>
+
+                                                                <td class="text-center">@item.Ev_SaveSurahNameFrom</td>
+                                                                <td class="text-center">@item.Ev_SaveAyahIdFrom   </td>
+                                                                <td class="text-center">@item.Ev_SaveSurahNameTo  </td>
+                                                                <td class="text-center">@item.Ev_SaveAyahIdTo     </td>
+                                                                @if (save < 0) {
+                                                                    <td class="text-center">@result_save </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td class="text-center">@result_save <br>@save / 10</td>
+                                                                }
+
+                                                                @if (Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الذكر الحكيم"))
+                                                                {
+                                                                    <td class="text-center">@item.Ev_RabtSurahNameFrom</td>
+                                                                    <td class="text-center">@item.Ev_RabtAyahIdFrom   </td>
+                                                                    <td class="text-center">@item.Ev_RabtSurahNameTo  </td>
+                                                                    <td class="text-center">@item.Ev_RabtAyahIdTo     </td>
+                                                                    @if (rabt < 0)
+                                                                    {
+                                                                        <td class="text-center">@result_rabt </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td class="text-center">@result_rabt <br>@rabt / 10</td>
+                                                                    }
+
+                                                                }
+                                                                @if (!Model.StudentVM.NewStudent.LessonData.LevelData.PlanData.Name.Contains("الخطة المفتوحة "))
+                                                                {
+                                                                    <td class="text-center">@item.Ev_RevSurahNameFrom</td>
+                                                                    <td class="text-center">@item.Ev_RevAyahIdFrom   </td>
+                                                                    <td class="text-center">@item.Ev_RevSurahNameTo  </td>
+                                                                    <td class="text-center">@item.Ev_RevAyahIdTo     </td>
+                                                                    @if (rev < 0)
+                                                                    {
+                                                                        <td class="text-center">@result_rev </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td class="text-center">@result_rev <br>@rev / 10</td>
+                                                                    }
+
+                                                                }
+                                                                <td class="text-center">@item.Notes</td>
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                    @{
+                                                        i++;
+                                                    }
+                                                </table>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample4">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-dark-subtle d-flex py-0" id="header_four">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-dark-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_four" aria-expanded="false" aria-controls="collapse_four">
+                                                <span class="text-center fw-bolder fs-6">سجل الطلبات</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="collapse_four" class="accordion-collapse collapse" aria-labelledby="header_four" data-bs-parent="#accordionExample4">
+                                    <div class="accordion-body">
+                                        <div>
+
+                                            @if (!Model.StudentVM.Demands.Any())
+                                            {
+                                                <div class="alert  alert-warning mt-5">
+                                                    <h4 class="alert-heading">No Demands!</h4>
+                                                    <p class="mb-0">No Demands where added yet.</p>
+                                                </div>
+                                            }
+                                            else
+                                            {
+
+                                                <table border="0" cellspacing="5" cellpadding="5">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>بداية الفترة</td>
+                                                            <td><input type="text" readonly id="minDem" name="minDem"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>نهاية الفترة</td>
+                                                            <td><input type="text" readonly id="maxDem" name="maxDem"></td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+
+                                                <table id="exampleDem" class="table-hover display nowrap w-100 p-2 table-bordered border-primary-subtle">
+                                                    <thead>
+                                                        <tr class="text-center p-2">
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold"></td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold">تاريخ الطلب</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold">نوع الطلب</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" >استلام الطلب</td>
+                                                            <td class="text-center p-2 bg-danger-subtle fs-5 fw-bold" >حالة القبول</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Model.StudentVM.Demands)
+                                                        {
+                                                            <tr class="text-center">
+                                                                @{
+                                                                    dNo++;
+                                                                }
+
+                                                                @if (item.IsOpened == false && item.IsAccepted == false)
+                                                                {
+                                                                    <td class="text-center text-dark">@dNo</td>
+                                                                    <td class="text-center text-dark">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-dark">@item.Request_Type</td>
+                                                                    <td class="text-center text-dark">لم يتم الإستلام</td>
+                                                                    <td class="text-center text-dark">قيد الانتظار</td>
+                                                                }
+                                                                else if (item.IsOpened == true && item.IsAccepted == false)
+                                                                {
+                                                                    <td class="text-center text-danger">@dNo</td>
+                                                                    <td class="text-center text-danger">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-danger">@item.Request_Type</td>
+                                                                    <td class="text-center text-danger">تم الإستلام</td>
+                                                                    <td class="text-center text-danger">مرفوض</td>
+                                                                }
+                                                                else if (item.IsOpened == true && item.IsAccepted == true)
+                                                                {
+                                                                    <td class="text-center text-success">@dNo</td>
+                                                                    <td class="text-center text-success">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-success">@item.Request_Type</td>
+                                                                    <td class="text-center text-success">تم الإستلام</td>
+                                                                    <td class="text-center text-success">مقبول</td>
+                                                                }
+                                                               
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                    @{
+                                                        i++;
+                                                    }
+                                                </table>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+   
+</div>
+
+@section Scripts {
+<script src="~/js/SelectedStudent.js"></script>
+
+
+}

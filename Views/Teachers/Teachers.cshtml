@@ -1,0 +1,144 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+@model TeacherViewModel
+
+@{
+    ViewData["Title"] = "Teachers";
+    var TeachersData = Model.AllTeachers;
+    int cNo = 0;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    TeachersData = Model.AllTeachers;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    //TeachersData = Model.TeachersMen;
+}
+
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    //TeachersData = Model.TeachersWomen;
+}
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.teachersPage_teachersMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-teacher justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @* @if (AuthorizationService.AuthorizeAsync(User, Permissions.Teachers.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                        class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                    @ResourceApp_Ar.TeachersPage_Addteacher_btn
+                                </button>
+
+                            } *@
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body  ">
+                        <!-- Tab links -->
+                        <div class="tab">
+
+                            <button class="tablinks" onclick="openCity(event, 'teachers')" id="defaultOpen">@ResourceApp_Ar.teachersPage_teacher_tab</button>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks" onclick="openCity(event, 'Logteachers')" id="defaultTow">Log teachers</button>
+                            }
+                        </div>
+                        <!-- Tab content -->
+                        @if (!TeachersData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Teachers!</h4>
+                                <p class="mb-0">No teachers where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="teachers" class="tabcontent">
+                                <table id="tableteacher" class="table table-hover mt-4" dir="rtl">
+                                    <thead>
+                                        <tr class="fw-bolder">
+                                            <td></td>
+                                            <td class="text-teacher">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</td>
+                                            <td class="text-teacher">رقم الجوال</td>
+
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var teacher in TeachersData)
+                                        {
+                                            cNo++;
+                                            <tr class="border-1 align-content-teacher">
+                                                <td class="text-teacher">@cNo</td>
+                                                <td class="text-teacher">@teacher.FullName</td>
+                                                <td class="text-teacher">@teacher.PhoneNumber</td>
+                                               
+                                                
+
+                                                <td class="text-teacher">
+                                                   @*  <a class="btn btn-success" asp-action="Selectedteacher" asp-controller="teachers" asp-route-Id="@teacher.Id">
+                                                        @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                    </a>
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.teachers.Edit).Result.Succeeded)
+                                                    {
+                                                        <input type="button" class="btn btn-info p-2 btn-sm" onclick="Edit('@teacher.Id', '@teacher.Name','@teacher.Type','@teacher.Description','@teacher.ApplicationUserId')" value="@ResourceApp_Ar.Page_EditBtn_Table" data-bs-toggle="modal" data-bs-target="#exampleModal" />
+                                                    }
+
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.teachers.Delete).Result.Succeeded)
+                                                    {
+                                                        <input type="button" class="btn btn-danger p-2 btn-sm" onclick="Delete('@teacher.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" />
+                                                    }
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.teachers.Pause).Result.Succeeded)
+                                                    {
+                                                        if (teacher.PauseState > 0)
+                                                        {
+                                                            <input type="button" id="pause" class="btn btn-outline-dark" onclick="Pause('@teacher.Id')" value=" @ResourceApp_Ar.Page_PauseBtn_Table" />
+                                                        }
+                                                        else
+                                                        {
+                                                            <input type="button" id="pause" class="btn btn-outline-success" onclick="Resume('@teacher.Id')" value=" @ResourceApp_Ar.Page_ResumeBtn_Table" />
+                                                        }
+                                                    } *@
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>

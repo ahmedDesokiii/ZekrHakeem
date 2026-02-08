@@ -1,0 +1,392 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Episodes Of Students";
+
+    var StudentsData = Model.StProgVM.StudentProgs;
+    var EpisodesData = Model.StProgVM.EVM.EpisodeProgs;
+    int cNo = 0;
+    int limi = 0;
+    int l = 0;
+    int i = 0;
+
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgs;
+    EpisodesData = Model.StProgVM.EVM.EpisodeProgs;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgsForMen;
+    EpisodesData = Model.StProgVM.EVM.EpisodeProgsForMen;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgsForWomen;
+    EpisodesData = Model.StProgVM.EVM.EpisodeProgsForWomen;
+}
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()) || User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgsWithSupervisor;
+    EpisodesData = Model.StProgVM.EVM.EpisodeProgsWithSupervisor;
+
+}
+else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgsWithTeacher;
+    EpisodesData = Model.StProgVM.EVM.EpisodeProgsWithTeacher;
+}
+else if (User.IsInRole(Roles.Parent.ToString()))
+{
+    StudentsData = Model.StProgVM.StudentProgsWithParent;
+}
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 d-flex">
+                    <h1 class="m-0 text-dark ms-5">@ResourceApp_Ar.EpisodeProgsOfStudentProgsPage_EpisodesMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                        <div class="card-header d-flex">
+                            <div class="card-tools ">
+                                <!-- Button trigger modal -->
+                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Students.Create).Result.Succeeded)
+                                {
+                                    <a class="btn btn-outline-primary rounded-3 fw-bold" asp-action="StudentsWithEpisodeProg" asp-controller="Progs">
+                                        <i class="bi bi-person-rolodex fs-5 ps-2"></i> @ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn
+                                    </a>
+                                }
+                               @*  <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-primary text-white">
+                                        خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            
+                                        </div>
+                                    </div>
+                                </div> *@
+
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+
+                        <div class="card-body" style="background: #FBF8EF;">
+                            <!-- Tab links -->
+                            <div class="tab bg-danger-subtle" >
+                                @if (!User.IsInRole(Roles.Parent.ToString()))
+                                {
+                                    <button class="tablinks fs-6 fw-bold bg-danger-subtle"  onclick="openCity(event, 'EpisodesOfStudentProgs')" id="defaultOpen">@ResourceApp_Ar.EpisodesOfStudentsPage_EpisodesOfStudent_tab</button>
+                                }
+                                @if (User.IsInRole(Roles.Admin.ToString()))
+                                {
+                                    <button class="tablinks fs-6 fw-bold" onclick="openCity(event, 'LogStudentProgs')" id="defaultTow">Log StudentProgs</button>
+                                }
+                            </div>
+                            <!-- Tab content -->
+                            @if (!StudentsData.Any())
+                            {
+                                <div class="alert  alert-warning mt-5">
+                                    <h4 class="alert-heading">No StudentProgs Of Episodes!</h4>
+                                    <p class="mb-0">No StudentProgs Of Episodes where added yet.</p>
+                                </div>
+                            }
+                            else
+                            {
+                                @if (User.IsInRole(Roles.Parent.ToString()))
+                                {
+                                    <div class="wrapper mt-3" dir="rtl">
+                                        <div class="content-header">
+                                            <div class="container-fluid">
+                                                <div class="row mb-2">
+                                                @foreach (var st in Model.StProgVM.StudentProgsWithParent)
+                                                    {
+                                                        <div class="card col-12 col-sm-4 mx-auto ">
+                                                            <div class="card-header bg-dark text-center ">
+                                                                <div class="form-group mb-2">
+                                                                    <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:80px;width:80px;object-fit:contain" src="~/images/stu.svg" />
+                                                                    <span class="text-center text-white fw-bolder fs-5 ">@st.Name</span>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                        </div>
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                                {
+                                    <div class=" row align-content-center align-items-center justify-content-center mt-2" style="background: #FBF8EF;">
+
+                                        @foreach (var episode in EpisodesData)
+                                        {
+                                            cNo++;
+                                            <div class="col-sm-3 mb-3">
+                                                <a class="btn btn-outline-dark col btn-sm rounded-3" asp-controller="Progs" asp-action="SelectedStudentProgsOfEpisodeProg" asp-route-Id="@episode.Id">
+                                                    <div class="accordion shadow mb-3 py-0" id="accordionExample3">
+                                                        <div class="accordion-item  bg-danger-subtle text-dark py-0">
+                                                            <div class="accordion-header bg-danger-subtletext-dark d-flex py-0" id="header_three">
+                                                                <div class="col-sm-12 col-12">
+                                                                    <button class=" collapsed  bg-danger-subtle text-dark w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_three" aria-expanded="false" aria-controls="collapse_three">
+                                                                        <span class="text-center fw-bolder fs-4">
+                                                                            طلاب @episode.Name
+                                                                        </span>
+                                                                        <i class="text-dark mt-1 me-2 bi bi-people-fill fs-2"></i>
+                                                                    </button>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="collapse_three" class="accordion-collapse collapsed" aria-labelledby="header_three" data-bs-parent="#accordionExample3">
+                                                            <div class="accordion-body">
+                                                                <div class="input-group mb-1">
+                                                                    <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</span>
+                                                                    <input type="text" class="form-control" readonly value="@episode.ApplicationUser.FullName" />
+                                                                </div>
+                                                                <div class="input-group mb-1">
+                                                                    <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</span>
+                                                                    <input type="text" class="form-control" readonly value="@episode.Period" />
+                                                                </div>
+                                                                <div class="input-group mb-1">
+                                                                    <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</span>
+                                                                    <input type="text" class="form-control" readonly value="@episode.EpProgLocation.Name" />
+                                                                </div>
+                                                                <div class="input-group mb-1">
+                                                                    <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.EpisodesPage_StudentsCount_EpisodesTable</span>
+                                                                    <input type="text" class="form-control" readonly value="@episode.StudentProgs.Count()" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </div>
+
+                                        }
+                                    </div>
+                                }
+                                else if (!User.IsInRole(Roles.Teacher.ToString()) || !User.IsInRole(Roles.TeacherWomen.ToString()))
+                                {
+                                    <div id="EpisodesOfStudentProgs" class="tabcontent ps-0 pe-0">
+                                        <table id="tableEpisodeOfStudentProgs" class="table table-hover mt-4  ">
+                                            <thead>
+                                                <tr class="fw-bolder">
+
+                                                    <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</td>
+                                                    <td class="text-center p-0">@ResourceApp_Ar.teachersPage_teacherName_teachersTable</td>
+                                                    <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_episodeTime_EpisodesTable</td>
+                                                    <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_epLocation_EpisodesTable</td>
+                                                    <td class="text-center p-0">@ResourceApp_Ar.EpisodesPage_StudentsCount_EpisodesTable</td>
+                                                    <td class="align-items-end p-0"></td>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var episode in EpisodesData)
+                                                {
+                                                    cNo++;
+
+                                                    <tr>
+
+                                                        <td class="text-center">
+                                                            <img src="~/images/ep.svg" alt="dis" height="45">
+                                                            <br>
+                                                            @episode.Name
+                                                        </td>
+                                                        <td class="text-center">@episode.ApplicationUser.FullName</td>
+                                                        <td class="text-center">@episode.Period</td>
+                                                        <td class="text-center">@episode.EpProgLocation.Name</td>
+                                                        <td class="text-center">@episode.StudentProgs.Count() </td>
+
+                                                        <td class="text-center">
+                                                            <a class="btn btn-outline-danger btn-sm rounded-3" asp-controller="Progs" asp-action="SelectedStudentProgsOfEpisodeProg" asp-route-Id="@episode.Id">
+                                                                <i class="bi bi-people-fill fs-4"></i><br>@ResourceApp_Ar.PageEpisodesOfStudents_Details_btn
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                }
+
+                            }
+
+
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+            </div>
+            <!-- /.row -->
+            <!-- reset episode daily -->
+
+            @*
+            <form asp-action="ResetEpisodeEveryDay" asp-controller="Episodes" method="post" id="resetEp_form"> </form>
+        *@
+
+            <!-- end reset episode daily -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+
+<!-- Modal Student -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header d-flex">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.StudentsModal_AddNewStudent_lbl</h5>
+                <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script>
+
+        $(document).ready(function(){
+            GetVersesBySurah_CTP();
+            GetVersesBySurah_PTC();
+        })
+        $("#surahId_ctp").change(function(){
+            GetVersesBySurah_CTP();
+
+        });
+         var GetVersesBySurah_CTP = function(){
+          $.ajax({
+                url: '@Url.Action("GetVersesBySurah", "Students")',
+                type : 'GET',
+                data:{
+                    surahId:$('#surahId_ctp').val(),
+                },
+                success: function(data){
+                    $('#verseId_ctp').find('option').remove()
+                    $(data).each(
+                        function(index , item){
+                            $("#verseId_ctp").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                        }
+                    )
+                }
+          })
+        }
+
+
+        $("#surahId_ptc").change(function(){
+            GetVersesBySurah_PTC();
+
+        });
+        var GetVersesBySurah_PTC = function(){
+          $.ajax({
+                url: '@Url.Action("GetVersesBySurah", "Students")',
+                type : 'GET',
+                data:{
+                    surahId:$('#surahId_ptc').val(),
+                },
+                success: function(data){
+                    $('#verseId_ptc').find('option').remove()
+                    $(data).each(
+                        function(index , item){
+                            $("#verseId_ptc").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                        }
+                    )
+                }
+          })
+        }
+
+
+    </script>
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/Students.js"></script>
+    <script src="~/js/filesize-validator.js"></script>
+
+    <script>
+        let lbTitleEditStudent = '@Html.Raw(ResourceApp_Ar.StudentsModal_EditStudent_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+
+        let lbAddNewStudent = '@Html.Raw(ResourceApp_Ar.StudentsModal_AddNewStudent_lbl)';
+        let lbAddNewStudentNat = '@Html.Raw(ResourceApp_Ar.StudentNationalitiesModal_AddNewStNationality_lbl)';
+        let lbAddNewStudentHealth = '@Html.Raw(ResourceApp_Ar.StudentHealthModal_AddNewStHealth_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+        let lbTitleMsgDelete = '@Html.Raw("Delete Student")';
+        let lbTitleMsgDeleteNat = '@Html.Raw("Delete Student Nationality")';
+        let lbTitleMsgDeleteHealth = '@Html.Raw("Delete Student Health Condition")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete StudentLog")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete Student ?")';
+        let lbTextMsgDeleteNat = '@Html.Raw("Are you sure to delete Student ?")';
+        let lbTextMsgDeleteHealth = '@Html.Raw("Are you sure to delete Student ?")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Student log ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+        let lbTitleDeletedOk = '@Html.Raw("Done")';
+        let lbMsgDeletedOkStudent = '@Html.Raw("Student is delete")';
+        let lbMsgDeletedOkStudentNat = '@Html.Raw("Student is delete")';
+        let lbMsgDeletedOkStudentHealth = '@Html.Raw("Student is delete")';
+        let lbMsgDeletedOkStudentLog = '@Html.Raw("StudentLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+
+
+
+}

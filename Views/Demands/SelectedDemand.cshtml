@@ -1,0 +1,237 @@
+﻿@model MasterViewModel
+@{
+    ViewData["Title"] = "Demands";
+    int dNo = 0;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card mx-3">
+                        <div class="card-header shadow text-center bg-danger-subtle rounded-top-3 text-dark py-1"> 
+                            <h3 class="fw-bold">بيانات الطلب</h3>
+                        </div>
+
+                        <div class="card-body " style="background: #FBF8EF;">
+                            <table class="mx-auto">
+                                <tr class="text-center p-2">
+                                    <td class="fw-bold fs-5 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">نوع الطلب</td>
+                                    <td class="fw-bold fs-5 py-1 px-3 text-warning border-top border-bottom" style="border-color:#273F4F" colspan="4">@Model.DemandVM.NewDemand.Request_Type</td>
+                                </tr>
+                                <tr class="p-3"><td></td><td></td></tr>
+                                <tr class="text-center p-2 mt-2">
+                                    <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">اسم الطالب</td>
+                                    <td class="fw-bold fs-6 py-1 px-3 text-primary border-top border-bottom" style="border-color:#273F4F" colspan="4">@Model.DemandVM.NewDemand.Student.Name</td>
+                                </tr>
+                                <tr class="p-2"><td></td><td></td></tr>
+                                <tr class="text-center p-2 mt-2">
+                                    <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">تاريخ الطلب</td>
+                                    <td class="fw-bold fs-6 py-1 px-3 text-primary border-top border-bottom" style="border-color:#273F4F" colspan="4">@Convert.ToDateTime(Model.DemandVM.NewDemand.Request_Date).Date.ToString("yyyy/MM/dd - ddd")</td>
+                                </tr>
+                                <tr class="p-2"><td></td><td></td></tr>
+                                <tr class="text-center p-2 mt-2">
+                                    <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F" >الحلقة الحالية</td>
+                                    <td class="fw-bold fs-6 py-1 px-3 text-primary border-top border-bottom" style="border-color:#273F4F" colspan="4">@Model.DemandVM.NewDemand.OldEpisode</td>
+                                </tr>
+                                <tr class="p-2"><td></td><td></td></tr>
+
+                                @if (Model.DemandVM.NewDemand.Request_Type.Contains("طلب نقل"))
+                                {
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">الحلقة الجديدة</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.NewEpisode</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                }
+                                @if (Model.DemandVM.NewDemand.Request_Type.Contains("طلب تعديل بيانات"))
+                                {
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">اسم الطالب</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.StName</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">هوية الطالب</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.StIdentityNum</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">جوال ولي الأمر</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.StParPhoneNum</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">عنوان الطالب</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.StAdress</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">ملاحظات</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Model.DemandVM.NewDemand.StNotes</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                }
+                                @if (Model.DemandVM.NewDemand.Request_Type.Contains("طلب اجازة"))
+                                {
+                                    <tr class="text-center p-2 mt-2">
+                                        <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">فترة الاجازة</td>
+                                        <td class="fw-bold fs-6 py-1 text-dark bg-primary-subtle px-3">مـن</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Convert.ToDateTime(Model.DemandVM.NewDemand.StartHoliday).Date.ToString("yyyy / MM / dd")</td>
+                                        <td class="fw-bold fs-6 py-1 text-dark bg-primary-subtle px-3">إلي</td>
+                                        <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F">@Convert.ToDateTime(Model.DemandVM.NewDemand.EndHoliday).Date.ToString("yyyy / MM / dd")</td>
+                                    </tr>
+                                    <tr class="p-2"><td></td><td></td></tr>
+                                }
+
+                                <tr class="text-center p-2 mt-2">
+                                    <td class="fw-bold fs-6 rounded-end-3 py-1 text-white px-3" style="background-color:#273F4F">اسباب الطلب</td>
+                                    <td class="fw-bold fs-6 py-1 px-3 text-danger border-top border-bottom" style="border-color:#273F4F" colspan="5">@Model.DemandVM.NewDemand.Request_Reason</td>
+                                </tr>
+                                <tr class="p-2"><td></td><td></td></tr>
+                            </table>
+                            <hr>
+                            <div class="row">
+                                <div class="col-sm-4 col-2"></div>
+                                <div class="text-center text-lg-start  col-sm-2 col-4">
+                                    @if (Model.DemandVM.NewDemand.Request_Type.Contains("طلب إضافة طالب جديد"))
+                                    {
+                                        <form asp-controller="Demands" asp-action="AcceptNewStudentRequest" asp-route-Id ="@Model.DemandVM.NewDemand.StudentId" method="post">
+
+                                            <button id="" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg text-white w-100"
+                                            style="background-color:#328E6E;">
+                                                موافقة
+                                                <br>
+                                                <i class="bi bi-check-circle-fill text-white text-center fw-bold fs-5"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <button id="" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg text-white w-100"
+                                                style="background-color:#328E6E;">
+                                            موافقة
+                                            <br>
+                                            <i class="bi bi-check-circle-fill text-white text-center fw-bold fs-5"></i>
+                                        </button>
+                                    }
+
+                                </div>
+                                <div class="text-center text-lg-start col-sm-2 col-4">
+                                    <button id="" type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg bg-danger text-white w-100">
+                                        رفـض
+                                        <br>
+                                        <i class="bi bi-x-circle text-white text-center fw-bold fs-5"></i>
+                                    </button>
+                                    
+                                </div>
+                                <div class="col-sm-4 col-2"></div>
+                            </div>
+                            
+                        </div>
+                        <div class="card-footer">
+                            <div class="accordion shadow mb-3 py-0" id="accordionExample4">
+                                <div class="accordion-item  bg-danger-subtle py-0">
+                                    <div class="accordion-header bg-dark-subtle d-flex py-0" id="header_four">
+                                        <div class="col-sm-12 col-12">
+                                            <button class=" collapsed  bg-dark-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_four" aria-expanded="false" aria-controls="collapse_four">
+                                                <span class="text-center fw-bolder fs-6">سجل الطلبات</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="collapse_four" class="accordion-collapse collapse" aria-labelledby="header_four" data-bs-parent="#accordionExample4">
+                                    <div class="accordion-body">
+                                        <div>
+
+                                            @if (!Model.DemandVM.SelectStudentDemands.Any())
+                                            {
+                                                <div class="alert  alert-warning mt-5">
+                                                    <h4 class="alert-heading">No Demands!</h4>
+                                                    <p class="mb-0">No Demands where added yet.</p>
+                                                </div>
+                                            }
+                                            else
+                                            {
+
+                                                @* <table border="0" cellspacing="5" cellpadding="5">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>بداية الفترة</td>
+                                                            <td><input type="text" readonly id="minDem" name="minDem"></td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>نهاية الفترة</td>
+                                                            <td><input type="text" readonly id="maxDem" name="maxDem"></td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+ *@
+                                                <table id="exampleDem" class="table-hover display nowrap w-100 p-2 table-bordered border-primary-subtle">
+                                                    <thead>
+                                                        <tr class="text-center p-2">
+                                                            <td class="text-center p-2 bg-primary-subtle fs-5 fw-bold"></td>
+                                                            <td class="text-center p-2 bg-primary-subtle fs-5 fw-bold">تاريخ الطلب</td>
+                                                            <td class="text-center p-2 bg-primary-subtle fs-5 fw-bold">نوع الطلب</td>
+                                                            <td class="text-center p-2 bg-primary-subtle fs-5 fw-bold">استلام الطلب</td>
+                                                            <td class="text-center p-2 bg-primary-subtle fs-5 fw-bold">حالة القبول</td>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Model.DemandVM.SelectStudentDemands)
+                                                        {
+                                                            <tr class="text-center">
+                                                                @{
+                                                                    dNo++;
+                                                                }
+
+                                                                @if (item.IsOpened == false && item.IsAccepted == false)
+                                                                {
+                                                                    <td class="text-center text-dark">@dNo</td>
+                                                                    <td class="text-center text-dark">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-dark">@item.Request_Type</td>
+                                                                    <td class="text-center text-dark">لم يتم الإستلام</td>
+                                                                    <td class="text-center text-dark">قيد الانتظار</td>
+                                                                }
+                                                                else if (item.IsOpened == true && item.IsAccepted == false)
+                                                                {
+                                                                    <td class="text-center text-danger">@dNo</td>
+                                                                    <td class="text-center text-danger">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-danger">@item.Request_Type</td>
+                                                                    <td class="text-center text-danger">تم الإستلام</td>
+                                                                    <td class="text-center text-danger">مرفوض</td>
+                                                                }
+                                                                else if (item.IsOpened == true && item.IsAccepted == true)
+                                                                {
+                                                                    <td class="text-center text-success">@dNo</td>
+                                                                    <td class="text-center text-success">@Convert.ToDateTime(item.Request_Date).Date.ToString("yyyy-MM-dd")</td>
+                                                                    <td class="text-center text-success">@item.Request_Type</td>
+                                                                    <td class="text-center text-success">تم الإستلام</td>
+                                                                    <td class="text-center text-success">مقبول</td>
+                                                                }
+
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                   
+                                                </table>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Content-->
+    </div>
+</div>
+
+@* <script src="~/js/SelectedCenter.js"></script>  *@

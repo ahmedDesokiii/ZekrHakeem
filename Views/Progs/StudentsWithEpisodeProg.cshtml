@@ -1,0 +1,424 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "EpisodeProgs";
+    var EpisodeProgsData = Model.EpProgVM.EpisodeProgsList;
+    var StudentsData = Model.EpProgVM.Students;
+    int cNo = 0;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsList;
+    StudentsData = Model.EpProgVM.Students;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsForMenList;
+    StudentsData = Model.EpProgVM.StudentsForMen;
+}
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsForWomenList;
+    StudentsData = Model.EpProgVM.StudentsForWomen;
+}
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithSupervisorList;
+    StudentsData = Model.EpProgVM.StudentsForMen;
+}
+else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithSupervisorList;
+    StudentsData = Model.EpProgVM.StudentsForWomen;
+}
+else if (User.IsInRole(Roles.Teacher.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithTeacherList;
+    StudentsData = Model.EpProgVM.StudentsForMen;
+}
+else if (User.IsInRole(Roles.TeacherWomen.ToString()))
+{
+    EpisodeProgsData = Model.EpProgVM.EpisodeProgsWithTeacherList;
+    StudentsData = Model.EpProgVM.StudentsForWomen;
+}
+
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6 d-flex">
+                    <h1 class="m-0 text-dark ms-5">@ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn</h1>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+
+    <section class="content" id="section02" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card" style="background: #FBF8EF;">
+                    <div class="card-header bg-danger-subtle p-0">
+
+                        <!--List Episode Progs-->
+
+                        <div class="form-group my-0">
+                            <div class="row">
+                                <div class="col-sm-2 col-2"></div>
+
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-center bg-secondary text-danger fs-5 fw-bold shadow" id="epProgForStudents" asp-items="@EpisodeProgsData" onchange="GetStudentsList()">
+                                        <option selected disabled value="">حدد الحلقة</option>
+                                    </select>
+
+                                </div>
+                                <div class="col-sm-2 col-2"></div>
+                            </div>
+                        </div>
+
+                        <!-- Button trigger modal -->
+                    </div>
+
+                    <!-- /.card-header -->
+
+                    <div class="card-body p-0" id="listStus" style="background: #FBF8EF;visibility:hidden">
+
+                        <!-- Tab links -->
+                        <div class="tab bg-dark-subtle" >
+                            <button class="tablinks fw-bold fs-6 bg-dark-subtle"  onclick="openCity(event, 'Students')" id="defaultOpen">@ResourceApp_Ar.StudentsPage_Student_tab</button>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'LogEpisodeProgs')" id="defaultTow">Log StudentsProgs</button>
+                            }
+                        </div>
+                        <!-- Tab content -->
+                        <br>
+                        <div class="d-flex">
+                            <button type="button"
+                            class="btn btn-outline-primary rounded-3"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                            onclick="Reset()"
+                            id="addEpisodeProgBtn">
+                                <i class="bi bi-person-fill-add fs-5 ps-2"></i> اضافة طالب غير مسجل
+                            </button>
+                            <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary text-white">
+                                    خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        @* @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                        {
+                                            <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#ListStNationalities">
+                                                <i class="bi bi-flag-fill fs-6 pe-2"></i> @ResourceApp_Ar.StudentsPage_StudentsNationalities_btn
+                                            </a>
+                                        } *@
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <hr>
+                        <!-- Students -->
+                        <!-- Tab content -->
+                       
+                        <form asp-action="AssignedStudentsToEpProg" asp-controller="Progs"  method="post" enctype="multipart/form-data">
+
+                            @if (!StudentsData.Any())
+                            {
+                                <div class="alert  alert-warning mt-5">
+                                    <h4 class="alert-heading">No Students!</h4>
+                                    <p class="mb-0">No Students where added yet.</p>
+                                </div>
+                            }
+                            else
+                            {
+
+                                <div>
+                                    <input type="text" hidden class="form-control text-center" asp-for="@Model.EpProgVM.SelectedEpProgId" id="selectedEpProgId" placeholder="" />
+                                </div>
+                                @if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                                {
+                                    <input type="text" hidden id="user" value="Teacher" />
+                                }
+                                else if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                {
+                                    <input type="text" hidden id="user" value="NoTeacher" />
+                                }
+                                <div id="Students" class="tabcontent">
+
+                                    <table id="tableStudentsWithEpProgs" class="table table-hover mt-4 mx-0 p-0">
+                                        <thead>
+                                            <tr class="fw-bolder">
+                                                <td class=""></td>
+                                                <td class="text-center">@ResourceApp_Ar.DemandsModel_StudentName_lbl</td>
+                                                <td class="text-center">@ResourceApp_Ar.EpisodesPage_episodeName_EpisodesTable</td>
+                                                <td class="text-center">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl <hr class="m-0 p-0">@ResourceApp_Ar.StudentsModel_StudentNationality_lbl</td>
+                                               @*  <td class="text-center p-0">@ResourceApp_Ar.StudentsModel_StudentNationality_lbl</td> *@
+                                                <td></td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var stu in StudentsData)
+                                            {
+                                                cNo++;
+                                                <tr class="">
+                                                    <td class="text-center ">@cNo</td>
+                                                    <td class="text-center fw-bold " id="stn_@cNo"> <img src="~/images/stu.svg" alt="loc" width="50" height="50"> <br> @stu.Name</td>
+                                                    <td class="text-center " id="stepp_@cNo"> <br>@stu.EpProgName</td>
+                                                    <td class="text-center " id="stp_@cNo"><br>@stu.ParentPhoneNumber <hr class="m-0 p-0">@stu.Nationality.Name</td>
+                                                    @* <td class="text-center " id="stt_@cNo">@stu.Nationality.Name</td> *@
+                                                    <td class="text-center ">
+                                                        <br>
+                                                        <input class="form-check-input border-1 border-primary fs-3 " type="checkbox" id="stProgCheck_@cNo" name="checkerProg" value="" onchange="CheckProgState(@StudentsData.Count())" />
+                                                        @*   @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                                        {
+                                                            <input type="checkbox" id="stProgCheck_@cNo" name="checkerProg" value="" onchange="CheckProgState(@StudentsData.Count())" />
+                                                        }
+                                                        else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                                                        {
+                                                            <input type="checkbox" id="stProgCheckTeach_@cNo" name="checkerProg" value="" onchange="CheckProgState(@StudentsData.Count())" />
+                                                        } *@
+
+                                                        <input type="text" hidden id="inProgState_@cNo" value="@stu.inProg" asp-for="@Model.EpProgVM.StudentsVM.Students[cNo-1].inProg" />
+                                                        <input type="text" hidden id="" value="@stu.Id" asp-for="@Model.EpProgVM.StudentsVM.Students[cNo-1].Id" />
+                                                        
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <button type="submit" id="assignStudents" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg text-white mt-2 w-100"
+                                        style="padding-left: 3rem; padding-right: 3rem;background-color:#328E6E">
+                                    <i class="bi bi-person-fill-down fs-2 ps-3"></i> @ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn
+                                </button>
+                            
+                        }
+                        </form>
+                    </div>
+                    <!-- /.card-body -->
+                    
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+
+        
+        <!-- end reset episode daily -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+<!-- Modal Student -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h4 class="modal-title" id="title">@ResourceApp_Ar.StudentsModal_AddNewStudent_lbl</h4>
+                <img id="stPhoto" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/stu.svg" />
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="SaveStudentProg" asp-controller="Progs" method="post" enctype="multipart/form-data">
+                    
+                    <div><input type="text" hidden class="input-group" asp-for="@Model.EpProgVM.NewStudentProg.Id" id="stId"></div>
+
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text bg-info-subtle ps-2">@ResourceApp_Ar.StudentsModel_StudentName_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.EpProgVM.NewStudentProg.Name" id="stName" style="border-left:solid 3px red" placeholder="@ResourceApp_Ar.StudentsModel_StudentName_txt" />
+                                <span asp-validation-for="@Model.EpProgVM.NewStudentProg.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_ParentPhoneNum_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control text-center" asp-for="@Model.EpProgVM.NewStudentProg.ParentPhoneNumber" style="border-left:solid 3px red" id="stParentPhonenum" placeholder="@ResourceApp_Ar.StudentsModel_ParentPhoneNum_txt" />
+                                <span asp-validation-for="@Model.EpProgVM.NewStudentProg.ParentPhoneNumber" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="stNationalityId">@ResourceApp_Ar.StudentsModel_StudentNationality_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" asp-items="@Model.EpProgVM.AvilableNationalities" id="stNationalityId" asp-for="@Model.EpProgVM.NewStudentProg.NationalityId" onchange="" style="border-left:solid 3px red">
+                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentNationality_select</option>
+                                </select>
+                                <span asp-validation-for="@Model.EpProgVM.NewStudentProg.NationalityId" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="stGender">@ResourceApp_Ar.StudentsModel_StudentGender_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-center" id="stGender" asp-for="@Model.EpProgVM.NewStudentProg.Gender" onchange="" style="border-left:solid 3px red">
+                                    @*  <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StudentGender_select</option> *@
+                                    <option value="male">ذكر </option>
+                                    <option value="female">انثي </option>
+                                </select>
+                                <span asp-validation-for="@Model.EpProgVM.NewStudentProg.Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2 ">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-2 bg-info-subtle">@ResourceApp_Ar.StudentsModel_StudentNotes_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8 ">
+                                <textarea class="form-control" asp-for="EpProgVM.NewStudentProg.Notes" id="stNotes" placeholder=" @ResourceApp_Ar.StudentsModel_StudentNotes_txt" rows="3" cols="50"></textarea>
+                                <span asp-validation-for="EpProgVM.NewStudentProg.Notes" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <input type="text" class="form-control text-center" hidden asp-for="EpProgVM.NewStudentProg.StEpisodeProgId" id="stEpProgId" placeholder="" />
+                    </div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="@ResourceApp_Ar.Modal_Save_btn" id="btnSave" onclick="getHijriDate()" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else if (Context.Session.GetString(Helper.MsgType) == Helper.Warning)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'warning'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+    <script src="~/js/StudentsWithEpisodeProgs.js"></script>
+    <script>
+
+        let lbTitleEditEpisodeProg = '@Html.Raw(ResourceApp_Ar.EpisodesModal_EditEpisode_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewEpisodeProg = '@Html.Raw(ResourceApp_Ar.EpisodesModal_AddNewEpisode_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("Delete EpisodeProg")';
+        let lbTitleMsgPause = '@Html.Raw("Pause EpisodeProg")';
+        let lbTitleMsgResume = '@Html.Raw("Resume EpisodeProg")';
+        let lbTitleMsgDeleteType = '@Html.Raw("Delete EpisodeProg Type")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete EpisodeProgLog")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete EpisodeProg Now ?")';
+        let lbTextMsgPause = '@Html.Raw("Are you sure to Pause EpisodeProg Now ?")';
+        let lbTextMsgResume = '@Html.Raw("Are you sure to Resume EpisodeProg Now ?")';
+        let lbTextMsgDeleteType = '@Html.Raw("Are you sure to delete EpisodeProg type ?")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete EpisodeProg log ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbconfirmButtonTextPause = '@Html.Raw("Yes,Pause it")';
+        let lbconfirmButtonTextResume = '@Html.Raw("Yes,Resume it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("Done !")';
+        let lbTitlePausedOk = '@Html.Raw("Done !")';
+        let lbTitleResumedOk = '@Html.Raw("Done !")';
+        let lbMsgDeletedOkEpisodeProg = '@Html.Raw("EpisodeProg is delete! ")';
+        let lbMsgPausedOkEpisodeProg = '@Html.Raw("EpisodeProg is pause! ")';
+        let lbMsgResumedOkEpisodeProg = '@Html.Raw("EpisodeProg is pause! ")';
+        let lbMsgDeletedOkEpisodeProgtype = '@Html.Raw("EpisodeProgType is delete")';
+        let lbMsgDeletedOkEpisodeProgLog = '@Html.Raw("EpisodeProgLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+    @* <script>
+        function GetLocationStateData(){
+            var epId = $("#ep_"+cNo).val();
+            var epLocState = $("#dist_"+cNo).val();
+
+            $.ajax({
+                url : @Url.Action("UpdateLocationState","EpisodeProgs"),
+                type : 'POST',
+                dataType : 'json',
+                data : {
+                    Id : epId,
+                    Description : epLocState
+                },
+                success : function(response){
+                    console.log("success");
+                }
+            })
+
+        }
+    </script> *@
+}
+

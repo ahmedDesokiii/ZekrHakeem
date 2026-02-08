@@ -1,0 +1,283 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Plans";
+    
+    var PlansData = Model.PlanVM.Plans;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.PlansPage_PlansMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header align-items-center justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Plans.Create).Result.Succeeded)
+                            {@* 
+                                <button type="button"
+                                        class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                    @ResourceApp_Ar.PlansPage_AddPlan_btn
+                                </button> *@
+
+                            }
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body   align-items-center justify-content-center" style="background: #FBF8EF;">
+                        <!-- Tab links -->
+                        <div class="tab" style="background: #CBF7DC;">
+
+                            <button class="tablinks fw-bold fs-6" onclick="openCity(event, 'Plans')" id="defaultOpen">@ResourceApp_Ar.PlansPage_Plan_tab</button>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks" onclick="openCity(event, 'LogPlans')" id="defaultTow">Log Plans</button>
+                            }
+                        </div>
+                        <!-- Tab content -->
+                        @if (!PlansData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Plans!</h4>
+                                <p class="mb-0">No Plans where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            @* <div id="Plans" class="tabcontent">
+                                <table id="tablePlan" class="table table-hover mt-4" dir="rtl">
+                                    <thead>
+                                        <tr class="fw-bolder">
+                                            <td></td>
+                                            <td class="text-center">@ResourceApp_Ar.PlansPage_PlanName_PlansTable</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var Plan in PlansData)
+                                        {
+                                            cNo++;
+                                            <tr class="border-1 align-content-center">
+                                                <td class="text-center">@cNo</td>
+                                                <td class="text-center">@Plan.Name</td>
+                                                <td class="text-center">
+                                                    <a class="btn btn-success" asp-action="SelectedPlan" asp-controller="Plans" asp-route-Id="@Plan.Id">
+                                                        @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                    </a>
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Plans.Edit).Result.Succeeded)
+                                                    {
+                                                        <input type="button" class="btn btn-info p-2 btn-sm" onclick="Edit('@Plan.Id', '@Plan.Name','@Plan.Description')" value="@ResourceApp_Ar.Page_EditBtn_Table" data-bs-toggle="modal" data-bs-target="#exampleModal" />
+                                                    }
+
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Plans.Delete).Result.Succeeded)
+                                                    {
+                                                        <input type="button" class="btn btn-danger p-2 btn-sm" onclick="Delete('@Plan.Id')" value="@ResourceApp_Ar.Page_DeleteBtn_Table" />
+                                                    }
+                                                   
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div> *@
+
+
+                            <div class="row align-content-center my-2 align-items-center justify-content-center  " style="background: #FBF8EF;">
+
+                                @foreach (var Plan in  PlansData)
+                                {
+                                        <div class="card col-sm-3 text-center me-2 my-2 px-0">
+                                            <a class="btn btn-transparent p-0" asp-action="SelectedPlan" asp-controller="Plans" asp-route-Id="@Plan.Id">
+                                            <img class="card-img-top bg-white" src="~/images/planlogo.png" style="height:100px;width:auto" alt="zhplan">
+                                                <div class="card-header bg-danger-subtle text-dark-emphasis fs-4 fw-bold">@Plan.Name</div>
+                                                <div class="card-body w-100  ">
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.PlansPage_SmallHeader_LevelsOfPlan_card</span>
+                                                        <input type="text" class="form-control" readonly value="@Plan.LevelsData.Count()" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.PlanPage_SmallHeader_StudentsPlan_card</span>
+                                                        <input type="text" class="form-control" readonly value="@Plan.Students.Count()" />
+                                                    </div>
+                                                </div>
+                                                <div class="card-footer">
+                                                </div>
+                                            </a>
+                                        </div>
+                                }
+                            </div>
+                            
+                           
+                        }
+
+                        
+
+
+                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Plans.DeleteLog).Result.Succeeded)
+                        {
+                            <div id="LogPlans" class="tabcontent">
+                                <table id="tableLogPlan" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr class="bg-primary fw-bolder text-white">
+                                            <td>#</td>
+                                            <td>Plan Name</td>
+                                            <td>ActionName</td>
+                                            <td>Date</td>
+                                            <td>UserName</td>
+                                            <td>Events</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.PlanVM.LogPlans)
+                                        {
+                                            <tr>
+                                                <td>#</td>
+                                                <td>@item.PlanData.Name</td>
+                                                <td>@item.Action</td>
+                                                <td>@item.Date</td>
+                                                <td>@userManager.FindByIdAsync(item.UserId.ToString()).Result?.FullName</td>
+
+                                                <td>
+
+                                                    <input type="button" class="btn btn-danger p-2 btn-sm" onclick="DeleteLog('@item.Id')" value="Delete" />
+
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.PlansModal_AddNewPlan_lbl</h5>
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Save" asp-controller="Plans" method="post">
+                    <input type="text" hidden class="form-control" asp-for="PlanVM.NewPlan.Id" id="PlanId" />
+                    <input type="text" hidden class="form-control" asp-for="PlanVM.NewPlan.Num" id="PlanNum" value="@Model.PlanVM.Plans.Count()" />
+
+                    <div class="input-group mb-2">
+                        <span class="input-group-text">@ResourceApp_Ar.PlansModal_PlanName_lbl</span>
+                        <input type="text" class="form-control" asp-for="PlanVM.NewPlan.Name" style="border-left:solid 3px red" id="PlanName" placeholder="@ResourceApp_Ar.PlansModal_PlanName_txt" />
+                        <span asp-validation-for="PlanVM.NewPlan.Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="input-group mb-2">
+                        <span class="input-group-text pe-3">@ResourceApp_Ar.PlansModal_PlanDescription_lbl</span>
+                        <textarea class="form-control" asp-for="PlanVM.NewPlan.Description" id="description" placeholder=" @ResourceApp_Ar.PlansModal_PlanDescription_txt" rows="4" cols="50"></textarea>
+                        <span asp-validation-for="PlanVM.NewPlan.Description" class="text-danger"></span>
+                    </div>
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/Plans.js"></script>
+    <script>
+
+        let lbTitleEditPlan = '@Html.Raw(ResourceApp_Ar.PlansModal_EditPlan_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewPlan = '@Html.Raw(@ResourceApp_Ar.PlansModal_AddNewPlan_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("Delete Plan")';
+        let lbTitleMsgPause = '@Html.Raw("Pause Plan")';
+        let lbTitleMsgResume = '@Html.Raw("Resume Plan")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete PlanLog")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete Plan ?")';
+        let lbTextMsgPause = '@Html.Raw("Are you sure to Pause Plan Now ?")';
+        let lbTextMsgResume = '@Html.Raw("Are you sure to Resume Plan Now ?")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Plan log ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbconfirmButtonTextPause = '@Html.Raw("Yes,Pause it")';
+        let lbconfirmButtonTextResume = '@Html.Raw("Yes,Resume it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("Done")';
+        let lbTitlePausedOk = '@Html.Raw("Done")';
+        let lbTitleResumedOk = '@Html.Raw("Done")';
+        let lbMsgDeletedOkPlan = '@Html.Raw("Plan is delete")';
+        let lbMsgPausedOkPlan = '@Html.Raw("Plan is pause")';
+        let lbMsgResumedOkPlan = '@Html.Raw("Plan is resume")';
+        let lbMsgDeletedOkPlanLog = '@Html.Raw("PlanLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+   }
+

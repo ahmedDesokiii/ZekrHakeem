@@ -1,0 +1,143 @@
+﻿@using ExpressTimezone
+@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Progs";
+    var i = 0;
+}
+<div class="wrapper" dir="rtl">
+    <!--Content-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <div class="row d-flex justify-content-center text-center align-items-stretch">
+                                <div class="col-sm-2 col-4 mb-2">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>اسم البرنامج</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.ProgVM.NewProg.Name</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>المشرف المسئول</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.ProgVM.NewProg.ApplicationUser.FullName</h6></div>
+                                    </div>
+                                </div>
+                                @*  <div class="col-sm-2 col-4">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedProgPage_MainHeader_LocationsProgMen_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationsOfProg.Locations.Count()</h6></div>
+                                    </div>
+                                </div> *@
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>عدد الحلقات النوعية</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.ProgVM.EpisodeProgsOfProg.Count()</h6></div>
+                                    </div>
+                                </div>
+                                @*  <div class="col-sm-2 col-4 ">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedProgPage_MainHeader_StudentsProg_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.StudentsOfProg.Students.Count()</h6></div>
+                                    </div>
+                                </div> *@
+
+                            </div>
+                        </div>
+                        <div class="card-body" style="background: #FBF8EF;">
+                            
+                            <div class="row d-flex justify-content-center text-center ">
+                                @foreach (var episode in Model.ProgVM.EpisodeProgsOfProg)
+                                {
+                                    <div class="col-sm-3 mb-2">
+
+                                        <div class="card" onmouseover="Details()">
+                                            <a class="btn btn-transparent p-0" asp-action="SelectedLocationProg" asp-controller="Progs" asp-route-Id="@episode.Id">
+                                                <img class="card-img-top bg-transparent" src="~/images/epproglogo.png" style="height:100px;width:auto" alt="zhcenter">
+                                                <div class="card-header bg-danger-subtle text-dark-emphasis fs-4 fw-bold">@episode.Name</div>
+                                                <div class="card-body w-100  ">
+                                                    <div>
+                                                        <input type="text" class="form-control  mb-2" hidden id="txtLatitudeLoc" readonly asp-for="@episode.EpProgLocation.Latitude" />
+                                                        <input type="text" class="form-control  mb-2" hidden id="txtLongitudeLoc" readonly asp-for="@episode.EpProgLocation.Longitude" />
+                                                    </div>
+                                                    <div id="mapLoc" hidden style="height: 200px;border: 1px solid #ddd;"></div>
+                                                   
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.EpisodesProgsModal_ProgName_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.EpProg.Name" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.EpisodesModal_EpisodeAttendType_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.AttendType" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_EpisodeTime_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.Period" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text ">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_EpLocation_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.EpProgLocation.Name" />
+                                                    </div>
+                                                    @{
+                                                        string dir = "";
+                                                        if (episode.SaveDir == "ctp")
+                                                            dir = "من البقرة للناس";
+                                                        else if (episode.SaveDir == "ptc")
+                                                            dir = "من الناس للبقرة";
+                                                    }
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.SelectedProgEp_SmallBody_SaveDir_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@dir" />
+                                                    </div>
+                                                    @*
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.SelectedProgEp_SmallBody_StartSurah_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.StartSurah" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                        <span class="input-group-text">@ResourceApp_Ar.SelectedProgEp_SmallBody_EndSurah_lbl</span>
+                                                        <input type="text" class="form-control bg-white" readonly value="@episode.EndSurah" />
+                                                    </div>
+                                                    *@
+                                                </div>
+                                                <div class="card-footer bg-white">
+                                                    <div class="row d-flex justify-content-center text-center">
+                                                        <div class="col-sm-12 col-12">
+                                                            <div class="card">
+                                                                <div class="card-header py-1 bg-success-subtle fw-bold fs-5">@ResourceApp_Ar.SelectedLocationCenterPage_SmallHeader_TeacherEpisodeMen_card</div>
+                                                                <div class="card-body py-1">
+                                                                    <div class="input-group mb-1">
+                                                                        <span class="input-group-text ps-2">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_TeacherNameMen_card</span>
+                                                                        <input type="text" class="form-control" readonly value="@episode?.ApplicationUser.FullName" />
+                                                                    </div>
+                                                                    <div class="input-group mb-1">
+                                                                        <span class="input-group-text ps-3">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_PhoneNumber_card</span>
+                                                                        <input type="text" class="form-control" readonly value="@episode?.ApplicationUser.PhoneNumber" />
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    i++;
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Content-->
+    </div>
+</div>
+
+<script src="~/js/SelectedProg.js"></script> 

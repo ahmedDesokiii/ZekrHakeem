@@ -1,0 +1,508 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Progs";
+    var EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgs;
+    //int cNo = 0;
+    var i = 0;
+    var j = 0;
+    var ProgsData = Model.ProgVM.Progs;
+    var SupervisorsProgData = Model.ProgVM.SupervisorsMenProg;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    ProgsData = Model.ProgVM.Progs;
+    //SupervisorsProgData = Model.SupervisorsMenProg;
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    ProgsData = Model.ProgVM.ProgsForMen;
+    //SupervisorsProgData = Model.SupervisorsMenProg;
+}
+
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    ProgsData = Model.ProgVM.ProgsForWomen;
+    //SupervisorsProgData = Model.SupervisorsMenProg;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgs;
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsForMen;
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsForWomen;
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsWithSupervisor;
+else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsWithSupervisor;
+else if (User.IsInRole(Roles.Teacher.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsWithTeacher;
+else if (User.IsInRole(Roles.TeacherWomen.ToString()))
+    EpisodeProgsData = Model.ProgVM.EpVM.EpisodeProgsWithTeacher;
+
+
+
+<div class="wrapper " dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.ProgsPage_ProgsMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card ">
+                    <div class="card-header d-flex align-items-center justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Progs.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                class="btn btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="RestProg()">
+                                    <i class="bi bi-plus-circle-dotted fs-5 ps-2"></i>  @ResourceApp_Ar.ProgsPage_AddProg_btn
+                                </button>
+                            }
+                            @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                            {
+                                <div class="btn-group  position-absolute start-0 ms-4 " dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                    <button type="button" class="btn btn-primary">
+                                        خدمات اخري <i class="bi bi-database-check fs-5 ps-2"></i>
+                                    </button>
+                                    <div class="btn-group" role="group">
+                                        <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                        <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                            @*  <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#AddEpProg" onclick="Reset()">
+                                                <i class="bi bi-plus-circle-dotted fs-5 pe-2"></i>  @ResourceApp_Ar.ProgEpisodesModal_AddNewProgEpisode_lbl
+                                            </a> *@
+                                            <a class="dropdown-item text-dark fw-bold" asp-action="EpisodeProgs" asp-controller="Progs">
+                                                <i class="bi bi-list-stars fs-5 pe-2"></i> @ResourceApp_Ar.ProgEpisodesPage_ProgEpisode_tab
+                                            </a>
+                                            <a class="dropdown-item text-dark fw-bold" asp-action="StudentsWithEpisodeProg" asp-controller="Progs">
+                                                <i class="bi bi-person-rolodex fs-5 pe-2"></i> @ResourceApp_Ar.ProgEpisodesPage_AssigningStudents_btn
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div id="Progs" class="tabcontent ">
+                        <div class="card-body p-0" style="background: #FBF8EF;">
+                            <!-- Tab links -->
+                            <div class="tab bg-danger-subtle" >
+
+                                <button class="tablinks fw-bold fs-6 bg-danger-subtle"  onclick="openCity(event, 'Progs')" id="defaultOpen">@ResourceApp_Ar.ProgsPage_Prog_tab</button>
+                                @if (User.IsInRole(Roles.Admin.ToString()))
+                                {
+                                    <button class="tablinks fw-bold fs-6 bg-danger-subtle" onclick="openCity(event, 'LogProgs')" id="defaultTow">Log Progs</button>
+                                }
+
+                            </div>
+                            <!-- Tab content -->
+                            @if (!ProgsData.Any())
+                            {
+                                <div class="alert  alert-warning mt-5">
+                                    <h4 class="alert-heading">No Programs!</h4>
+                                    <p class="mb-0">No programs where added yet.</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="align-content-center mt-2 align-items-center justify-content-center row " style="background: #FBF8EF;">
+
+                                    @foreach (var prg in ProgsData)
+                                    {
+                                        <div class="col-sm-3 col-6 mb-3">
+                                            <div class="card  text-center">
+
+                                                <a class="btn btn-transparent p-0" asp-action="SelectedProg" asp-controller="Progs" asp-route-Id="@prg.Id">
+                                                    <img class="card-img-top bg-white" src="~/images/proglogo.png" style="height:100px;width:auto" alt="zhcenter">
+                                                    <div class="card-header bg-primary fs-4 text-white fw-bold">@prg.Name</div>
+                                                    <div class="card-body w-100  ">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text bg-primary-subtle">عدد الحلقات </span>
+                                                            <input type="text" class="form-control" readonly value="@prg.EpisodeProgs.Count()" />
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="card-footer bg-white d-flex ">
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Progs.Edit).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-outline-warning ms-2 btn-sm rounded-3" onclick="EditProg('@prg.Id', '@prg.Name','@prg.Type','@prg.StartProg','@prg.EndProg','@prg.PlanId','@prg.Kind','@prg.Description'.'@prg.ApplicationUserId')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                                <i class="bi bi-pencil-square fs-6 ps-2"></i>  @ResourceApp_Ar.Page_EditBtn_Table
+                                                            </a>
+                                                        }
+
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Progs.Pause).Result.Succeeded)
+                                                        {
+                                                            if (prg.PauseState > 0)
+                                                            {
+                                                                <a id="pause" class="btn btn-outline-dark btn-sm ms-2 rounded-3" onclick="PauseProg('@prg.Id')">
+                                                                    <i class="bi bi-pause-circle fs-6 ps-2"></i>  @ResourceApp_Ar.Page_PauseBtn_Table
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a id="pause" class="btn btn-outline-success btn-sm ms-2 rounded-3" onclick="ResumeProg('@prg.Id')">
+                                                                    <i class="bi bi-play-circle fs-6 ps-2"></i> @ResourceApp_Ar.Page_ResumeBtn_Table
+                                                                </a>
+                                                            }
+                                                        }
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Progs.Delete).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-danger btn-sm rounded-3" onclick="DeleteProg('@prg.Id')">
+                                                                <i class="bi bi-trash fs-6 ps-2"></i> @ResourceApp_Ar.Page_DeleteBtn_Table
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+
+                            }
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Progs.DeleteLog).Result.Succeeded)
+                            {
+                                <div id="LogProgs" class="tabcontent">
+                                    <table id="tableLogProg" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr class="bg-primary fw-bolder text-white">
+                                                <td>#</td>
+                                                <td>Prog Name</td>
+                                                <td>ActionName</td>
+                                                <td>Date</td>
+                                                <td>UserName</td>
+                                                <td>Events</td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.ProgVM.LogProgs)
+                                            {
+                                                <tr>
+                                                    <td>#</td>
+                                                    <td>@item.Prog.Name</td>
+                                                    <td>@item.Action</td>
+                                                    <td>@item.Date</td>
+                                                    <td>@userManager.FindByIdAsync(item.UserId.ToString()).Result?.FullName</td>
+
+                                                    <td>
+
+                                                        <input type="button" class="btn btn-danger p-2 btn-sm" onclick="DeleteLogProg('@item.Id')" value="Delete" />
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.ProgsModal_AddNewProg_lbl</h5>
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/proglogo.png" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body">
+                <form asp-action="Save" asp-controller="Progs" method="post">
+                    <input type="text" hidden class="form-control" asp-for="ProgVM.NewProg.Id" id="ProgId" />
+
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-4 bg-info-subtle">@ResourceApp_Ar.ProgsModal_ProgName_lbl</span>
+                            </div>
+
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control" asp-for="ProgVM.NewProg.Name" style="border-left:solid 3px red" id="ProgName" placeholder="@ResourceApp_Ar.ProgsModal_ProgName_txt" />
+                                <span asp-validation-for="ProgVM.NewProg.Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (User.IsInRole(Roles.Supervisor.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="ProgVM.NewProg.Type" value="men" id="ProgType" placeholder="Type ..." />
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-sm-4 col-4">
+                                    <span class="input-group-text ps-4 bg-info-subtle" id="lblsuperM" for="superM"> @ResourceApp_Ar.CentersModal_CentersMen_lbl</span>
+                                </div>
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-center" id="superM" asp-for="ProgVM.NewProg.ApplicationUserId" asp-items="@Model.ProgVM.SupervisorsMenProgList" style="border-left:solid 3px red">
+                                        <option selected disabled>@ResourceApp_Ar.CentersModal_CentersMenSupervisor_option </option>
+                                        
+                                    </select>
+                                    <span asp-validation-for="ProgVM.NewProg.ApplicationUserId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="ProgVM.NewProg.Type" value="women" id="ProgType" placeholder="Type ..." />
+                        </div>
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-sm-4 col-4">
+                                    <span class="input-group-text ps-4 bg-info-subtle" id="lblsuperW" for="superW"> @ResourceApp_Ar.CentersModal_CentersWomen_lbl</span>
+                                </div>
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-center" id="superW" asp-for="ProgVM.NewProg.ApplicationUserId" style="border-left:solid 3px red">
+                                        <option selected disabled>@ResourceApp_Ar.CentersModal_CentersWomenSupervisor_option </option>
+                                        @foreach (var supervisor in Model.ProgVM.SupervisorsWomenProg)
+                                        {
+                                            <option value="@supervisor.Id">@supervisor.FullName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProgVM.NewProg.ApplicationUserId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    else if (User.IsInRole(Roles.Admin.ToString()))
+                    {
+                        <div class="form-group mb-2">
+                            <div class="row">
+                                <div class="col-sm-4 col-4">
+                                    <label class="input-group-text ps-2 pe-3 bg-info-subtle " for="ProgType">@ResourceApp_Ar.ProgsModal_ProgType_lbl </label>
+                                </div>
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-secondary" id="ProgType" onchange="SelectType()" asp-for="ProgVM.NewProg.Type">
+                                        <option selected disabled>حدد نوع البرنامج</option>
+                                        <option id="formen" value="men"> رجال </option>
+                                        <option id="forwomen" value="women"> نساء </option>
+                                    </select>
+                                    @* <input type="text" class="form-control mb-2" hidden asp-for="NewProg.Type" value="men" id="ProgType" /> *@
+                                    <span asp-validation-for="ProgVM.NewProg.Type" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    
+                        <div class="form-group mb-2" hidden>
+                            <div class="row">
+                                <div class="col-sm-4 col-4">
+                                    <span class="input-group-text ps-4 bg-info-subtle" id="lblsuperM" for="superM"> @ResourceApp_Ar.CentersModal_CentersMen_lbl</span>
+                                </div>
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-center" id="superM" asp-for="ProgVM.NewProg.ApplicationUserId" style="border-left:solid 3px red">
+                                        <option selected disabled>@ResourceApp_Ar.CentersModal_CentersMenSupervisor_option </option>
+                                        @foreach (var supervisor in Model.ProgVM.SupervisorsMenProg)
+                                        {
+                                            <option value="@supervisor.Id">@supervisor.FullName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProgVM.NewProg.ApplicationUserId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                    
+                        <div class="form-group mb-2" hidden>
+                            <div class="row">
+                                <div class="col-sm-4 col-4">
+                                    <span class="input-group-text ps-4 bg-info-subtle" id="lblsuperW" for="superW"> @ResourceApp_Ar.CentersModal_CentersWomen_lbl</span>
+                                </div>
+                                <div class="col-sm-8 col-8">
+                                    <select class="form-select text-center" id="superW" asp-for="ProgVM.NewProg.ApplicationUserId" style="border-left:solid 3px red">
+                                        <option selected disabled>@ResourceApp_Ar.CentersModal_CentersWomenSupervisor_option </option>
+                                        @foreach (var supervisor in Model.ProgVM.SupervisorsWomenProg)
+                                        {
+                                            <option value="@supervisor.Id">@supervisor.FullName</option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ProgVM.NewProg.ApplicationUserId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-4 bg-info-subtle">@ResourceApp_Ar.ProgsModal_ProgStart_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control" asp-for="ProgVM.NewProg.StartProg" style="border-left:solid 3px red" id="ProgStart" onfocus="(this.type='date')" onblur="(this.type='text')" value="@DateTime.Now.Date.ToString("yyyy / MM / dd ")" placeholder="@DateTime.Now.Date.ToString("dddd | yyyy / MM / dd ")" />
+                                <span asp-validation-for="ProgVM.NewProg.StartProg" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text ps-4 bg-info-subtle">@ResourceApp_Ar.ProgsModal_ProgEnd_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <input type="text" class="form-control" asp-for="ProgVM.NewProg.EndProg" style="border-left:solid 3px red" id="ProgEnd" onfocus="(this.type='date')" onblur="(this.type='text')" value="@DateTime.Now.Date.ToString("yyyy / MM / dd ")" placeholder="@DateTime.Now.Date.ToString("dddd | yyyy / MM / dd ")" />
+                                <span asp-validation-for="ProgVM.NewProg.EndProg" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text bg-info-subtle" for="ProgPlanId">@ResourceApp_Ar.StudentsModel_StPlan_lbl</label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-secondary text-center" id="ProgPlanId" value="" onchange="" style="border-left:solid 3px red" asp-for="ProgVM.NewProg.PlanId">
+                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StPlan_select</option>
+                                    @foreach (var plan in Model.ProgVM.PlansData)
+                                    {
+                                        <option value="@plan.Id">@plan.Name</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <label class="input-group-text pe-3 bg-info-subtle" for="ProgKind">@ResourceApp_Ar.ProgsModal_ProgKind_lbl </label>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <select class="form-select text-secondary text-center" id="ProgKind" onchange="" asp-for="ProgVM.NewProg.Kind">
+                                    <option selected disabled> حدد نوع الخطة</option>
+                                    <option id="" value="saveOnly"> حفـــظ فقط </option>
+                                    <option id="" value="revOnly"> مراجعة فقط </option>
+                                    <option id="" value="recitOnly"> تــلاوة فقط </option>
+                                </select>
+
+                                @* <input type="text" class="form-control mb-2" hidden asp-for="NewProg.Type" value="men" id="ProgType" /> *@
+                                <span asp-validation-for="ProgVM.NewProg.Kind" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group mb-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-4">
+                                <span class="input-group-text pe-3 bg-info-subtle">@ResourceApp_Ar.ProgsModal_ProgDescription_lbl</span>
+                            </div>
+                            <div class="col-sm-8 col-8">
+                                <textarea class="form-control" asp-for="ProgVM.NewProg.Description" id="ProgDescription" placeholder=" @ResourceApp_Ar.ProgsModal_ProgDescription_txt" rows="4" cols="50"></textarea>
+                                <span asp-validation-for="ProgVM.NewProg.Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/EpisodeProgs.js"></script>
+
+    <script src="~/js/Progs.js"></script>
+    <script>
+
+        let lbTitleEditProg = '@Html.Raw(ResourceApp_Ar.ProgsModal_EditProg_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewProg = '@Html.Raw(@ResourceApp_Ar.ProgsModal_AddNewProg_lbl)';
+        
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("Delete Prog")';
+        let lbTitleMsgPause = '@Html.Raw("Pause Prog")';
+        let lbTitleMsgResume = '@Html.Raw("Resume Prog")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete ProgLog")';
+        let lbTextMsgDelete = '@Html.Raw("Are you sure to delete Prog ?")';
+        let lbTextMsgPause = '@Html.Raw("Are you sure to Pause Prog Now ?")';
+        let lbTextMsgResume = '@Html.Raw("Are you sure to Resume Prog Now ?")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Prog log ?")';
+        let lbconfirmButtonText = '@Html.Raw("Yes,Delete it")';
+        let lbconfirmButtonTextPause = '@Html.Raw("Yes,Pause it")';
+        let lbconfirmButtonTextResume = '@Html.Raw("Yes,Resume it")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("Done")';
+        let lbTitlePausedOk = '@Html.Raw("Done")';
+        let lbTitleResumedOk = '@Html.Raw("Done")';
+        let lbMsgDeletedOkProg = '@Html.Raw("Prog is delete")';
+        let lbMsgPausedOkProg = '@Html.Raw("Prog is pause")';
+        let lbMsgResumedOkProg = '@Html.Raw("Prog is resume")';
+        let lbMsgDeletedOkProgLog = '@Html.Raw("ProgLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+   }
+

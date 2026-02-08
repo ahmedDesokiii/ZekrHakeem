@@ -1,0 +1,3238 @@
+﻿@model MasterViewModel
+@{
+    ViewData["Title"] = "Episodes";
+    int ev = 0;
+    int i = 0;
+}
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+
+                <div class="col-sm-6">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+
+        @if (Model.EpProgVM.NewEpisodeProg.Period == null)
+        { }
+        else if (Model.EpProgVM.NewEpisodeProg.Period.Contains(PrayerTimesPeriods.الفجر.ToString()))
+        {
+            <input Id="epEndTime" hidden type="text" value="@Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI?.EndFajrTime)" />
+        }
+        else if (Model.EpProgVM.NewEpisodeProg.Period.Contains(PrayerTimesPeriods.الظهر.ToString()))
+        {
+            <input Id="epEndTime" hidden type="text" value="@Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI?.EndZohrTime)" />
+        }
+        else if (Model.EpProgVM.NewEpisodeProg.Period.Contains(PrayerTimesPeriods.العصر.ToString()))
+        {
+            <input Id="epEndTime" hidden type="text" value="@Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI?.EndAsrTime)" />
+        }
+        else if (Model.EpProgVM.NewEpisodeProg.Period.Contains(PrayerTimesPeriods.المغرب.ToString()))
+        {
+            <input Id="epEndTime" hidden type="text" value="@Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI?.EndMghrbTime)" />
+        }
+        else if (Model.EpProgVM.NewEpisodeProg.Period.Contains(PrayerTimesPeriods.العشاء.ToString()))
+        {
+            <input Id="epEndTime" hidden type="text" value="@Convert.ToDateTime(Model.EpProgVM.PrayerTimesAPI?.EndIshaTime)" />
+        }
+
+        <div class="d-flex">
+            @if (!User.IsInRole(Roles.Teacher.ToString()) || !User.IsInRole(Roles.TeacherWomen.ToString()))
+            {
+                @if (Model?.EpProgVM.NewEpisodeProg?.Status == true)
+                {
+                    <div class="mb-2 col-3 align-items-center" dir="ltr">
+                        <button type="button"
+                                class="btn text-success bg-transparent  border-0" disabled data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            ... حلقة جارية الآن
+                        </button>
+                    </div>
+                }
+                else if (Model?.EpProgVM.NewEpisodeProg?.Status == false)
+                {
+                    <div class="mb-2 col-3 align-items-center" dir="ltr">
+                        <button type="button"
+                                class="btn text-danger bg-transparent  border-0" disabled data-bs-toggle="modal" data-bs-target="#exampleModal">
+                            ... غير جارية الآن
+                        </button>
+                    </div>
+                }
+            }
+            else
+            {
+
+            }
+
+        </div>
+        <div class="row mb-2">
+            <div class="col-sm-12">
+                <div class="card">
+                    <div class="card-header py-2">
+                        <div class="row ">
+                            <div class="col-sm-12 ">
+                                <div class=" shadow" id="accordionExamplen">
+                                    <div class="accordion-item  bg-light ">
+                                        <div class="accordion-header bg-danger-subtle d-flex rounded-2 py-1" id="header_n">
+                                            <div class="col-sm-10 col-8 ">
+                                                <button type="button" class="accordion-toggle bg-danger-subtle w-100 border-0" data-parent="#accordion" data-bs-toggle="collapse" data-bs-target="#collapse_n" aria-controls="collapse_n">
+                                                    <span class="text-center fw-bolder fs-4 text-dark"> @Model.EpProgVM.NewEpisodeProg.Name </span>
+                                                    <i class="mt-1 mx-2 text-dark  bi bi-box-arrow-in-down fs-5"></i>
+                                                    <span class="fs-6 fw-bold text-dark ms-2"> اجمالي الطلاب | <span class="text-warning fw-bold fs-4 me-2">@Model.EpProgVM.NewEpisodeProg.StudentProgs.Count()</span></span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="collapse_n" class="collapse mt-2" aria-labelledby="header_n" data-bs-parent="#accordionExamplen">
+                                        <div class="accordion-body">
+                                            <div class="row d-flex justify-content-center text-center">
+                                                <div class="col-sm-2 col-4 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0   bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedEpisode_TeacherName_lbl</h6></div>
+                                                        <div class="card-body py-0 "><h6 class="card-title">@Model.EpProgVM.NewEpisodeProg.ApplicationUser.FullName</h6></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-4 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.LocationsPage_locationName_LocationsTable</h6></div>
+                                                        <div class="card-body py-0"><h6 class="card-title">@Model.EpProgVM.NewEpisodeProg.EpProgLocation.Name</h6></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-2 col-3 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedEpisodes_Students_lbl</h6></div>
+                                                        <div class="card-body py-0"><h6 class="card-title">@Model.EpProgVM.NewEpisodeProg.StudentProgs.Count() </h6></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-3 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.ProgsModal_ProgName_lbl</h6></div>
+                                                        <div class="card-body py-0"><h6 class="card-title">@Model.EpProgVM.NewEpisodeProg.EpProg.Name</h6></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-3 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedEpisode_EpisodeAttendType_lbl</h6></div>
+                                                        <div class="card-body py-0">
+                                                            <h6 class="card-title py-0">@Model.EpProgVM.NewEpisodeProg.AttendType</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-3 mb-2">
+                                                    <div class="card">
+                                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.EpisodesModal_EpisodePeriod_lbl</h6></div>
+                                                        <div class="card-body py-0">
+                                                            <h6 class="card-title py-0">@Model.EpProgVM.NewEpisodeProg.Period</h6>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="card-body py-3  ">
+                        <div class="row d-flex justify-content-center text-center">
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="card mt-3">
+                                        <ul class="nav nav-tabs bg-light mb-2" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link active fw-bold text-secondary" data-bs-toggle="tab" href="#epstudents" aria-selected="true" role="tab">@ResourceApp_Ar.SelectedEpisodePage_ListStudent_tab</a>
+                                            </li>
+                                        </ul>
+                                        @if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
+                                        {
+                                            <div id="myTabContent" class="tab-content">
+                                                <div class="tab-pane fade active show" id="epstudents" role="tabpanel">
+                                                    <!-- /.card-header -->
+                                                    <div class="card-body " style="background: #FBF8EF;">
+                                                        <form asp-route-id="@Model.EpProgVM.NewEpisodeProg.Id" method="post" id="form_data">
+                                                            @if (Model.EpProgVM.TeacherAttendance == null)
+                                                            {
+                                                                <div class="d-flex align-items-center justify-content-center text-center">
+                                                                    <div class="col-sm-4 col-4 ">
+                                                                        <div class="card">
+                                                                            <div class="card-header bg-success-subtle fw-bold">@ResourceApp_Ar.SelectedEpisode_TeacherAttendIn_card</div>
+                                                                            <div class="card-body py-1">
+                                                                                <h6 class="card-title  text-success-emphasis"></h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-sm-3 col-3 mb-2 mx-2">
+                                                                        <button type="submit" asp-action="UpdateLesson" asp-controller="Progs" asp-route-Id="@Model.EpProgVM.NewEpisodeProg.Id" disabled id="finish" class="btn w-100 px-0 btn-danger fs-5"
+                                                                                data-mdb-ripple-init data-mdb-ripple-unbound="true">
+
+                                                                            <i class="bi bi-fingerprint fs-2"></i>
+                                                                            <br>
+                                                                            @ResourceApp_Ar.SelectedEpisodePage_FinishEpisode_btn
+                                                                            <span class="position-absolute top-0 start-100 translate-middle badge fs-4 rounded bg-warning">
+                                                                                <span id="stcount" value="0"></span> <span class="visually-hidden">activeStudents</span>
+                                                                            </span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="col-sm-4 col-4 ">
+                                                                        <div class="card">
+                                                                            <div class="card-header  bg-dark-subtle fw-bold">@ResourceApp_Ar.SelectedEpisode_TeacherAttendOut_card</div>
+                                                                            <div class="card-body py-1 ">
+                                                                                <h6 class="card-title text-dark"></h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="d-flex align-content-center d-flex align-items-center justify-content-center text-center">
+                                                                    <div class="col-sm-3 col-4">
+                                                                        <div class="card">
+                                                                            <div class="card-header bg-success-subtle fw-bold">@ResourceApp_Ar.SelectedEpisode_TeacherAttendIn_card</div>
+                                                                            <div class="card-body py-1">
+                                                                                <h6 class="card-title text-dark-emphasis">
+                                                                                    @Model.EpProgVM.TeacherAttendance.Att_In.ToString("hh:mm")
+                                                                                    <br>
+                                                                                    @Model.EpProgVM.TeacherAttendance.Att_In.ToString("dd/MM/yyyy")
+                                                                                </h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+
+                                                                    <div class="col-sm-3 col-3 fs-5 me-2">
+                                                                        <button type="submit" asp-action="UpdateLesson" asp-controller="Progs" asp-route-Id="@Model.EpProgVM.NewEpisodeProg.Id" disabled id="finish" class="btn w-100 btn-danger fs-5"
+                                                                                data-mdb-ripple-init data-mdb-ripple-unbound="true">
+                                                                            <i class=" bi bi-fingerprint fs-2"></i>
+                                                                            <br>
+                                                                            @ResourceApp_Ar.SelectedEpisodePage_FinishEpisode_btn
+                                                                            <span class="position-absolute top-0 start-100 translate-middle badge fs-6 rounded bg-warning">
+                                                                                <span id="stcount"></span> <span class="visually-hidden">activeStudents</span>
+                                                                            </span>
+                                                                        </button>
+
+                                                                        @* <div class="card mx-2">
+                                                                            <div class="card-body py-0">
+                                                                                <span class="card-title fw-bold fs-5 text-danger" id="timerCount"></span>
+                                                                            </div>
+                                                                        </div> *@
+                                                                    </div>
+
+                                                                    <div class="col-sm-3 col-4 me-2">
+                                                                        <div class="card">
+                                                                            <div class="card-header  bg-dark-subtle fw-bold">@ResourceApp_Ar.SelectedEpisode_TeacherAttendOut_card</div>
+                                                                            <div class="card-body py-1">
+                                                                                <h6 class="card-title  text-dark-emphasis">
+                                                                                    @Model.EpProgVM.TeacherAttendance.Att_Out.ToString("hh:mm")
+                                                                                    <br>
+                                                                                    @Model.EpProgVM.TeacherAttendance.Att_Out.ToString("dd/MM/yyyy")
+                                                                                </h6>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            }
+
+                                                            <div class="mt-2">
+                                                                @if (!Model.EpProgVM.StudentProgsVM.StudentProgs.Any())
+                                                                {
+                                                                    <div class="alert  alert-warning mt-3">
+                                                                        <h4 class="alert-heading">No Students!</h4>
+                                                                        <p class="mb-0">No Students where added yet.</p>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="row">
+                                                                        <div class="col-12">
+                                                                            <div class="card">
+                                                                                <div class="card-body p-1 d-flex bg-primary-subtle" dir="ltr">
+                                                                                    <!-- save temp -->
+                                                                                    <div>
+                                                                                        @*   <button disabled type="submit" asp-action="AddEvaluatoinOnly" asp-controller="Episodes" asp-route-Id="@Model.NewEpisode.Id" class="btn bg-transparent rounded-3 me-2  border-0" id="saveTemp">
+                                                                                            <i class="bi bi-bookmark-check-fill fs-3"></i>
+                                                                                        </button> *@
+                                                                                    </div>
+                                                                                    <!-- select all boxes -->
+                                                                                    <div class="form-check form-switch mx-1 mt-2">
+                                                                                        <input disabled class="form-check-input  p-3 px-5 " name="select-all" id="select-all" type="checkbox" onchange="ActiveAll(@Model.EpProgVM.StudentProgsVM.StudentProgs.Count())" />
+                                                                                    </div>
+
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <hr>
+
+                                                                    <div class="row ">
+                                                                        <div class="col-sm-12">
+                                                                            <div class=" shadow my-2" id="accordionExample">
+
+                                                                                @foreach (var student in Model.EpProgVM.StudentProgsVM.StudentProgs)
+                                                                                {
+                                                                                    <div><input type="text" hidden id="iseval_@i" asp-for="@student.IsEvaluate" /></div>
+                                                                                    if (student.EpisodeProg.EpProg.Plan.Name.Contains("الخطة المفتوحة"))
+                                                                                    {
+
+                                                                                        <div><input type="text" hidden id="plancheck_@i" value="op" /></div>
+                                                                                        <div><input type="text" hidden id="stId" value="@student.Id" /></div>
+
+                                                                                        <div class="accordion-item  bg-light py-2">
+                                                                                            <div class="accordion-header bg-dark d-flex rounded-2 py-1" id="header_@i">
+                                                                                                <div class="col-sm-10 col-8 ">
+                                                                                                    <button type="button" class="accordion-toggle bg-dark w-100 border-0" data-bs-toggle="collapse" data-bs-target="#collapse_@i" aria-controls="collapse_@i" aria-expanded="false">
+                                                                                                        <span class="text-center fw-bolder fs-5 text-white ">@student.Name</span>
+                                                                                                        <i class="mt-1 mx-2 text-white  bi bi-box-arrow-in-down"></i>
+                                                                                                    </button>
+                                                                                                </div>
+                                                                                                <div class="col-sm-2 col-4 pb-1  d-flex rounded-4">
+                                                                                                    <div class="form-check form-switch">
+                                                                                                        <input disabled class="form-check-input p-3 px-4" type="checkbox" id="depature_@i" name="depature" onchange="EvaluateBoxes(@Model.EpProgVM.StudentProgsVM.StudentProgs.Count())">
+                                                                                                    </div>
+                                                                                                    <!-- save temp -->
+                                                                                                    <div>
+                                                                                                        <button type="submit" asp-action="AddEvaluatoinOnly" asp-controller="Progs" asp-route-Id="@Model.EpProgVM.NewEpisodeProg.Id" class="btn bg-transparent rounded-3 me-2  border-0" id="saveTemp">
+                                                                                                            <i class="bi bi-bookmark-check-fill fs-3" style="color:darkgoldenrod;"></i>
+                                                                                                        </button>
+                                                                                                    </div>
+
+                                                                                                </div>
+
+                                                                                            </div>
+                                                                                            <div class="col-sm-12 mb-2">
+                                                                                                <p class="text-center" id="notify_@i" style="background-color : PaleGreen">حاضر</p>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        <div id="collapse_@i" class="collapse mt-2" aria-labelledby="header_@i" data-bs-parent="#accordionExample">
+                                                                                            <div class="accordion-body" id="stuAcc_@i">
+                                                                                                <div class="row">
+                                                                                                    <div class="col-sm-4 mb-1 mb-sm-1">
+                                                                                                        <div class="accordion shadow mb-3 py-0" id="accordionExampleev1_@ev">
+                                                                                                            <div class="accordion-item  bg-danger-subtle py-0">
+                                                                                                                <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_ev1_@ev">
+                                                                                                                    <div class="col-sm-12 col-12">
+                                                                                                                        <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_ev1_@ev" aria-expanded="true" aria-controls="collapse_ev1_@ev">
+                                                                                                                            <span class="text-center fw-bolder fs-6">حالة الحضور</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                                                                        </button>
+
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+
+                                                                                                            <div id="collapse_ev1_@ev" class="accordion-collapse collapsed" aria-labelledby="headerev1_@ev" data-bs-parent="#accordionExampleev1_@ev">
+                                                                                                                <div class="accordion-body">
+                                                                                                                    <div class="form-group mb-2 ">
+                                                                                                                        <div class="card-text">
+                                                                                                                            <input type="text" hidden id="OstAtt_@i" asp-for="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_Attend" />
+
+                                                                                                                            <fieldset id="Oatt_@i" onchange="OCheckDepature(@i,@Model.EpProgVM.StudentProgsVM.StudentProgs.Count())">
+                                                                                                                                <label class="ms-1"><input class="form-check-input" id="Oatt0_@i" type="radio" value="0" name="Oatt_@i" checked onchange="document.getElementById('notify_@i').innerText ='حاضر';document.getElementById('notify_@i').style.backgroundColor ='PaleGreen';"> حاضر </label>
+                                                                                                                                <br>
+                                                                                                                                <label class="ms-1"><input class="form-check-input" id="Oatt1_@i" type="radio" value="1" name="Oatt_@i" onchange="document.getElementById('notify_@i').innerText ='متأخر';document.getElementById('notify_@i').style.backgroundColor ='#FFF085';"> متأخر </label>
+                                                                                                                                <br>
+                                                                                                                                <label class="me-2"><input class="form-check-input" id="Oatt2_@i" type="radio" value="2" name="Oatt_@i" onchange="document.getElementById('notify_@i').innerText ='مستأذن';document.getElementById('notify_@i').style.backgroundColor ='LightSalmon';"> مستأذن </label>
+                                                                                                                                <br>
+                                                                                                                                <label class="me-3"><input class="form-check-input" id="Oatt3_@i" type="radio" value="3" name="Oatt_@i" onchange="document.getElementById('notify_@i').innerText ='غائب بإذن';document.getElementById('notify_@i').style.backgroundColor ='Silver';"> غائب بإذن </label>
+                                                                                                                                <br>
+                                                                                                                                <label class="ms-2"><input class="form-check-input" id="Oatt4_@i" type="radio" value="4" name="Oatt_@i" onchange="document.getElementById('notify_@i').innerText ='غائب';document.getElementById('notify_@i').style.backgroundColor ='Silver';"> غائب </label>
+                                                                                                                                <br>
+                                                                                                                            </fieldset>
+                                                                                                                        </div>
+                                                                                                                        <br>
+                                                                                                                        <div>
+                                                                                                                            <textarea class="form-control" id="Onotes_@i" rows="4" value="" asp-for="@Model.EpProgVM.EvaluationProgs[i].Notes" placeholder=" ملاحظات"></textarea>
+                                                                                                                        </div>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                    <div class="col-sm-4 mb-1 mb-sm-1">
+                                                                                                        <div class="accordion shadow mb-3 py-0" id="accordionExampleev2_@ev">
+                                                                                                            <div class="accordion-item  bg-danger-subtle py-0">
+                                                                                                                <div class="accordion-header bg-danger-subtle d-flex py-0" id="header_ev2_@ev">
+                                                                                                                    <div class="col-sm-12 col-12">
+                                                                                                                        <button class=" collapsed  bg-danger-subtle w-100 border-0 py-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_ev2_@ev" aria-expanded="true" aria-controls="collapse_ev2_@ev">
+                                                                                                                            <span class="text-center fw-bolder fs-6">حالة المقدار</span><i class="mt-1 me-2 bi bi-box-arrow-in-down"></i>
+                                                                                                                        </button>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            </div>
+
+                                                                                                            <div id="collapse_ev2_@ev" class="accordion-collapse collapsed" aria-labelledby="headerev2_@ev" data-bs-parent="#accordionExampleev2_@ev">
+                                                                                                                <div class="accordion-body">
+                                                                                                                    <h5 class="card-title text-warning-emphasis fw-bold"> المقدار السابق</h5>
+                                                                                                                    <p class="card-text">
+                                                                                                                        <div class="row d-flex">
+                                                                                                                            <div class="col-6">
+                                                                                                                                <div calss="card">
+                                                                                                                                    <div class="card-header fw-bold bg-primary-subtle">من</div>
+                                                                                                                                    <div class="card-body p-0 d-flex">
+                                                                                                                                        <div class="col-8 text-center">
+                                                                                                                                            <input type="text" readonly class="form-control fs-6 text-center fw-bold bg-light" value="@student.LessonData.PrevSave_FromSorh  " />
+                                                                                                                                        </div>
+                                                                                                                                        <div class="col-4 text-center">
+                                                                                                                                            <input type="text" readonly class="form-control fs-6 text-center fw-bold bg-light" value="@student.LessonData.PrevSave_FromAyah " />
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                            <div class="col-6">
+                                                                                                                                <div calss="card">
+                                                                                                                                    <div class="card-header fw-bold bg-primary-subtle">إلي</div>
+                                                                                                                                    <div class="card-body p-0 d-flex">
+                                                                                                                                        <div class="col-8 text-center">
+                                                                                                                                            <input type="text" readonly class="form-control fs-6 text-center fw-bold bg-light" value="@student.LessonData.PrevSave_ToSorh" />
+                                                                                                                                        </div>
+                                                                                                                                        <div class="col-4 text-center">
+                                                                                                                                            <input type="text" readonly class="form-control fs-6 text-center fw-bold bg-light" value="@student.LessonData.PrevSave_ToAyah" />
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </div>
+                                                                                                                    </p>
+                                                                                                                    <hr>
+                                                                                                                    <h5 class="card-title text-warning fw-bold">المقدار الحالي</h5>
+                                                                                                                    <p class="card-text">
+                                                                                                                        @if (student.EpisodeProg.SaveDir == "ctp")
+                                                                                                                        {
+                                                                                                                            <div class="row d-flex">
+                                                                                                                                <div class="col-6">
+                                                                                                                                    <div calss="card">
+                                                                                                                                        <div class="card-header fw-bold bg-warning-subtle">من</div>
+                                                                                                                                        <div class="card-body p-0">
+                                                                                                                                            <div class="col-12 text-center">
+                                                                                                                                                <input type="text" readonly class="form-control text-center fs-6 fw-bold bg-light" value=" @student.LessonData.Save_FromSorh" />
+                                                                                                                                            </div>
+                                                                                                                                            <div class="d-flex">
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" readonly class="form-control  text-center fw-bold bg-dark-subtle " style="font-size:14px;" value="@ResourceApp_Ar.StudentsModel_StVerse_select" />
+                                                                                                                                                </div>
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" disabled class="form-control  text-center fw-bold bg-light " style="font-size:14px;" value=" @student.LessonData.Save_FromAyah " />
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-6">
+                                                                                                                                    <div calss="card">
+                                                                                                                                        <div class="card-header fw-bold bg-warning-subtle">إلي</div>
+                                                                                                                                        <div class="card-body p-0">
+                                                                                                                                            <div class="col-12 text-center">
+
+                                                                                                                                                <select class="form-select text-center bg-light fs-6 fw-bold" id="surahId_saveTo_@i" asp-items="@Model.EpProgVM.Surahs_ctp" asp-for="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_SaveSurahIdTo"
+                                                                                                                                                        onchange="document.getElementById('surahNameSave_@i').value=document.getElementById('surahId_saveTo_@i').options[document.getElementById('surahId_saveTo_@i').selectedIndex].text;
+                                                                                                                                                                document.getElementById('surahIdSaveTo_@i').value=document.getElementById('surahId_saveTo_@i').options[document.getElementById('surahId_saveTo_@i').selectedIndex].value;
+                                                                                                                                                                document.getElementById('verseNumSaveTo_'+@i).value='1';
+                                                                                                                                                                document.getElementById('vrsSaveTo_'+@i).value='1';">
+                                                                                                                                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StSorah_select</option>
+                                                                                                                                                </select>
+                                                                                                                                            </div>
+
+                                                                                                                                            <div class="d-flex">
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <select class="form-select bg-dark-subtle text-center fw-bold" style="font-size:14px;" id="verseId_saveTo_@i"
+                                                                                                                                                            onchange="document.getElementById('verseNumSaveTo_@i').value=document.getElementById('verseId_saveTo_@i').options[document.getElementById('verseId_saveTo_@i').selectedIndex].text;
+                                                                                                                                                        document.getElementById('vrsSaveTo_@i').value=document.getElementById('verseId_saveTo_@i').options[document.getElementById('verseId_saveTo_@i').selectedIndex].text;">
+                                                                                                                                                        <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StVerse_select</option>
+                                                                                                                                                    </select>
+                                                                                                                                                </div>
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" class="form-control bg-light text-center fw-bold" style="font-size:14px;" disabled id="verseNumSaveTo_@i" value="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_SaveAyahIdTo" asp-for="EpProgVM.StudentProgsVM.StudentProgs[i].PrevSaveVerseTo" />
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+
+                                                                                                                        }
+                                                                                                                        else if (student.EpisodeProg.SaveDir == "ptc")
+                                                                                                                        {
+                                                                                                                            <div class="row d-flex">
+                                                                                                                                <div class="col-6">
+                                                                                                                                    <div calss="card">
+                                                                                                                                        <div class="card-header fw-bold bg-warning-subtle">من</div>
+                                                                                                                                        <div class="card-body p-0">
+                                                                                                                                            <div class="col-12 text-center">
+                                                                                                                                                <input type="text" readonly class="form-control text-center fs-6 fw-bold bg-light" value="  @student.LessonData.Save_FromSorh" />
+                                                                                                                                            </div>
+                                                                                                                                            <div class="d-flex">
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" readonly class="form-control  text-center fw-bold bg-dark-subtle " style="font-size:14px;" value="@ResourceApp_Ar.StudentsModel_StVerse_select" />
+                                                                                                                                                </div>
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" disabled class="form-control  text-center fw-bold bg-light " style="font-size:14px;" value="  @student.LessonData.Save_FromAyah" />
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                                <div class="col-6">
+                                                                                                                                    <div calss="card">
+                                                                                                                                        <div class="card-header fw-bold bg-warning-subtle">إلي</div>
+                                                                                                                                        <div class="card-body p-0">
+                                                                                                                                            <div class="col-12 text-center">
+
+                                                                                                                                                <select class="form-select text-center bg-light fs-6 fw-bold" id="surahId_saveTo_@i" asp-items="@Model.EpProgVM.Surahs_ptc" asp-for="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_SaveSurahIdTo"
+                                                                                                                                                        onchange="document.getElementById('surahNameSave_@i').value=document.getElementById('surahId_saveTo_@i').options[document.getElementById('surahId_saveTo_@i').selectedIndex].text;
+                                                                                                                                                                document.getElementById('surahIdSaveTo_@i').value=document.getElementById('surahId_saveTo_@i').options[document.getElementById('surahId_saveTo_@i').selectedIndex].value;
+                                                                                                                                                                document.getElementById('verseNumSaveTo_'+@i).value='1';
+                                                                                                                                                                document.getElementById('vrsSaveTo_'+@i).value='1';">
+                                                                                                                                                    <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StSorah_select</option>
+                                                                                                                                                </select>
+                                                                                                                                            </div>
+
+                                                                                                                                            <div class="d-flex">
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <select class="form-select bg-dark-subtle text-center fw-bold" style="font-size:14px;" id="verseId_saveTo_@i"
+                                                                                                                                                            onchange="document.getElementById('verseNumSaveTo_@i').value=document.getElementById('verseId_saveTo_@i').options[document.getElementById('verseId_saveTo_@i').selectedIndex].text;
+                                                                                                                                                        document.getElementById('vrsSaveTo_@i').value=document.getElementById('verseId_saveTo_@i').options[document.getElementById('verseId_saveTo_@i').selectedIndex].text;">
+                                                                                                                                                        <option selected disabled value="">@ResourceApp_Ar.StudentsModel_StVerse_select</option>
+                                                                                                                                                    </select>
+                                                                                                                                                </div>
+                                                                                                                                                <div class="col-6 text-center">
+                                                                                                                                                    <input type="text" class="form-control bg-light text-center fw-bold" style="font-size:14px;" disabled id="verseNumSaveTo_@i" value="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_SaveAyahIdTo" asp-for="EpProgVM.StudentProgsVM.StudentProgs[i].PrevSaveVerseTo" />
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        }
+                                                                                                                    </p>
+                                                                                                                    <hr>
+                                                                                                                    <select class="form-select bg-primary fs-4 text-white fw-bold" asp-for="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_Save" aria-label="Default select example" id="OsaveEv_@i" onchange="OCheckDepature(@i,@Model.EpProgVM.StudentProgsVM.StudentProgs.Count())">
+                                                                                                                        @* <select class="form-select bg-dark-subtle fw-bold" aria-label="Default select example" id="GsaveEv_@i" onchange="GCheckDepature(@i,@Model.StudentsVM.Students.Count())"> *@
+                                                                                                                        <option selected disabled value="-1">تقييم المقدار</option>
+                                                                                                                        @for (int j = 1; j <= 10; j++)
+                                                                                                                        {
+                                                                                                                            <option class=" text-center fw-bold" value="@j">@j</option>
+                                                                                                                        }
+                                                                                                                    </select>
+
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        <div style="font-size:10px;margin:auto; " id="Oeval_data">
+                                                                                            <input type="text" hidden id="Olessonstate_@i" value="false" asp-for="@Model.EpProgVM.StudentProgsVM.StudentProgs[i].newLessonState" />
+                                                                                            <input type="text" hidden id="stid" value="@student.Id" asp-for="@Model.EpProgVM.EvaluationProgs[i].EvStudentProgId" />
+                                                                                            <input type="text" hidden id="OattendEval_@i" value="0" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_Attend" />
+                                                                                            <input type="text" hidden id="OsaveEval_@i" value="-1" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_Save" />
+                                                                                            <input type="text" hidden id="OrabtEval_@i" value="10" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_Rabt" />
+                                                                                            <input type="text" hidden id="OrevEval_@i" value="10" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_Rev" />
+                                                                                            <input type="text" hidden id="surahIdSaveTo_@i" value="@Model.EpProgVM.LastEvaluateOfStudentProgs.GetValueOrDefault(student).Ev_SaveSurahIdTo" />
+                                                                                            <input type="text" hidden id="surahNameSave_@i" value="" asp-for="EpProgVM.StudentProgsVM.StudentProgs[i].PrevSaveSurhTo" />
+                                                                                            <input type="text" hidden id="vrsSaveTo_@i" value="" asp-for="EpProgVM.StudentProgsVM.StudentProgs[i].PrevSaveVerseTo" />
+                                                                                            <input type="text" hidden id="OSaveSurahEvalTo_@i" value="" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_SaveSurahIdTo" />
+                                                                                            <input type="text" hidden id="OSaveAyahEvalTo_@i" value="" asp-for="@Model.EpProgVM.EvaluationProgs[i].Ev_SaveAyahIdTo" />
+                                                                                            <input type="text" hidden value="@student.Id" asp-for="@Model.EpProgVM.StudentProgsVM.StudentProgs[i].Id" />
+                                                                                            <input type="text" hidden value="@student.LessonDataId" asp-for="@Model.EpProgVM.StudentProgsVM.StudentProgs[i].LessonDataId" />
+                                                                                            <input type="text" hidden value="@student.LessonDataId" asp-for="@Model.EpProgVM.StudentProgsVM.StudentProgs[i].LessonData.Id" />
+                                                                                            <input type="text" hidden value="@student.EpisodeProg.EpProg.Plan.Name" asp-for="@Model.EpProgVM.StudentProgsVM.StudentProgs[i].EpisodeProg.EpProg.Plan.Name" />
+                                                                                            @* <input type="text" hidden asp-for="@Model.Evaluations[i].Id" /> *@
+                                                                                        </div>
+
+                                                                                        i++;
+                                                                                    }
+                                                                                }
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        }
+                                        @* Not Teacher *@
+                                        else
+                                        {
+                                           
+
+                                        }
+
+                                        <!-- /.card-body -->
+                                    </div>
+                                    <!-- /.card -->
+                                    <!-- /.card -->
+                                </div>
+                                <!-- /.col -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.row -->
+    </section>
+
+    <!-- /.content -->
+</div>
+
+@section Scripts {
+
+    <script>
+
+                // Listen for click on toggle checkbox [select all]
+        $('#select-all').click(function(event) {
+            if(this.checked) {
+                // Iterate each checkbox
+                $(':checkbox').each(function() {
+                    this.checked = true;
+                });
+            } else {
+                $(':checkbox').each(function() {
+                    this.checked = false;
+                });
+            }
+        });
+
+        // $(document).ready(function(){
+        //    GetVersesBySurah_saveTo();
+        //    GetVersesBySurah_revFrom();
+        //    GetVersesBySurah_revTo();
+        //    })
+           //SaveTo
+            $("#surahId_saveTo_0").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_1").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_2").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_3").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_4").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_5").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_6").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_7").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_8").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_9").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_10").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_11").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_12").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_13").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_14").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_15").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_16").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_17").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_18").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_19").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_20").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_21").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_22").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_23").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_24").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_25").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_26").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_27").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_28").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_29").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_30").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_31").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_32").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_33").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_34").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_35").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_36").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_37").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_38").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_39").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_40").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_41").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_42").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_43").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_44").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_45").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_46").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_47").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+            $("#surahId_saveTo_48").change(function(){
+                GetVersesBySurah_saveTo();
+            });
+
+            //------------------ Rev_From --------------------
+            $("#surahId_revFrom_0").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_1").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_2").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_3").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_4").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_5").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_6").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_7").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_8").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_9").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_10").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_11").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_12").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_13").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_14").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_15").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_16").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_17").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_18").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_19").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_20").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_21").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_22").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_23").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_24").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_25").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_26").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_27").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_28").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_29").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_30").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_31").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_32").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_33").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_34").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_35").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_36").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_37").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_38").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_39").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_40").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_41").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_42").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_43").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_44").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_45").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_46").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_47").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            $("#surahId_revFrom_48").change(function(){
+                GetVersesBySurah_revFrom();
+            });
+            //------------------ Rev_To --------------------
+            $("#surahId_revTo_0").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_1").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_2").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_3").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_4").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_5").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_6").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_7").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_8").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_9").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_10").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_11").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_12").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_13").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_14").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_15").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_16").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_17").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_18").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_19").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_20").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_21").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_22").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_23").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_24").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_25").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_26").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_27").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_28").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_29").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_30").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_31").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_32").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_33").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_34").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_35").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_36").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_37").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_38").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_39").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_40").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_41").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_42").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_43").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_44").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_45").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_46").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_47").change(function(){
+                GetVersesBySurah_revTo();
+            });
+            $("#surahId_revTo_48").change(function(){
+                GetVersesBySurah_revTo();
+            });
+
+
+            var GetVersesBySurah_saveTo = function(){
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_0').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_0').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_0").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_1').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_1').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_1").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_2').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_2').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_2").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_3').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_3').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_3").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_4').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_4').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_4").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_5').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_5').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_5").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_6').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_6').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_6").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_7').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_7').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_7").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_8').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_8').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_8").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_9').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_9').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_9").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_10').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_10').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_10").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_12').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_12').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_12").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_13').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_13').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_13").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_14').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_14').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_14").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_15').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_15').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_15").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_16').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_16').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_16").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_17').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_17').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_17").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_18').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_18').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_18").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_19').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_19').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_19").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_20').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_20').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_20").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_21').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_21').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_21").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_22').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_22').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_22").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_23').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_23').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_23").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_24').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_24').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_24").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_25').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_25').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_25").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_26').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_26').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_26").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_27').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_27').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_27").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_28').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_28').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_28").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_29').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_29').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_29").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_30').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_30').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_30").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_31').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_31').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_31").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_32').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_32').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_32").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_33').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_33').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_33").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_34').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_34').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_34").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_35').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_35').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_35").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_36').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_36').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_36").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_37').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_37').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_37").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_38').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_38').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_38").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_39').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_39').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_39").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_40').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_40').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_40").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_41').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_41').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_41").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_42').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_42').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_42").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_43').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_43').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_43").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_44').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_44').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_44").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_45').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_45').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_45").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_46').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_46').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_46").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_47').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_47').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_47").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_saveTo_48').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_saveTo_48').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_saveTo_48").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+
+            }
+            var GetVersesBySurah_revFrom = function(){
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_0').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_0').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_0").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                })
+                  $.ajax({
+                            url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                            type : 'GET',
+                            data:{
+                                surahId:$('#surahId_revFrom_1').val(),
+                            },
+                            success: function(data){
+                                $('#verseId_revFrom_1').find('option').remove()
+                                $(data).each(
+                                    function(index , item){
+                                        $("#verseId_revFrom_1").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                    }
+                                )
+                            }
+                        })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_2').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_2').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_2").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_3').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_3').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_3").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_4').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_4').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_4").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_5').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_5').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_5").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_6').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_6').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_6").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_7').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_7').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_7").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_8').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_8').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_8").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_9').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_9').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_9").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_10').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_10').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_10").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_12').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_12').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_12").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_13').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_13').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_13").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_14').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_14').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_14").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_15').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_15').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_15").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_16').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_16').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_16").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_17').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_17').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_17").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_18').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_18').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_18").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_19').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_19').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_19").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_20').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_20').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_20").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_21').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_21').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_21").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_22').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_22').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_22").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_23').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_23').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_23").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_24').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_24').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_24").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_25').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_25').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_25").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_26').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_26').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_26").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_27').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_27').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_27").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_28').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_28').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_28").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_29').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_29').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_29").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_30').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_30').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_30").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_31').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_31').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_31").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_32').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_32').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_32").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_33').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_33').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_33").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_34').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_34').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_34").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_35').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_35').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_35").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_36').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_36').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_36").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_37').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_37').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_37").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_38').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_38').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_38").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_39').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_39').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_39").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_40').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_40').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_40").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_41').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_41').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_41").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_42').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_42').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_42").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_43').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_43').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_43").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_44').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_44').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_44").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_45').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_45').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_45").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_46').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_46').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_46").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_47').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_47').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_47").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revFrom_48').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revFrom_48').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revFrom_48").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+         }
+            var GetVersesBySurah_revTo = function(){
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_0').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_0').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_0").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                                url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                                type : 'GET',
+                                data:{
+                                    surahId:$('#surahId_revTo_1').val(),
+                                },
+                                success: function(data){
+                                    $('#verseId_revTo_1').find('option').remove()
+                                    $(data).each(
+                                        function(index , item){
+                                            $("#verseId_revTo_1").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                        }
+                                    )
+                                }
+                          })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_2').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_2').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_2").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_3').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_3').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_3").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_4').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_4').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_4").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_5').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_5').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_5").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_6').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_6').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_6").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_7').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_7').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_7").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_8').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_8').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_8").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_9').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_9').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_9").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_10').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_10').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_10").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_12').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_12').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_12").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_13').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_13').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_13").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_14').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_14').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_14").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_15').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_15').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_15").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_16').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_16').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_16").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_17').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_17').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_17").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_18').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_18').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_18").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_19').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_19').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_19").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_20').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_20').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_20").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_21').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_21').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_21").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_22').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_22').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_22").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_23').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_23').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_23").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_24').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_24').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_24").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_25').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_25').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_25").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_26').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_26').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_26").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_27').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_27').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_27").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_28').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_28').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_28").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_29').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_29').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_29").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_30').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_30').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_30").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_31').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_31').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_31").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_32').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_32').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_32").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_33').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_33').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_33").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_34').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_34').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_34").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_35').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_35').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_35").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_36').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_36').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_36").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_37').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_37').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_37").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_38').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_38').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_38").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_39').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_39').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_39").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_40').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_40').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_40").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_41').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_41').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_41").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_42').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_42').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_42").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_43').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_43').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_43").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_44').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_44').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_44").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_45').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_45').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_45").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_46').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_46').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_46").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_47').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_47').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_47").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+                  $.ajax({
+                        url: '@Url.Action("GetVersesBySurah", "Episodes")',
+                        type : 'GET',
+                        data:{
+                            surahId:$('#surahId_revTo_48').val(),
+                        },
+                        success: function(data){
+                            $('#verseId_revTo_48').find('option').remove()
+                            $(data).each(
+                                function(index , item){
+                                    $("#verseId_revTo_48").append('<option value = "'+item.Id+'">'+item.num + '</option>')
+                                }
+                            )
+                        }
+                  })
+
+        }
+
+    </script>
+
+    <script src="~/js/SelectedEpisode.js"></script>
+
+}

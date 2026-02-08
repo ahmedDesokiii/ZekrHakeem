@@ -1,0 +1,131 @@
+﻿@model MasterViewModel
+@{
+    ViewData["Title"] = "Centers";
+}
+@*  *@
+<div class="wrapper" dir="rtl">
+    <!--Content-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <div class="row d-flex justify-content-center text-center">
+                                <div class="col-sm-2 col-4 mb-2">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_CenterName_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.NewLocation.LoCenter.Name</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_Supervisor_card</h6></div>
+                                        @if (@Model.LocationVM.NewLocation.LoCenter.ApplicationUser == null)
+                                        {
+                                            <div class="card-body py-0 text-danger"><h6 class="card-title"> بدون مشرف مركز </h6></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.NewLocation.LoCenter.ApplicationUser.FullName</h6></div>
+                                        }
+                                        
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedLocationPage_MainHeader_DistrictName_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.NewLocation.District.Name</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedLocationCenterPage_MainHeader_LocationNameMen_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.NewLocation.Name</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedLocationCenterPage_MainHeader_EpisodesLocationMen_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.EpisodesOfLocation.Episodes.Count()</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedLocationCenterPage_MainHeader_StudentsLocationMen_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.LocationVM.StudentsOfLocation.Students.Count()</h6></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body  " style="background: #FBF8EF;">
+
+                            <div class="row d-flex justify-content-center text-center">
+                                @foreach (var episode in Model.LocationVM.EpisodesOfLocation.Episodes)
+                                {
+                                    <div class="col-sm-3 mb-2">
+                                        <a class="btn btn-transparent p-0" asp-action="SelectedEpisode" asp-controller="Episodes" asp-route-Id="@episode.Id">
+                                            <div class="card">
+                                                <img class="card-img-top bg-white" src="~/images/ep.svg" style="height:100px;width:auto" alt="zhcenter">    
+                                                <div class="card-header bg-success-subtle text-dark fw-bold fs-4">@episode.Name</div>
+                                            <div class="card-body  ">
+
+                                                <div class="input-group mb-1">
+                                                    <span class="input-group-text">@ResourceApp_Ar.EpisodesModal_EpisodeAttendType_lbl</span>
+                                                    <input type="text" class="form-control bg-white" readonly value="@episode.AttendType" />
+                                                </div>
+                                                <div class="input-group mb-1">
+                                                    <span class="input-group-text">@ResourceApp_Ar.EpisodesModal_EpisodeTitle_lbl</span>
+                                                    <input type="text" class="form-control bg-white" readonly value="@episode.EpisodeType.Name" />
+                                                </div>
+                                                <div class="input-group mb-1">
+                                                    <span class="input-group-text">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_EpisodeTime_lbl</span>
+                                                    <input type="text" class="form-control bg-white" readonly value="@episode.Period" />
+                                                </div>
+                                                <div class="input-group mb-1">
+                                                    <span class="input-group-text ">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_EpStudents_lbl</span>
+                                                    <input type="text" class="form-control bg-white" readonly value="@episode.Students.Count()" />
+                                                </div>
+                                                <div class="input-group mb-1">
+                                                    <span class="input-group-text">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_LimitStudents_lbl</span>
+                                                    <input type="text" class="form-control bg-white" readonly value="@episode.LimitStudents" />
+                                                </div>
+                                                </div>
+                                                <div class="card-footer bg-white">
+                                                    <div class="row d-flex justify-content-center text-center">
+                                                        <div class="col-sm-12 col-12">
+                                                            <div class="card">
+                                                                <div class="card-header py-1 bg-danger-subtle fw-bold fs-5">@ResourceApp_Ar.SelectedLocationCenterPage_SmallHeader_TeacherEpisodeMen_card</div>
+                                                                <div class="card-body py-1">
+                                                                    <div class="input-group mb-1">
+                                                                        <span class="input-group-text ps-2">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_TeacherNameMen_card</span>
+                                                                        <input type="text" class="form-control" readonly value="@episode?.ApplicationUser.FullName" />
+                                                                    </div>
+                                                                    <div class="input-group mb-1">
+                                                                        <span class="input-group-text ps-3">@ResourceApp_Ar.SelectedLocationCenterPage_SmallBody_PhoneNumber_card</span>
+                                                                        <input type="text" class="form-control" readonly value="@episode?.ApplicationUser.PhoneNumber" />
+                                                                    </div>
+                                                                </div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Content-->
+    </div>
+</div>
+
+<script src="~/js/SelectedCenter.js"></script> 

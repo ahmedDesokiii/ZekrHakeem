@@ -1,0 +1,349 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@inject RoleManager<IdentityRole> roleManager
+
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Centers";
+    int cNo = 0;
+    var CentersData = Model.CenterVM.Centers;
+    var SupervisorsCenterData = Model.CenterVM.SupervisorsMenCenter;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+{
+    CentersData = Model.CenterVM.Centers;
+    SupervisorsCenterData = Model.CenterVM.SupervisorsMenCenter.Concat(Model.CenterVM.SupervisorsWomenCenter);
+}
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+{
+    CentersData = Model.CenterVM.CentersForMen;
+    SupervisorsCenterData = Model.CenterVM.SupervisorsMenCenter;
+}
+
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+{
+    CentersData = Model.CenterVM.CentersForWomen;
+    SupervisorsCenterData = Model.CenterVM.SupervisorsWomenCenter;
+}
+
+
+
+
+<div class="wrapper " dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.CentersPage_CentersMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card ">
+                    <div class="card-header d-flex align-items-center justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                        class="btn btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
+                                    <i class="bi bi-plus-circle-dotted fs-5 ps-2"></i>  @ResourceApp_Ar.CentersPage_AddCenter_btn
+                                </button>
+                            }
+                            @*
+                                 <div class="btn-group  position-absolute start-0 ms-4 " dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary">
+                                    خدمات اخري <i class="bi bi-database-check fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle " data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                        {
+
+
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                             *@
+
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+                    <div id="Centers" class="tabcontent ">
+                        <div class="card-body p-0" style="background: #FBF8EF;">
+                            <!-- Tab links -->
+                            <div class="tab" style="background: #CBF7DC;">
+
+                                <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'Centers')" id="defaultOpen">@ResourceApp_Ar.CentersPage_Center_tab</button>
+                                @if (User.IsInRole(Roles.Admin.ToString()))
+                                {
+                                    <button class="tablinks fw-bold fs-6" style="background: #CBF7DC;" onclick="openCity(event, 'LogCenters')" id="defaultTow">Log Centers</button>
+                                }
+
+                            </div>
+                            <!-- Tab content -->
+                            @if (!CentersData.Any())
+                            {
+                                <div class="alert  alert-warning mt-5">
+                                    <h4 class="alert-heading">No Centers!</h4>
+                                    <p class="mb-0">No centers where added yet.</p>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="align-content-center mt-2 align-items-center justify-content-center row " style="background: #FBF8EF;">
+
+                                    @foreach (var center in CentersData)
+                                    {
+                                        <div class="col-sm-3 col-6 mb-3">
+                                            <div class="card  text-center">
+
+                                                <a class="btn btn-transparent p-0" asp-action="SelectedCenter" asp-controller="Centers" asp-route-Id="@center.Id">
+                                                    <img class="card-img-top bg-white" src="~/images/centlogo.png" style="height:100px;width:auto" alt="zhcenter">
+                                                    <div class="card-header bg-primary fs-4 text-white fw-bold">@center.Name</div>
+                                                    <div class="card-body w-100  ">
+                                                        <div class="input-group mb-1">
+                                                            <span class="input-group-text bg-primary-subtle">عدد المساجد</span>
+                                                            <input type="text" class="form-control" readonly value="@center.Locations.Count()" />
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="card-footer bg-white d-flex ">
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Edit).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-outline-warning ms-2 btn-sm rounded-3" onclick="Edit('@center.Id', '@center.Name','@center.Type','@center.Description','@center.ApplicationUserId')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                                <i class="bi bi-pencil-square fs-6"></i> <br /> @ResourceApp_Ar.Page_EditBtn_Table
+                                                            </a>
+                                                        }
+
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Pause).Result.Succeeded)
+                                                        {
+                                                            if (center.PauseState > 0)
+                                                            {
+                                                                <a id="pause" class="btn btn-outline-dark btn-sm ms-2 rounded-3" onclick="Pause('@center.Id')">
+                                                                    <i class="bi bi-pause-circle fs-6"></i><br />  @ResourceApp_Ar.Page_PauseBtn_Table
+                                                                </a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <a id="pause" class="btn btn-outline-success btn-sm ms-2 rounded-3" onclick="Resume('@center.Id')">
+                                                                    <i class="bi bi-play-circle fs-6"></i><br /> @ResourceApp_Ar.Page_ResumeBtn_Table
+                                                                </a>
+                                                            }
+                                                        }
+                                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Delete).Result.Succeeded)
+                                                        {
+                                                            <a class="btn btn-danger btn-sm rounded-3" onclick="Delete('@center.Id')">
+                                                                <i class="bi bi-trash fs-6"></i><br> @ResourceApp_Ar.Page_DeleteBtn_Table
+                                                            </a>
+                                                        }
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                    }
+                                </div>
+
+                            }
+
+
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.DeleteLog).Result.Succeeded)
+                            {
+                                <div id="LogCenters" class="tabcontent">
+                                    <table id="tableLogCenter" class="table table-bordered table-hover">
+                                        <thead>
+                                            <tr class="bg-primary fw-bolder text-white">
+                                                <td>#</td>
+                                                <td>Center Name</td>
+                                                <td>ActionName</td>
+                                                <td>Date</td>
+                                                <td>UserName</td>
+                                                <td>Events</td>
+
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.CenterVM.LogCenters)
+                                            {
+                                                <tr>
+                                                    <td>#</td>
+                                                    <td>@item.Center.Name</td>
+                                                    <td>@item.Action</td>
+                                                    <td>@item.Date</td>
+                                                    <td>@userManager.FindByIdAsync(item.UserId.ToString()).Result?.FullName</td>
+
+                                                    <td>
+
+                                                        <input type="button" class="btn btn-danger p-2 btn-sm" onclick="DeleteLog('@item.Id')" value="Delete" />
+
+
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content" dir="rtl">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.CentersModal_AddNewCenter_lbl</h5>
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/centlogo.png" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body" dir="rtl">
+                <form asp-action="Save" asp-controller="Centers" method="post">
+                    <input type="text" hidden class="form-control" asp-for="CenterVM.NewCenter.Id" id="CenterId" />
+
+                    <div class="input-group">
+                        <span class="input-group-text">@ResourceApp_Ar.CentersModal_CenterName_lbl</span>
+                        <input type="text" class="form-control" asp-for="CenterVM.NewCenter.Name" required style="border-left:solid 3px red" id="CenterName" placeholder="@ResourceApp_Ar.CentersModal_CenterName_txt" />
+                    </div>
+                    <span asp-validation-for="CenterVM.NewCenter.Name" class="text-danger"></span>
+
+
+                    @if (User.IsInRole(Roles.Supervisor.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="CenterVM.NewCenter.Type" value="men" id="CenterType" placeholder="Type ..." />
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="CenterVM.NewCenter.Type" value="women" id="CenterType" placeholder="Type ..." />
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.Admin.ToString()))
+                    {
+                        <div class="input-group  mb-2">
+                            <label class="input-group-text pe-3 " for="CenterType">@ResourceApp_Ar.CentersModal_CenterType_lbl </label>
+                            <select class="form-select text-secondary" id="CenterType" asp-for="CenterVM.NewCenter.Type" onchange="SelectType()">
+                                <option selected disabled>حدد نوع المركز</option>
+                                <option id="formen" value="men">مراكز رجال </option>
+                                <option id="forwomen" value="women">مراكز نساء </option>
+                            </select>
+
+                            <input type="text" class="form-control mb-2" hidden value="" id="selectedCenterType" />
+                            <span asp-validation-for="CenterVM.NewCenter.Type" class="text-danger"></span>
+                        </div>
+                    }
+
+                    <div class="input-group input-group mt-2">
+                        <label class="input-group-text w-auto" id="" for="Super"> @ResourceApp_Ar.CentersModal_CentersMen_lbl</label>
+                        <select class="form-select" id="Super" required asp-items="SupervisorsCenterData" asp-for="CenterVM.NewCenter.ApplicationUserId" style="border-left:solid 3px red">
+                            <option selected disabled>@ResourceApp_Ar.CentersModal_CentersMenSupervisor_option </option>
+                        </select>
+                    </div>
+                    <span asp-validation-for="CenterVM.NewCenter.ApplicationUserId" class="text-danger"></span>
+
+                    <div class="input-group mt-2">
+                        <span class="input-group-text pe-3">@ResourceApp_Ar.CentersModal_CenterDescription_lbl</span>
+                        <textarea class="form-control" asp-for="CenterVM.NewCenter.Description" id="description" placeholder=" @ResourceApp_Ar.CentersModal_CenterDescription_txt" rows="4" cols="50"></textarea>
+                    </div>
+                    <span asp-validation-for="CenterVM.NewCenter.Description" class="text-danger"></span>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/Centers.js"></script>
+    <script>
+
+        let lbTitleEditCenter = '@Html.Raw(ResourceApp_Ar.CentersModal_EditCenter_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewCenter = '@Html.Raw(@ResourceApp_Ar.CentersModal_AddNewCenter_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("حذف المركز")';
+        let lbTitleMsgPause = '@Html.Raw("إيقاف مؤقت للمركز !")';
+        let lbTitleMsgResume = '@Html.Raw("اعادة تشغيل المركز")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete CenterLog")';
+        let lbTextMsgDelete = '@Html.Raw("هل تريد حذف المركز وكل الحلقات التابعة للمركز ؟ ?")';
+        let lbTextMsgPause = '@Html.Raw("سوف يتم ايقاف مؤقت لكل الحلقات التابعة للمركز ؟")';
+        let lbTextMsgResume = '@Html.Raw("سوف يتم اعادة تشغيل لكل الحلقات التابعة للمركز ؟")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Center log ?")';
+        let lbconfirmButtonText = '@Html.Raw("نعم , إحذف")';
+        let lbconfirmButtonTextPause = '@Html.Raw("نعم , ايقاف مؤقت")';
+        let lbconfirmButtonTextResume = '@Html.Raw("نعم , اعادة تشعيل")';
+        let lbcancelButtonText = '@Html.Raw(ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("تم الحذف")';
+        let lbTitlePausedOk = '@Html.Raw("تم الإيقاف المؤقت")';
+        let lbTitleResumedOk = '@Html.Raw("تم اعادة التشغيل")';
+        let lbMsgDeletedOkCenter = '@Html.Raw("تم حذف المركز وما يحتويه من حلقات !")';
+        let lbMsgPausedOkCenter = '@Html.Raw("تم الايقاف المؤقت للمركز وجميع الحلقات التابعة له !")';
+        let lbMsgResumedOkCenter = '@Html.Raw("تم تشغيل المركز و الحلقات التابعة له")';
+        let lbMsgDeletedOkCenterLog = '@Html.Raw("CenterLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+   }

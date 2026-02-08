@@ -1,0 +1,107 @@
+﻿@model MasterViewModel
+@{
+    ViewData["Title"] = "Centers";
+    var i = 0;
+}
+<div class="wrapper" dir="rtl">
+    <!--Content-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <div class="row d-flex justify-content-center text-center align-items-stretch">
+                                <div class="col-sm-2 col-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_CenterName_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.NewCenter.Name</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-6">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_Supervisor_card</h6></div>
+                                        @if (@Model.CenterVM.NewCenter.ApplicationUser == null)
+                                        {
+                                            <div class="card-body py-0 text-danger"><h6 class="card-title"> بدون مشرف مركز </h6></div>
+
+                                        }
+                                        else
+                                        {
+                                            <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.NewCenter.ApplicationUser.FullName</h6></div>
+
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_LocationsCenterMen_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.LocationsOfCenter.Locations.Count()</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_EpisodesCenter_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.EpisodesOfCenter.Episodes.Count()</h6></div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-4 ">
+                                    <div class="card ">
+                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_StudentsCenter_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.StudentsOfCenter.Students.Count()</h6></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="card-body" style="background: #FBF8EF;">
+
+                            <div class="row d-flex justify-content-center text-center ">
+                                @foreach (var location in Model.CenterVM.LocationsOfCenter.Locations)
+                                {
+                                    <div class="col-sm-3 mb-2">
+
+                                        <div class="card" onmouseover="Details()">
+                                            <a class="btn btn-transparent p-0" asp-action="SelectedLocationCenter" asp-controller="Centers" asp-route-Id="@location.Id">
+                                                <img class="card-img-top bg-transparent" src="~/images/loclogo.png" style="height:100px;width:auto" alt="zhcenter">
+                                                <div class="card-header bg-danger-subtle text-dark-emphasis fs-4 fw-bold">@location.Name</div>
+                                                <div class="card-body w-100  ">
+                                                    <div>
+                                                        <input type="text" class="form-control  mb-2" hidden id="txtLatitudeLoc" readonly asp-for="@location.Latitude" />
+                                                        <input type="text" class="form-control  mb-2" hidden id="txtLongitudeLoc" readonly asp-for="@location.Longitude" />
+                                                    </div>
+                                                    <div id="mapLoc" hidden style="height: 200px;border: 1px solid #ddd;"></div>
+                                                </div>
+                                                <div class="card-footer bg-white">
+                                                    <div class="row d-flex justify-content-center text-center"> 
+                                                        <div class="col-sm-6 col-6">
+                                                            <div class="card">
+                                                                <div class="card-header py-0 bg-success-subtle"><h6>@ResourceApp_Ar.SelectedCenterPage_SmallHeader_EpisodesLocation_card</h6></div>
+                                                                <div class="card-body py-0"><h6 class="card-title">@location.Episodes.Count()</h6></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6 col-6">
+                                                            <div class="card">
+                                                                <div class="card-header py-0 bg-success-subtle"><h6>@ResourceApp_Ar.SelectedCenterPage_SmallHeader_StudentsLocation_card</h6></div>
+                                                                <div class="card-body py-0"><h6 class="card-title">@location.TotalStudents</h6></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    i++;
+                                }
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-->
+</div>
+</div>
+
+ <script src="~/js/SelectedCenter.js"></script> 

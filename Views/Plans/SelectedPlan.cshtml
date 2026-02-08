@@ -1,0 +1,77 @@
+﻿@model MasterViewModel
+@{
+    ViewData["Title"] = "Plans";
+    var i = 0;
+}
+<div class="wrapper" dir="rtl">
+    <!--Content-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-12">
+                    <div class="card">
+                        <div class="card-header">
+
+                            <div class="row d-flex justify-content-center text-center align-items-stretch">
+                                <div class="col-sm-3 col-6 mb-2">
+                                    <div class="card">
+                                        <div class="card-header py-0 bg-dark-subtle"><h6>@ResourceApp_Ar.SelectedPlanPage_MainHeader_PlanName_card</h6></div>
+                                        <div class="card-body py-0"><h6 class="card-title">@Model.PlanVM.NewPlan.Name</h6></div>
+                                    </div>
+                                </div>
+                               
+                            </div>
+                        </div>
+                        <div class="card-body" dir="rtl">
+
+                            <div class="row d-flex justify-content-center text-center">
+                                <h2> مستويات الخطة </h2>
+                                @foreach (var level in Model.PlanVM.Levels.Levels)
+                                {
+                                    <div class="col-sm-2 col-6 mb-2">
+
+                                        <div class="card">
+                                            <a class="btn btn-transparent p-0" asp-action="SelectedLevelPlan" asp-controller="Plans" asp-route-Id="@level.Id">
+                                                <div class="card-header bg-dark text-white fw-bold"><h6>@level.Name</h6></div>
+                                                <div class="card-body w-100">
+                                                  @*   <div class="row d-flex justify-content-center text-center">
+                                                        <div class="col-sm-6 col-3">
+                                                            <div class="card">
+                                                                <div class="card-header py-0"><h6>@ResourceApp_Ar.SelectedPlanPage_SmallHeader_LessonsOfLevel_card</h6></div>
+                                                                <div class="card-body py-0"><h6 class="card-title">@level.LessonsData.Count()</h6></div>
+                                                                
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-sm-6 col-6">
+                                                            <div class="card">
+                                                                <div class="card-header py-0"><h6>@ResourceApp_Ar.SelectedPlanPage_SmallHeader_StudentsLevel_card</h6></div>
+                                                                <div class="card-body py-0"><h6 class="card-title">@level.Description</h6></div>
+                                                            </div>
+                                                        </div>
+                                                    </div> *@
+                                                    <div class="input-group mb-1">
+                                                            <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.SelectedPlanPage_SmallHeader_LessonsOfLevel_card</span>
+                                                        <input type="text" class="form-control" readonly value="@level.LessonsData.Count()" />
+                                                    </div>
+                                                    <div class="input-group mb-1">
+                                                                <span class="input-group-text bg-primary-subtle">@ResourceApp_Ar.SelectedPlanPage_SmallHeader_StudentsLevel_card</span>
+                                                        <input type="text" class="form-control" readonly value="@level.Description" />
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                    i++;
+                                }
+                            
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End Content-->
+    </div>
+</div>
+
+@* <script src="~/js/SelectedCenter.js"></script>  *@

@@ -1,0 +1,208 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Teachers Attendances";
+    int cNo = 0;
+    var TeacherAttendancesData = Model.ReportVM.AllAttendances;
+
+    var utcTime = DateTime.UtcNow;
+    //var currentTime = utcTime.UTCToRegionalTime("Asia/Riyadh").TimeOfDay;
+
+    var epStartTime_Fajr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.FajrTime).ToString("hh:mm tt");
+    var epEndTime_Fajr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndFajrTime).ToString("hh:mm tt"); 
+
+
+    var epStartTime_Sunrise = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.SunriseTime).ToString("hh:mm tt");
+    var epEndTime_Sunrise = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndSunriseTime).ToString("hh:mm tt");
+
+    var epStartTime_Zohr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.ZohrTime).ToString("hh:mm tt");
+    var epEndTime_Zohr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndZohrTime).ToString("hh:mm tt");
+
+    var epStartTime_Asr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.AsrTime).ToString("hh:mm tt");
+    var epEndTime_Asr = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndAsrTime).ToString("hh:mm tt");
+
+    var epStartTime_Mghrb = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.MghrbTime).ToString("hh:mm tt");
+    var epEndTime_Mghrb = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndMghrbTime).ToString("hh:mm tt");
+
+    var epStartTime_Isha = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.IshaTime).ToString("hh:mm tt");
+    var epEndTime_Isha = Convert.ToDateTime(Model.EpisodeVM.PrayerTimesAPI.EndIshaTime).ToString("hh:mm tt");
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+    TeacherAttendancesData = Model.ReportVM.AllAttendances;
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+    TeacherAttendancesData = Model.ReportVM.AllAttendancesMen;
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+    TeacherAttendancesData = Model.ReportVM.AllAttendancesWomen;
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+    TeacherAttendancesData = Model.ReportVM.AllAttendancesMen;
+else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+    TeacherAttendancesData = Model.ReportVM.AllAttendancesWomen;
+else if (User.IsInRole(Roles.Teacher.ToString()))
+    TeacherAttendancesData = Model.ReportVM.TeacherAttendances;
+else if (User.IsInRole(Roles.TeacherWomen.ToString()))
+    TeacherAttendancesData = Model.ReportVM.TeacherAttendances;
+
+<div class="card w-100 border-0">
+    <div class="card-header shadow text-center bg-dark rounded-top-3 text-white py-1"> <h3 class="fw-bold">حضور و انصراف المعلمين</h3></div>
+    <div class="card-body border-0" dir="rtl">
+        @if (!TeacherAttendancesData.Any())
+        {
+            <div class="alert  alert-warning mt-5">
+                <h4 class="alert-heading">No Attendances!</h4>
+                <p class="mb-0">No Attendances where added yet.</p>
+            </div>
+        }
+        else
+        {
+
+           @*  <table border="0" cellspacing="5" cellpadding="5">
+                <tbody>
+                    <tr>
+                        <td>بداية الفترة</td>
+                        <td><input type="text" readonly id="minTea" name="minTea"></td>
+                    </tr>
+                    <tr>
+                        <td>نهاية الفترة</td>
+                        <td><input type="text" readonly id="maxTea" name="maxTea"></td>
+                    </tr>
+
+                </tbody>
+            </table> *@
+            <table id="exampleTea" class="table-hover display nowrap w-100 p-2 table-bordered border-primary-subtle">
+                <thead>
+                    <tr class="text-center fs-6 p-1">
+                        <td class="text-center px-0 bg-danger-subtle fw-bold"></td>
+                        <td class="text-center px-0 bg-danger-subtle fw-bold">تاريخ </td>
+                        <td class="text-center px-0 bg-danger-subtle fw-bold">
+                            الحلقة|المعلم
+                        </td>
+                        <td class="text-center px-0 bg-danger-subtle fw-bold"> الحضور</td>
+                        <td class="text-center px-0 bg-danger-subtle fw-bold"> الانصراف</td>
+                        <td class="text-center px-0 bg-danger-subtle fw-bold"> التقييم </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in TeacherAttendancesData)
+                    {
+                        <tr class="text-center fs-5">
+                            @{
+                                cNo++;
+                            }
+                            <td class="text-center px-0 fw-bold fs-6">@cNo</td>
+                            <td class="text-center px-0 fw-bold" style="font-size:14px">
+                                @item.Att_In.ToString("dddd")
+                                <br class=" my-0 py-0 px-0 mx-auto w-75">
+                                @item.Att_In.ToString("yyyy-MM-dd")
+                            </td>
+                            <td class="text-center px-0 ">
+                                <span class="fw-bold " style="font-size:18px">@item.Episode.Name</span>
+                                <br>
+                                <span class="text-success fs-6">@item.Episode.Period</span>
+                                <br class=" my-0 py-0 px-0 mx-auto w-75">
+                                <a class="link-underline-light fw-bold link-primary fs-6"  asp-action="SingleTeacherAttendance" asp-controller="Reports" asp-route-id="@item.ApplicationUserId">
+                                    @item.ApplicationUser.FullName
+                                </a>
+                            </td>
+
+                            @if (item.Status_AttIn == "غائب" && item.Status_AttOut == "غائب")
+                            {
+                                <td class="text-center px-0 fw-bold text-danger" style="font-size:14px">
+                                    [ @item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold text-danger" style="font-size:14px">
+                                    [ @item.Status_AttOut]
+                                </td>
+                            }
+                            else if (item.Status_AttIn == "حاضر" && item.Status_AttOut == " ")
+                            {
+                                <td class="text-center px-0 fw-bold text-success" style="font-size:14px">
+                                    @item.Att_In.ToString("hh:mm tt")
+                                    <br/>
+                                    [ @item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold" style="font-size:14px">
+                                    @item.Att_Out.ToString("hh:mm tt")
+                                    <br />
+                                    [ ]
+                                </td>
+                            }
+                            else if (item.Status_AttIn == "حاضر" && item.Status_AttOut == "انصراف مبكر")
+                            {
+                                <td class="text-center px-0 fw-bold text-success" style="font-size:14px">
+                                    @item.Att_In.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold text-danger" style="font-size:14px">
+                                    @item.Att_Out.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttOut ]
+                                </td>
+                            }
+                            else if (item.Status_AttIn == "تأخير" && item.Status_AttOut == " ")
+                            {
+                                <td class="text-center px-0 fw-bold text-warning" style="font-size:14px">
+                                    @item.Att_In.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttIn ]
+                                </td>
+                                <td class="text-center px-0 fw-bold" style="font-size:14px">
+                                    @item.Att_Out.ToString("hh:mm tt")
+                                    <br />
+                                    []
+                                </td>
+                            }
+                            else if (item.Status_AttIn == "تأخير" && item.Status_AttOut == "انصراف مبكر")
+                            {
+                                <td class="text-center px-0 fw-bold text-warning" style="font-size:14px">
+                                    @item.Att_In.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold text-danger" style="font-size:14px">
+                                    @item.Att_Out.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttOut]
+                                </td>
+                            }
+                            else if (item.Status_AttIn == "عن بعد")
+                            {
+                                <td class="text-center px-0 fw-bold text-info" style="font-size:14px">
+                                    [@item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold text-info" style="font-size:14px">
+                                    [ @item.Status_AttOut]
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="text-center px-0 fw-bold" style="font-size:14px">
+                                    @item.Att_In.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttIn]
+                                </td>
+                                <td class="text-center px-0 fw-bold" style="font-size:14px">
+                                    @item.Att_Out.ToString("hh:mm tt")
+                                    <br />
+                                    [ @item.Status_AttOut]
+                                </td>
+                            }
+                            @if (item.Att_In == item.Att_Out)
+                            {
+                                <td class="fw-bold px-0 bg-light text-danger"><i class="bi bi-x-circle-fill fs-3 text-danger"></i></td>
+                            }
+                            else
+                            {
+                                <td class="fw-bold px-0 text-success bg-light"><i class="bi bi-check-circle fs-3 text-success fw-bold"></i></td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>
+<script src="~/js/Reports_TeacherAttendance.js"></script>
+

@@ -1,0 +1,459 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+
+@{
+    ViewData["Title"] = "Locations";
+    var LocationsData = Model.LocationVM.Locations;
+    int cNo = 0;
+}
+
+@if (User.IsInRole(Roles.Admin.ToString()))
+    LocationsData = Model.LocationVM.Locations;
+else if (User.IsInRole(Roles.Supervisor.ToString()))
+    LocationsData = Model.LocationVM.LocationsForMen;
+else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+    LocationsData = Model.LocationVM.LocationsForWomen;
+else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+    LocationsData = Model.LocationVM.LocationsWithSupervisor;
+else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+    LocationsData = Model.LocationVM.LocationsWithSupervisor;
+
+<div class="wrapper" dir="rtl">
+    <!--Content-Header-->
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0 text-dark">@ResourceApp_Ar.LocationsPage_LocationsMain_lbl</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Content-Header-->
+    <!-- Main content -->
+    <section class="content" dir="rtl">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex align-items-Location justify-content-start">
+                        <div class="card-tools ">
+                            <!-- Button trigger modal -->
+                            @if (AuthorizationService.AuthorizeAsync(User, Permissions.Locations.Create).Result.Succeeded)
+                            {
+                                <button type="button"
+                                        class="btn btn-outline-primary rounded-3" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()" id="addlocationBtn">
+                                    <i class="bi bi-plus-circle-dotted fs-5 ps-2"></i> @ResourceApp_Ar.LocationsPage_AddLocation_btn
+                                </button>
+                            }
+                            <div class="btn-group  position-absolute start-0 ms-4" dir="ltr" role="group" aria-label="Button group with nested dropdown">
+                                <button type="button" class="btn btn-primary text-white">
+                                    خدمات اخري <i class="bi bi-database-check text-white fs-5 ps-2"></i>
+                                </button>
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+                                    <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        @if (User.IsInRole(Roles.Admin.ToString()) || User.IsInRole(Roles.Supervisor.ToString()) || User.IsInRole(Roles.SupervisorWomen.ToString()))
+                                        {
+                                            @*  <a class="dropdown-item text-dark fw-bold" data-bs-toggle="modal" data-bs-target="#prayerTimes">
+                                                @ResourceApp_Ar.EpisodesPage_PrayerTimes_btn
+                                            </a> *@
+
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- /.card-header -->
+
+                    <div class="card-body  " style="background: #FBF8EF;">
+                        <!-- Tab links -->
+                        <div class="tab" style="background: #CBF7DC;">
+                            <button class="tablinks fs-6 fw-bold" style="background: #CBF7DC;" onclick="openCity('event', 'Locations')" id="defaultOpen">@ResourceApp_Ar.LocationsPage_Location_tab</button>
+                            @if (User.IsInRole(Roles.Admin.ToString()))
+                            {
+                                <button class="tablinks fs-6 fw-bold" onclick="openCity(event, 'LogLocations')" id="defaultTow">Log Locations</button>
+                            }
+                        </div>
+
+                        <!-- Tab content -->
+                        @if (!LocationsData.Any())
+                        {
+                            <div class="alert  alert-warning mt-5">
+                                <h4 class="alert-heading">No Locations!</h4>
+                                <p class="mb-0">No locations where added yet.</p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="Locations" class="tabcontent">
+                                <table id="tableLocation" class="table-hover display nowrap  w-100 p-2 table-bordered border-primary-subtle">
+
+                                <thead>
+                                        <tr class="text-center fs-5">
+
+                                            <td class="text-center py-2 px-1 bg-dark text-white fw-bold"></td>
+                                            <td class="text-center py-2 px-1 bg-dark text-white fw-bold">@ResourceApp_Ar.LocationsPage_locationName_LocationsTable <br />[الحلقات]</td>
+                                            <td class="text-center py-2 px-1 bg-dark text-white fw-bold"></td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        @foreach (var location in LocationsData)
+                                        {
+                                            cNo++;
+                                        <tr class="text-center fs-5">
+                                            <td class="text-center py-1 fw-bold fs-6">
+                                                    <img src="~/images/loclogo.png" alt="loc" width="50" height="50"><br>@cNo
+                                            </td>
+                                            <td class="text-center py-1 fs-6 fw-bold" style="font-size:13px">
+                                                    @location.Name <br />[@location.Episodes.Count()]حلقة
+                                            </td>
+                                               
+                                            <td class="text-center py-1 fw-bold fs-6" style="font-size:13px">
+                                                    <a class="btn btn-success btn-sm rounded-3" asp-action="SelectedLocationCenter" asp-controller="Centers" asp-route-Id="@location.Id">
+                                                        <i class="bi-geo-alt-fill fs-6"></i><br> @ResourceApp_Ar.Page_DetailsBtn_Table
+                                                    </a>
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Locations.Edit).Result.Succeeded)
+                                                    {
+                                                        
+                                                        <a class="btn btn-outline-warning btn-sm rounded-3" onclick="Edit('@location.Id', '@location.Name','@location.Type','@location.Description','@location.LoCenterId','@location.Latitude','@location.Longitude','@location.DistrictId')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                            <i class="bi bi-pencil-square fs-6"></i> <br> @ResourceApp_Ar.Page_EditBtn_Table
+                                                        </a>
+                                                    }
+                                                    <br>
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Locations.Pause).Result.Succeeded)
+                                                    {
+                                                        if (location.PauseState > 0)
+                                                        {
+                                                            
+                                                            <a id="pause" class="btn btn-outline-dark btn-sm rounded-3" onclick="Pause('@location.Id')">
+                                                                <i class="bi bi-pause-circle fs-6"></i> <br /> @ResourceApp_Ar.Page_PauseBtn_Table
+                                                            </a>
+                                                        }
+                                                        else
+                                                        {
+                                                            
+                                                            <a id="pause" class="btn btn-outline-success btn-sm rounded-3" onclick="Resume('@location.Id')">
+                                                                <i class="bi bi-play-circle fs-6 "></i><br> @ResourceApp_Ar.Page_ResumeBtn_Table
+                                                            </a>
+                                                        }
+                                                    }
+                                                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Locations.Delete).Result.Succeeded)
+                                                    {
+                                                        
+                                                        <a class="btn btn-danger btn-sm rounded-3" onclick="Delete('@location.Id')">
+                                                            <i class="bi bi-trash fs-6"></i> <br /> @ResourceApp_Ar.Page_DeleteBtn_Table
+                                                        </a>
+                                                    }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                            </div> 
+                        }
+
+                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Locations.DeleteLog).Result.Succeeded)
+                        {
+                            <div id="LogLocations" class="tabcontent">
+                                <table id="tableLogLocation" class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr class="bg-primary fw-bolder text-white">
+                                            <td>#</td>
+                                            <td>Location Name</td>
+                                            <td>ActionName</td>
+                                            <td>Date</td>
+                                            <td>UserName</td>
+                                            <td>Events</td>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.LocationVM.LogLocations)
+                                        {
+                                            <tr>
+                                                <td>#</td>
+                                                <td>@item.Location.Name</td>
+                                                <td>@item.Action</td>
+                                                <td>@item.Date</td>
+                                                <td>@userManager.FindByIdAsync(item.UserId.ToString()).Result?.FullName</td>
+
+                                                <td>
+
+                                                    <input type="button" class="btn btn-danger p-2 btn-sm" onclick="DeleteLog('@item.Id')" value="Delete" />
+
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+                <!-- /.card -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+    </section>
+    <!-- /.content -->
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog card card-success card-outline">
+        <div class="modal-content">
+            <div class="modal-header" dir="rtl">
+                <h5 class="modal-title" id="title">@ResourceApp_Ar.LocationsModal_AddNewLocation_lbl</h5>
+                <img id="epIcon" alt="profile" class="rounded-circle mx-auto d-block bg-transparent" style="height:100px;width:100px;object-fit:contain" src="~/images/loclogo.png" />
+
+                <a href="#" class="btn-close ms-1" data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+            <div class="modal-body" dir="rtl">
+                <form asp-action="Save" asp-controller="Locations" method="post">
+                    <input type="text" hidden class="form-control" asp-for="LocationVM.NewLocation.Id" id="LocationId" />
+
+                    <div class="input-group mt-2 ">
+                        <span class="input-group-text ">@ResourceApp_Ar.LocationsModal_LocationName_lbl</span>
+                        <input type="text" class="form-control" required style="border-left:solid 3px red" asp-for="LocationVM.NewLocation.Name" id="LocationName" placeholder="@ResourceApp_Ar.LocationsModal_LocationName_txt" />
+                    </div>
+                    <span asp-validation-for="LocationVM.NewLocation.Name" class="text-danger"></span>
+
+                    @if (User.IsInRole(Roles.Admin.ToString()))
+                    {
+                        <div class="input-group mb-2" id="locc">
+                            <label class="input-group-text pe-3" for="LocationType"> نوع المكان </label>
+                            <select class="form-select text-secondary" asp-for="LocationVM.NewLocation.Type" id="LocationType" onchange="SelectType()">
+                                <option selected disabled> حدد نوع المكان</option>
+                                <option id="formen" value="mosque">مساجد رجال </option>
+                                <option id="forwomen" value="dar">دور نساء </option>
+                            </select>
+                            <span asp-validation-for="LocationVM.NewLocation.Type" class="text-danger"></span>
+                        </div>
+
+                        <div class="input-group input-group-sm mb-2">
+                            <label class="input-group-text w-auto" id="lblcentersM" for="centersM">مراكز رجال</label>
+                            <select class="form-select" asp-for="LocationVM.NewLocation.LoCenterId" id="centersM" style="border-left:solid 3px red">
+                                <option selected disabled>حدد المركز</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForMen)
+                                {
+                                    <option id="Mcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+
+                            <label class="input-group-text w-auto" id="lblcentersW" for="centersW">مراكز نساء</label>
+                            <select class="form-select" asp-for="LocationVM.NewLocation.LoCenterId" id="centersW" style="border-left:solid 3px red">
+                                <option selected disabled>حدد المركز</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForWomen)
+                                {
+                                    <option id="Wcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+
+                            <span asp-validation-for="LocationVM.NewLocation.LoCenterId" class="text-danger"></span>
+                        </div>
+                    }
+                    else if (User.IsInRole(Roles.Supervisor.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mt-2" hidden asp-for="LocationVM.NewLocation.Type" value="mosque" id="LocationType" />
+                        </div>
+
+                        <div class="input-group mt-2">
+                            <label class="input-group-text w-auto" id="lblcentersM" for="centersM">@ResourceApp_Ar.LocationsModal_AvilableCenters_lbl</label>
+                            <select class="form-select" required asp-for="LocationVM.NewLocation.LoCenterId" id="centersM" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.LocationsModal_AvilableCenters_option</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForMen)
+                                {
+                                    <option id="Mcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="LocationVM.NewLocation.LoCenterId" class="text-danger"></span>
+
+                    }
+                    else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="LocationVM.NewLocation.Type" value="dar" id="LocationType" />
+                        </div>
+                        <div class="input-group input-group mt-2">
+                            <label class="input-group-text w-auto" id="lblcentersW" for="centersW">@ResourceApp_Ar.LocationsModal_AvilableCenters_lbl</label>
+                            <select class="form-select" required asp-for="LocationVM.NewLocation.LoCenterId" id="centersW" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.LocationsModal_AvilableCenters_option</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForWomen)
+                                {
+                                    <option id="Wcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+
+                        </div>
+                        <span asp-validation-for="LocationVM.NewLocation.LoCenterId" class="text-danger"></span>
+
+                    }
+                    else if (User.IsInRole(Roles.SupervisorCenterMen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mt-2" hidden asp-for="LocationVM.NewLocation.Type" value="mosque" id="LocationType" />
+                        </div>
+
+                        <div class="input-group input-group mb-2">
+                            <label class="input-group-text w-auto" id="lblcentersM" for="centersM">@ResourceApp_Ar.LocationsModal_AvilableCenters_lbl</label>
+                            <select class="form-select" required asp-for="LocationVM.NewLocation.LoCenterId" id="centersM" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.LocationsModal_AvilableCenters_option</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForSupervisorCenter)
+                                {
+                                    <option id="Mcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+                        </div>
+                        <span asp-validation-for="LocationVM.NewLocation.LoCenterId" class="text-danger"></span>
+
+                    }
+                    else if (User.IsInRole(Roles.SupervisorCenterWomen.ToString()))
+                    {
+                        <div class="form-group">
+                            <input type="text" class="form-control mb-2" hidden asp-for="LocationVM.NewLocation.Type" value="dar" id="LocationType" />
+                        </div>
+
+                        <div class="input-group mt-2">
+                            <label class="input-group-text w-auto" id="lblcentersW" for="centersW">@ResourceApp_Ar.LocationsModal_AvilableCenters_lbl</label>
+                            <select class="form-select" required asp-for="LocationVM.NewLocation.LoCenterId" id="centersW" style="border-left:solid 3px red">
+                                <option selected disabled>@ResourceApp_Ar.LocationsModal_AvilableCenters_option</option>
+                                @foreach (var center in Model.LocationVM.CVM.CentersForSupervisorCenter)
+                                {
+                                    <option id="Wcid" value="@center.Id">@center.Name</option>
+                                }
+                            </select>
+
+                        </div>
+                        <span asp-validation-for="LocationVM.NewLocation.LoCenterId" class="text-danger"></span>
+
+                    }
+                    <div class="input-group input-group mb-2 ">
+                        <label class="input-group-text w-auto" id="lblDistrict" for="districtId">@ResourceApp_Ar.LocationsModal_AvilableDistricts_lbl</label>
+                        <select class="form-select" required asp-for="LocationVM.NewLocation.DistrictId" id="districtId" style="border-left:solid 3px red">
+                            <option selected disabled>@ResourceApp_Ar.LocationsModal_AvilableDistricts_option</option>
+                            @foreach (var district in Model.LocationVM.Districts)
+                            {
+                                <option value="@district.Id">@district.Name</option>
+                            }
+                        </select>
+
+                    </div>
+                    <span asp-validation-for="LocationVM.NewLocation.DistrictId" class="text-danger"></span>
+
+                    <div class="input-group mb-2">
+                        <span class="input-group-text pe-4">@ResourceApp_Ar.LocationsModal_LocationDescription_lbl</span>
+                        <textarea class="form-control" asp-for="LocationVM.NewLocation.Description" id="description" placeholder=" @ResourceApp_Ar.LocationsModal_LocationDescription_txt" rows="3" cols="50"></textarea>
+                        <span asp-validation-for="LocationVM.NewLocation.Description" class="text-danger"></span>
+                    </div>
+                    <hr>
+                    <!-- قائمة اختيار نوع الخريطة -->
+                    <div class="input-groupovd mb-3 d-flex">
+                        <label class="input-group-text ms-2" for="mapType">
+                            نوع الخريطة
+                            <img src="~/images/355980.png" class="pe-3" style="height:30px;" />
+                        </label>
+                        <select id="mapType" class="form-select" onchange="changeMapType(this.value)">
+                            <option value="roadmap">خريطة الشوارع</option>
+                            <option value="satellite">قمر صناعي</option>
+                            <option value="hybrid">هجين</option>
+                            <option value="terrain">تضاريس</option>
+                        </select>
+                    </div>
+
+
+                    <!-- مربعات نص لعرض الإحداثيات -->
+                    <div>
+                        @*  <label>خط العرض (Latitude):</label> *@
+                        <input type="text" class="form-control  mb-2" id="txtLatitude" readonly asp-for="LocationVM.NewLocation.Latitude" hidden />
+                        @* <label>خط الطول (Longitude):</label> *@
+                        <input type="text" class="form-control  mb-2" id="txtLongitude" readonly asp-for="LocationVM.NewLocation.Longitude" hidden />
+                    </div>
+                    <!-- حاوية الخريطة -->
+                    <div id="map" style=" width: 100%;height: 300px;margin-top: 20px;border: 1px solid #ddd;"></div>
+
+                    <div class="modal-footer mt-2" style="padding:0 15px 15px 0">
+                        <input type="submit" class="btn btn-success" value="Save Changes" id="btnSave" />
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@ResourceApp_Ar.Modal_Cancle_btn</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
+
+    <script src="~/js/Locations.js"></script>
+
+    <script>
+
+        let lbTitleEditLocation = '@Html.Raw(ResourceApp_Ar.LocationsModal_EditLocation_lbl)';
+        let lbEdit = '@Html.Raw(ResourceApp_Ar.Modal_SaveEdit_btn)';
+        let lbAddNewLocation = '@Html.Raw(@ResourceApp_Ar.LocationsModal_AddNewLocation_lbl)';
+        let lbbtnSave = '@Html.Raw(ResourceApp_Ar.Modal_Save_btn)';
+
+        let lbTitleMsgDelete = '@Html.Raw("حذف المسجد")';
+        let lbTitleMsgPause = '@Html.Raw("ايقاف مؤقت للمسجد")';
+        let lbTitleMsgResume = '@Html.Raw("اعادة تشغيل المسجد")';
+        let lbTitleMsgDeleteLog = '@Html.Raw("Delete LocationLog")';
+        let lbTextMsgDelete = '@Html.Raw("هل تريد حذف المسجد وكل الحلقات التابعه له ؟")';
+        let lbTextMsgPause = '@Html.Raw("هل تريد ايقاف مؤقت للمسجد وكل الحلقات التابعة له ؟")';
+        let lbTextMsgResume = '@Html.Raw("هل تريد اعادة تشغيل المسجد و كل الحلقات التابعة له ؟")';
+        let lbTextMsgDeleteLog = '@Html.Raw("Are you sure to delete Location log ?")';
+        let lbconfirmButtonText = '@Html.Raw("نعم , احذف!")';
+        let lbconfirmButtonTextPause = '@Html.Raw("نعم , ايقاف مؤقت!")';
+        let lbconfirmButtonTextResume = '@Html.Raw("نعم , اعادة تشغيل")';
+        let lbcancelButtonText = '@Html.Raw(@ResourceApp_Ar.Modal_Cancle_btn)';
+
+        let lbTitleDeletedOk = '@Html.Raw("تم الحذف")';
+        let lbTitlePausedOk = '@Html.Raw("تم الايقاف المؤقت")';
+        let lbTitleResumedOk = '@Html.Raw("تم اعادة التشغيل")';
+        let lbMsgDeletedOkLocation = '@Html.Raw("تم حذف المسجد من القائمة")';
+        let lbMsgPausedOkLocation = '@Html.Raw("تم ايقاف المسجد و الحلقات التابعه له بشكل مؤقت")';
+        let lbMsgResumedOkLocation = '@Html.Raw("تم اعادة تشغيل المسجد والحلقات التابعة له")';
+        let lbMsgDeletedOkLocationLog = '@Html.Raw("LocationLog is delete")';
+        let lbSuccess = '@Html.Raw(Helper.Success)';
+
+    </script>
+}
+

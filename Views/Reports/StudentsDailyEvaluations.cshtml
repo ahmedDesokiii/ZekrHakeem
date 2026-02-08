@@ -1,0 +1,346 @@
+﻿@inject IAuthorizationService AuthorizationService
+@inject UserManager<ApplicationUser> userManager
+@model MasterViewModel
+@{
+    ViewData["Title"] = "Students Last Lessons";
+    int cNo = 0;
+    string attendRes = "";
+    string saveRes = "";
+    string revRes = "";
+    string rabtRes = "";
+
+    string SaveSurahNameFrom = ""; int? SaveAyahNumFrom = null;
+    string RevSurahNameFrom = ""; int? RevAyahNumFrom = null;
+    string RabtSurahNameFrom = ""; int? RabtAyahNumFrom = null;
+    string SaveSurahNameTo = ""; int? SaveAyahNumTo = null;
+    string RevSurahNameTo = ""; int? RevAyahNumTo = null;
+    string RabtSurahNameTo = ""; int? RabtAyahNumTo = null;
+
+    var StudentData = Model.ReportVM.AllStudents;
+    @if (User.IsInRole(Roles.Admin.ToString()))
+        StudentData = Model.ReportVM.AllStudents;
+    else if (User.IsInRole(Roles.Supervisor.ToString()))
+        StudentData = Model.ReportVM.AllStudentsMen;
+    else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+        StudentData = Model.ReportVM.AllStudentsWomen;
+    else if (User.IsInRole(Roles.Teacher.ToString()))
+        StudentData = Model.ReportVM.AllStudentsWithTeacher;
+    else if (User.IsInRole(Roles.TeacherWomen.ToString()))
+        StudentData = Model.ReportVM.AllStudentsWithTeacher;
+
+}
+<div class="card w-100 border-0">
+    <div class="card-header shadow text-center bg-dark rounded-top-3 text-white py-1"> 
+        <h3 class="fw-bold"> تقييمات الطلاب اليومية </h3>
+        <br class="p-1 m-0">
+        <span class="p-0 text-center fw-bold text-warning fs-5" >
+
+            @DateTime.Now.Date.AddDays(-1).ToString("dddd") &nbsp;&nbsp;|&nbsp;&nbsp;
+
+            @DateTime.Now.Date.AddDays(-1).ToString("yyyy-MM-dd")
+
+        </span>
+    </div>
+    @* @if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))*@
+
+    <div class="row justify-content-center align-items-center align-content-center">
+        <div class="col-sm-6 col-6">
+            <div id="demo-output" class="rounded-4"></div>
+        </div>
+
+        <div class="col-sm-6 col-6">
+            <div id="demo-output2" class="rounded-4"></div>
+        </div>
+    </div>
+
+
+    <hr>
+    <div class="card-body border-0" dir="rtl">
+        @if (!StudentData.Any())
+        {
+            <div class="alert  alert-warning mt-5">
+                <h4 class="alert-heading">No Students!</h4>
+                <p class="mb-0">No Students where added yet.</p>
+            </div>
+        }
+        else
+        {
+
+            <a class="me-3 btn btn-outline-success btn-sm rounded-3 px-3 py-2" asp-action="ExportDailyEvaluationInExcel" asp-controller="Reports">
+                تصدير للإكسيل  <i class="bi bi-download fw-bold fs-5 pe-3"></i>
+
+            </a>
+
+            <table id="exampleDailyEval" class="mt-4 table table-hover table-bordered justify-content-center align-items-center text-center align-content-center border-primary-subtle">
+                <thead>
+
+                    <tr class="text-center p-2">
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" rowspan="2"></td>
+
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" rowspan="2"> 
+                            الطالب 
+                            |
+                            الجنسية
+                        </td>
+
+
+
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" rowspan="2"> الحضور</td>
+
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" colspan="3"> الحفظ</td>
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" colspan="3"> المراجعة</td>
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" colspan="3"> الربط</td>
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" rowspan="2">الخطة</td>
+                        <td class="text-center bg-danger-subtle fw-bold" style="font-size:15px" rowspan="2">
+                            الحلقة
+                            |
+                            المعلم
+                        </td>
+                    </tr>
+
+                    <tr class="text-center p-1 fw-bold ">
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            من سورة 
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            إلي سورة
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+                        <td class="text-center p-1 bg-danger-subtle fw-bold" style="font-size:13px">تقييم</td>
+
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            من سورة
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            إلي سورة
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+                        <td class="text-center p-1 bg-danger-subtle fw-bold" style="font-size:13px">تقييم</td>
+
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            من سورة
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+
+                        <td class="text-center p-1 bg-danger-subtle " style="font-size:13px">
+                            إلي سورة
+                            <br class="py-0 my-0">
+                            آية
+                        </td>
+                        <td class="text-center p-1 bg-danger-subtle fw-bold" style="font-size:13px">تقييم</td>
+
+
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var stu in StudentData)
+                    {
+                        foreach (var eval in stu.Evaluations.Where(x=>x.Ev_Date.Date == DateTime.Now.Date.AddDays(-1)))
+                        {
+                            //Eval Attend
+                            if (eval.Ev_Attend == -1) attendRes = "لم يقيم";
+                            if (eval.Ev_Attend == 0) attendRes = "حاضر";
+                            if (eval.Ev_Attend == 1) attendRes = "متأخر";
+                            if (eval.Ev_Attend == 2) attendRes = "مستأذن";
+                            if (eval.Ev_Attend == 3) attendRes = "غ بإذن";
+                            if (eval.Ev_Attend == 4) attendRes = "غائب";
+
+                            if (eval.Ev_Save == -1) saveRes = "لم يقيم";
+                            if (eval.Ev_Save < 5 && eval.Ev_Save > -1) saveRes = "لم يحفظ";
+                            if (eval.Ev_Save >= 5 && eval.Ev_Save < 7) saveRes = "متوسط";
+                            if (eval.Ev_Save >= 7 && eval.Ev_Save < 9) saveRes = "جيد";
+                            if (eval.Ev_Save >= 9) saveRes = "ممتاز";
+
+                            if (eval.Ev_Rev == -1) revRes = "لم يقيم";
+                            if (eval.Ev_Rev < 5 && eval.Ev_Rev > -1) revRes = "لم يحفظ";
+                            if (eval.Ev_Rev >= 5 && eval.Ev_Rev < 7) revRes = "متوسط";
+                            if (eval.Ev_Rev >= 7 && eval.Ev_Rev < 9) revRes = "جيد";
+                            if (eval.Ev_Rev >= 9) revRes = "ممتاز";
+
+                            if (eval.Ev_Rabt == -1) rabtRes = "لم يقيم";
+                            if (eval.Ev_Rabt < 5 && eval.Ev_Rabt > -1) rabtRes = "لم يحفظ";
+                            if (eval.Ev_Rabt >= 5 && eval.Ev_Rabt < 7) rabtRes = "متوسط";
+                            if (eval.Ev_Rabt >= 7 && eval.Ev_Rabt < 9) rabtRes = "جيد";
+                            if (eval.Ev_Rabt >= 9) rabtRes = "ممتاز";
+
+
+
+                            if (stu.PlanData.Name.Contains("الذكر الحكيم"))
+                            {
+                                SaveSurahNameFrom = eval.Ev_SaveSurahNameFrom;
+                                RevSurahNameFrom = eval.Ev_RevSurahNameFrom;
+                                RabtSurahNameFrom = eval.Ev_RabtSurahNameFrom;
+                                SaveAyahNumFrom = eval.Ev_SaveAyahIdFrom;
+                                RevAyahNumFrom = eval.Ev_RevAyahIdFrom;
+                                RabtAyahNumFrom = eval.Ev_RabtAyahIdFrom;
+
+                                SaveSurahNameTo = eval.Ev_SaveSurahNameTo;
+                                RevSurahNameTo = eval.Ev_RevSurahNameTo;
+                                RabtSurahNameTo = eval.Ev_RabtSurahNameTo;
+                                SaveAyahNumTo = eval.Ev_SaveAyahIdTo;
+                                RevAyahNumTo = eval.Ev_RevAyahIdTo;
+                                RabtAyahNumTo = eval.Ev_RabtAyahIdTo;
+                            }
+                            else if (stu.PlanData.Name.Contains("الخطة العامة"))
+                            {
+                                SaveSurahNameFrom = eval.Ev_SaveSurahNameFrom;
+                                RevSurahNameFrom = eval.Ev_RevSurahNameFrom;
+                                SaveAyahNumFrom = eval.Ev_SaveAyahIdFrom;
+                                RevAyahNumFrom = eval.Ev_RevAyahIdFrom;
+                                SaveSurahNameTo = eval.Ev_SaveSurahNameTo;
+                                RevSurahNameTo = eval.Ev_RevSurahNameTo;
+                                SaveAyahNumTo = eval.Ev_SaveAyahIdTo;
+                                RevAyahNumTo = eval.Ev_RevAyahIdTo;
+
+                                RabtSurahNameFrom = null;
+                                RabtAyahNumFrom = null;
+                                RabtSurahNameTo = null;
+                                RabtAyahNumTo = null;
+                                rabtRes = "";
+
+                            }
+                            else if (stu.PlanData.Name.Contains("الخطة المفتوحة"))
+                            {
+                                SaveSurahNameFrom = eval.Ev_SaveSurahNameFrom;
+                                SaveAyahNumFrom = eval.Ev_SaveAyahIdFrom;
+                                SaveSurahNameTo = eval.Ev_SaveSurahNameTo;
+                                SaveAyahNumTo = eval.Ev_SaveAyahIdTo;
+
+                                RevSurahNameFrom = null;
+                                RevAyahNumFrom = null;
+                                RevSurahNameTo = null;
+                                RevAyahNumTo = null;
+                                revRes = "";
+
+                                RabtSurahNameFrom = null;
+                                RabtAyahNumFrom = null;
+                                RabtSurahNameTo = null;
+                                RabtAyahNumTo = null;
+                                rabtRes = "";
+                            }
+
+
+                            cNo++;
+                            <tr class="text-center p-0">
+
+                                <td class="p-0 text-center">@cNo</td>
+                                <td class="p-0 text-center">
+                                    <a target="_blank" class="link-underline-light fw-bold" style="font-size:14px" asp-controller="Students" asp-action="SelectedStudent" asp-route-Id="@stu.Id">
+                                        @stu.Name
+                                    </a>
+                                    <br class="py-0 my-0">
+                                    <span style="font-size:14px" >@stu.Nationality.Name</span>
+                                </td>
+                                @if (eval.Ev_Attend.Equals(4))
+                                {
+                                    <td class="p-0 text-center bg-danger text-white fw-bold" style="font-size:14px ">@attendRes</td>
+                                }
+                                else
+                                {
+                                    <td class="p-0 text-center  text-bg-light" style="font-size:14px ">@attendRes</td>
+                                }
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @SaveSurahNameFrom
+                                    <br class="py-0 my-0">
+                                    @SaveAyahNumFrom
+                                </td>
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @SaveSurahNameTo
+                                    <br class="py-0 my-0">
+                                    @SaveAyahNumTo
+                                </td>
+                                <td class="p-0 text-center text-bg-light">@eval.Ev_Save</td>
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @RevSurahNameFrom
+                                    <br class="py-0 my-0">
+                                    @RevAyahNumFrom
+                                </td>
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @RevSurahNameTo
+                                    <br class="py-0 my-0">
+                                    @RevAyahNumTo
+                                </td>
+                                @if (stu.PlanData.Name.Equals("الخطة المفتوحة"))
+                                {
+                                    <td class="p-0 text-center text-bg-light">@revRes</td>
+                                }
+                                else
+                                {
+                                    <td class="p-0 text-center text-bg-light">@eval.Ev_Rev</td>
+
+                                }
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @RabtSurahNameFrom
+                                    <br class="py-0 my-0">
+                                    @RabtAyahNumFrom
+                                </td>
+                                <td class="p-0 text-center" style="font-size:14px">
+                                    @RabtSurahNameTo
+                                    <br class="py-0 my-0">
+                                    @RabtAyahNumTo
+                                </td>
+                                @if (!stu.PlanData.Name.Equals("الذكر الحكيم"))
+                                {
+                                    <td class="p-0 text-center text-bg-light">@rabtRes</td>
+                                }
+                                else
+                                {
+                                    <td class="p-0 text-center text-bg-light">@eval.Ev_Rabt</td>
+                                }
+                                
+                                <td class="p-0 text-center " style="font-size:13px">@stu.PlanData.Name</td>
+                                <td class="p-1 text-center">
+                                    <span class="">@stu.StEpisode.Name</span>
+                                    <br class="py-0 my-0">
+                                    <span class="">@stu.StEpisode.ApplicationUser.FullName</span>
+                                </td>
+                            </tr>
+                        }
+                        
+                    }
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586">اجمالي البيانات</th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        <th class="text-center  fw-bold fs-6" style="background-color:#FFD586"></th>
+                        
+                        
+                       
+                        
+                    </tr>
+                </tfoot>
+                
+
+            </table>
+
+        }
+    </div>
+</div>
+
+
+<script src="~/js/ReportsDailyEvaluations.js"></script>

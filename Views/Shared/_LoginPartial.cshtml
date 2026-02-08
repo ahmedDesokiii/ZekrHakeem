@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<style>
+    a.dropdown-toggle::after {
+    content: none;
+    }
+</style>
+
+<ul class="navbar-nav">
+
+@if (SignInManager.IsSignedIn(User))
+{
+        @if (UserManager.GetUserAsync(User).Result.ProfilePicture != null)
+        {
+            <li class="nav-item">
+                <img class="avatar  rounded-circle "  alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.ProfilePicture))" />
+            </li>
+        }
+        <li class="nav-item">
+                <a class="nav-link text-primary" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"> @UserManager.GetUserAsync(User).Result.FullName</a>
+        </li>
+        <li class="nav-item">
+            <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("index", "Home", new { area = "" })">
+                    <button type="submit" class=" btn btn-danger btn-sm rounded-3" style="font-size:16px !important">
+                        <i class="bi bi-door-open-fill fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_LogOut_lnk
+                    </button>
+            </form>
+        </li>
+}
+else
+{
+    <li class="nav-item">
+            <a class="btn btn-dark fw-bold fs-6 m-1 btn-sm rounded-3" style="font-size:16px !important" asp-area="Identity" asp-page="/Account/Register">
+                <i class="bi bi-person-circle fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_Register_lnk
+            </a>
+    </li>
+    <li class="nav-item">
+            <a class="btn btn-outline-success fw-bold fs-6 m-1 btn-sm rounded-3" style="font-size:16px !important" asp-area="Identity" asp-page="/Account/Login">
+                <i class="bi bi-door-closed fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_SignIn_lnk
+            </a>
+    </li>
+}
+</ul>
+

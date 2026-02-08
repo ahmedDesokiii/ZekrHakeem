@@ -1,0 +1,238 @@
+﻿@{
+    ViewData["Title"] = "الصفحة الرئيسية";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 rounded-3">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4 class="mb-0">إدخال بيانات القرآن الكريم</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form id="whatsappForm" asp-action="SendWhatsAppMessage" asp-controller="WhatsApp">
+                        <!-- الصف الأول: من سورة وآية -->
+                        <div class="row mb-3">
+                            <!-- حقل من سورة -->
+                            <div class="col-md-6">
+                                <label for="surahName1" class="form-label fw-bold text-primary">
+                                    <i class="fas fa-book-open ms-2"></i>
+                                    من سورة
+                                </label>
+                                <input type="text"
+                                       class="form-control text-end"
+                                       id="surahName1"
+                                       placeholder="أدخل اسم السورة هنا..."
+                                       required>
+                            </div>
+
+                            <!-- حقل آية -->
+                            <div class="col-md-6">
+                                <label for="ayahText1" class="form-label fw-bold text-primary">
+                                    <i class="fas fa-quote-right ms-2"></i>
+                                    آية
+                                </label>
+                                <textarea class="form-control text-end"
+                                          id="ayahText1"
+                                          rows="1"
+                                          placeholder="أدخل نص الآية هنا..."
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- الصف الثاني: الى سورة وآية -->
+                        <div class="row mb-3">
+                            <!-- حقل الى سورة -->
+                            <div class="col-md-6">
+                                <label for="surahName2" class="form-label fw-bold text-primary">
+                                    <i class="fas fa-book-open ms-2"></i>
+                                    الى سورة
+                                </label>
+                                <input type="text"
+                                       class="form-control text-end"
+                                       id="surahName2"
+                                       placeholder="أدخل اسم السورة هنا..."
+                                       required>
+                            </div>
+
+                            <!-- حقل آية -->
+                            <div class="col-md-6">
+                                <label for="ayahText2" class="form-label fw-bold text-primary">
+                                    <i class="fas fa-quote-right ms-2"></i>
+                                    آية
+                                </label>
+                                <textarea class="form-control text-end"
+                                          id="ayahText2"
+                                          rows="1"
+                                          placeholder="أدخل نص الآية هنا..."
+                                          required></textarea>
+                            </div>
+                        </div>
+
+                        <!-- مربع لعرض الصورة -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-primary">
+                                <i class="fas fa-image ms-2"></i>
+                                الصورة
+                            </label>
+                            <div class="text-center">
+                                <div class="image-container border rounded p-3 bg-light"
+                                     style="min-height: 200px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="displayImage"
+                                         src="https://www.kanzalebda3.com/img/Parents2.jpg"
+                                         class="img-fluid rounded"
+                                         alt="صورة القرآن"
+                                         style="max-width: 100%; max-height: 300px; object-fit: contain; display: block;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- زر الإرسال -->
+                        <div class="text-center">
+                            <button type="submit" id="sendButton" class="btn btn-primary btn-lg px-5 py-3 rounded-pill">
+                                <i class="fas fa-paper-plane ms-2"></i>
+                                إرسال
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- رسالة النتيجة -->
+                    <div id="resultMessage" class="mt-3" style="display: none;">
+                        <div class="alert" role="alert">
+                            <span id="resultText"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* RTL Support */
+    body {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    .card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+        }
+
+    .btn {
+        transition: all 0.3s ease;
+    }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+    .form-control:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .image-container {
+        transition: all 0.3s ease;
+    }
+
+        .image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+    /* RTL specific styles */
+    .form-control {
+        text-align: right;
+    }
+
+    .form-label {
+        text-align: right;
+    }
+
+    .card-header {
+        text-align: center;
+    }
+
+    /* Fix for Bootstrap RTL */
+    .ms-2 {
+        margin-right: 0.5rem !important;
+        margin-left: 0 !important;
+    }
+
+    .text-end {
+        text-align: right !important;
+    }
+</style>
+
+<script>
+    document.getElementById('whatsappForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const sendButton = document.getElementById('sendButton');
+        const resultMessage = document.getElementById('resultMessage');
+        const resultText = document.getElementById('resultText');
+
+        // تعطيل الزر أثناء الإرسال
+        sendButton.disabled = true;
+        sendButton.innerHTML = '<i class="fas fa-spinner fa-spin ms-2"></i>جاري الإرسال...';
+
+                try {
+           // جمع البيانات من النموذج
+           const surahName1 = document.getElementById('surahName1').value;
+           const ayahText1 = document.getElementById('ayahText1').value;
+           const surahName2 = document.getElementById('surahName2').value;
+           const ayahText2 = document.getElementById('ayahText2').value;
+           const imageUrl = document.getElementById('displayImage').src;
+
+           // بيانات Ultramsg من ملف التكوين مع الحقول الأربعة
+           const whatsappData = {
+               surahName1: surahName1,
+               ayahText1: ayahText1,
+               surahName2: surahName2,
+               ayahText2: ayahText2,
+               imageUrl: imageUrl
+           };
+
+            // إرسال الطلب
+            const response = await fetch('/WhatsApp/SendWhatsAppMessage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(whatsappData)
+            });
+
+            const result = await response.json();
+
+            // عرض النتيجة
+            resultMessage.style.display = 'block';
+            resultText.textContent = result.message;
+
+            if (result.success) {
+                resultMessage.querySelector('.alert').className = 'alert alert-success';
+                // إعادة تعيين النموذج
+                document.getElementById('whatsappForm').reset();
+            } else {
+                resultMessage.querySelector('.alert').className = 'alert alert-danger';
+            }
+
+        } catch (error) {
+            console.error('خطأ:', error);
+            resultMessage.style.display = 'block';
+            resultMessage.querySelector('.alert').className = 'alert alert-danger';
+            resultText.textContent = 'حدث خطأ أثناء إرسال الرسالة';
+        } finally {
+            // إعادة تفعيل الزر
+            sendButton.disabled = false;
+            sendButton.innerHTML = '<i class="fas fa-paper-plane ms-2"></i>إرسال';
+        }
+    });
+</script>

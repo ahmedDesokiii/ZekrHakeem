@@ -1,0 +1,186 @@
+﻿@page
+@using ZekrHakeem_v11.Resources
+@model RegisterModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+
+<section class="vh-100" id="registerfrm">
+    <div class="container-fluid h-custom">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <div class="text-center">
+                        <img alt="zh" class=" mx-auto d-block" style="height:130px;width:130px;object-fit:contain" src="~/images/zekr.png" />
+                        <h2 class="mt-2">@ResourceApp_Ar.Register_MainLoginTitle_lbl</h2>
+                        <hr />
+                    </div>
+
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+
+                    <!-- FullName -->
+                    <div class="input-group">
+                        <input asp-for="Input.FullName" class="form-control" required autocomplete="fullname" aria-required="true" placeholder="@ResourceApp_Ar.Register_FullName_txt" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_FullName_lbl &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.FullName" class="text-danger"></span>
+
+                    <!-- IdentityNumber -->
+                    <div class="input-group mt-3">
+                        <input asp-for="Input.IdentityNum" required class="form-control" autocomplete="IdentityNum" aria-required="true" placeholder="@ResourceApp_Ar.Register_IdentityNum_txt" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_IdentityNum_lbl</span>
+                        <span class="input-group-text bg-success-subtle border-start-0" id="inputGroup-sizing-default">&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.IdentityNum" class="text-danger"></span>
+
+                    <!-- PhoneNumber -->
+                    <div class="input-group mt-3">
+                        <input asp-for="Input.PhoneNumber" required class="form-control" autocomplete="PhoneNum" aria-required="true" placeholder="@ResourceApp_Ar.Register_PhoneNum_txt" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_PhoneNum_lbl</span>
+                        <span class="input-group-text bg-success-subtle border-start-0" id="inputGroup-sizing-default">&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
+
+                    <!-- Gender -->
+                    <div class="input-group mt-3">
+                        <select class="form-select" id="inputGroupSelect01" asp-for="Input.Gender"  aria-required="true">
+                            <option selected disabled>@ResourceApp_Ar.Register_Gender_txt</option>
+                            <option value="male">ذكــر</option>
+                            <option value="female">انثـي</option>
+                        </select>
+                        <label class="input-group-text bg-success-subtle fw-bold" for="inputGroupSelect01">@ResourceApp_Ar.Register_Gender_lbl</label>
+                        <span class="input-group-text bg-success-subtle border-start-0" id="inputGroup-sizing-default">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.Gender" class="text-danger"></span>
+
+                    <!-- Email -->
+                    <div class="input-group mt-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="email" required aria-required="true" placeholder="@ResourceApp_Ar.Register_Email_txt" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_Email_lbl &nbsp;&nbsp;&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+
+                    <!-- Password -->
+                    <div class="input-group mt-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" required aria-required="true" placeholder="@ResourceApp_Ar.Register_Password_txt" type="password" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle border-start-0 fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_Password_lbl</span>
+                        <span class="input-group-text bg-success-subtle border-start-0" id="inputGroup-sizing-default">&nbsp;&nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                    <!-- ConfirmPassword -->
+                    <div class="input-group mt-3">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" required autocomplete="new-password" aria-required="true" placeholder="@ResourceApp_Ar.Register_ConfirmPassword_txt" type="password" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                        <span class="input-group-text bg-success-subtle border-start-0 fw-bold" id="inputGroup-sizing-default">@ResourceApp_Ar.Register_ConfirmPassword_lbl &nbsp;</span>
+                    </div>
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+
+                    <div class="text-center text-lg-start mt-4 pt-2">
+                        <button id="login-submit" type="submit" data-mdb-button-init data-mdb-ripple-init class="btn btn-lg text-white w-100"
+                                style="padding-left: 3rem; padding-right: 3rem;background-color:#328E6E">
+                            @ResourceApp_Ar.Register_btn
+                        </button>
+                    </div>
+                </form>
+                <div class="d-flex flex-row align-items-center justify-content-center mt-3">
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-google fs-4"></i>
+                    </button>
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-twitter fs-4"></i>
+                    </button>
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-youtube fs-4"></i>
+                    </button>
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-facebook fs-4"></i>
+                    </button>
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-whatsapp fs-4"></i>
+                    </button>
+                    <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
+                        <i class="bi bi-twitter-x fs-4"></i>
+                    </button>
+                </div>
+                @*  @{
+                if ((Model.ExternalLogins?.Count ?? 0) == 0)
+                {
+                    <div>
+                        <p>
+                            There are no external authentication services configured. See this <a href="https://go.microsoft.com/fwlink/?LinkID=532715">
+                                article
+                                about setting up this ASP.NET application to support logging in via external services
+                            </a>.
+                        </p>
+                    </div>
+                }
+                else
+                {
+                    <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
+                        <div>
+                            <p>
+                                @foreach (var provider in Model.ExternalLogins!)
+                                {
+                                    <button type="submit" class="btn btn-light" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">
+
+
+                                        @{
+                                            string imageSrc = string.Empty;
+                                            if (provider.DisplayName == "Google")
+                                                imageSrc = "https://cdn.freebiesupply.com/logos/large/2x/google-icon-logo-svg-vector.svg";
+
+                                            else if (provider.DisplayName == "Facebook")
+                                                imageSrc = "https://cdn.freebiesupply.com/logos/large/2x/facebook-3-logo-png-transparent.png";
+                                            // else if (provider.DisplayName == "Microsoft")
+                                            //     imageSrc = "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Microsoft_Store_logo.svg/1200px-Microsoft_Store_logo.svg.png";
+                                        }
+                                        <img src="@imageSrc" alt="@provider.DisplayName" style="height: 20px;" />
+                                        Login with @provider.DisplayName
+                                    </button>
+                                }
+                            </p>
+                        </div>
+                    </form>
+                }
+            }
+ *@
+            </div>
+            <div class="col-md-9 col-lg-6 col-xl-5">
+                <img src="~/images/Login/rre.png"
+                     class="img-fluid" alt="Sample image">
+            </div>
+
+        </div>
+    </div>
+    @*  <div class="d-flex flex-column flex-md-row text-center text-md-start justify-content-between py-4 px-4 px-xl-5 bg-primary">
+        <!-- Copyright -->
+        <div class="text-white mb-3 mb-md-0">
+            Copyright © 2020. All rights reserved.
+        </div>
+        <!-- Copyright -->
+        <!-- Right -->
+        <div>
+            <a href="#!" class="text-white me-4">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="#!" class="text-white me-4">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="#!" class="text-white me-4">
+                <i class="fab fa-google"></i>
+            </a>
+            <a href="#!" class="text-white">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </div>
+        <!-- Right -->
+    </div>
+ *@
+</section>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
