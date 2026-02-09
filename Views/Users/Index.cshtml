@@ -151,16 +151,156 @@
                     }
                     else
                     {
-                        <div class="table-responsive text-center">
-                            <table id="tableUser"
-                                   class="table table-hover align-middle users-table nowrap">
+                        <!-- ======================= Mobile Users =============================== -->
+                        <!-- ================= Search Bar ================= -->
+                        <div class="d-block d-md-none px-2 mb-2">
+                            <input type="text" id="userSearch" class="form-control shadow-sm"
+                                   placeholder="ابحث عن أي حاجة..." />
+                        </div>
+
+                        <!-- ================= Users Cards ================= -->
+                        <div class="d-block d-md-none px-2" id="usersCardsContainer">
+                            @foreach (var user in Model.UserVM)
+                            {
+                                <div class="card user-card mb-3 shadow-sm mt-2 position-relative"
+                                     data-name="@user.FullName.ToLower()"
+                                     data-username="@user.UserName.ToLower()"
+                                     data-phone="@user.PhoneNumber?.ToLower()"
+                                     data-roles="@string.Join(",", user.Roles).ToLower()"
+                                     style="transition: all 0.3s ease;">
+
+                                    <!-- Header -->
+                                    <div class="card-header py-2 px-3 text-white d-flex align-items-center"
+                                         style="background: linear-gradient(135deg, #d9ead3 0%, #b7e1b4 50%, #9ccc9c 100%);">
+                                        <i class="bi bi-person-circle fs-4 ms-2"></i>
+                                        <h6 class="fw-bold mb-0 text-truncate user-name" title="@user.FullName">@user.FullName</h6>
+                                    </div>
+
+                                    <!-- Body -->
+                                    <div class="card-body py-2">
+                                        <div class="data-row d-flex justify-content-between align-items-center">
+                                            <span class="data-label">اسم المستخدم:</span>
+                                            <span class="fw-bold user-username">@user.UserName</span>
+                                        </div>
+                                        <div class="data-row d-flex justify-content-between align-items-center">
+                                            <span class="data-label">التليفون:</span>
+                                            <span class="fw-bold user-phone">@user.PhoneNumber</span>
+                                        </div>
+                                        <div class="data-row d-flex flex-wrap align-items-center">
+                                            <span class="data-label me-2">المجموعات:</span>
+                                            <span class="fw-bold user-roles d-flex flex-wrap">
+                                                @foreach (var role in user.Roles)
+                                                {
+                                                    <span class="badge me-1 mb-1" style="background-color: rgba(25,135,84,0.1); color:#198754;">@role</span>
+                                                }
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Footer / Actions -->
+                                    <div class="card-footer bg-light border-0 d-flex justify-content-around py-2 sticky-bottom">
+                                        <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
+                                            <i class="bi bi-view-stacked"></i>
+                                        </a>
+                                        <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a class="btn fw-bold btn-outline-dark bg-transparent text-danger border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- ================= Search + Highlight + Animation JS ================= -->
+                        <script>
+                            const searchInput = document.getElementById('userSearch');
+                            const cardsContainer = document.getElementById('usersCardsContainer');
+                            const cards = Array.from(cardsContainer.querySelectorAll('.user-card'));
+
+                            function escapeRegex(text) {
+                                return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                            }
+
+                            searchInput.addEventListener('input', function() {
+                                const query = this.value.toLowerCase().trim();
+                                const regex = new RegExp(escapeRegex(query), 'gi');
+
+                                cards.forEach(card => {
+                                    const nameEl = card.querySelector('.user-name');
+                                    const usernameEl = card.querySelector('.user-username');
+                                    const phoneEl = card.querySelector('.user-phone');
+                                    const rolesEl = card.querySelector('.user-roles');
+
+                                    const name = card.getAttribute('data-name');
+                                    const username = card.getAttribute('data-username');
+                                    const phone = card.getAttribute('data-phone');
+                                    const roles = card.getAttribute('data-roles');
+
+                                    const matchFound = name.includes(query) || username.includes(query) || phone.includes(query) || roles.includes(query);
+
+                                    // Animate visibility
+                                    if (matchFound) {
+                                        card.style.opacity = 1;
+                                        card.style.transform = 'scale(1)';
+                                        card.style.display = 'block';
+                                    } else {
+                                        card.style.opacity = 0;
+                                        card.style.transform = 'scale(0.95)';
+                                        setTimeout(() => { card.style.display = 'none'; }, 300);
+                                    }
+
+                                    // Highlight matches
+                                    [nameEl, usernameEl, phoneEl].forEach(el => {
+                                        el.innerHTML = el.textContent.replace(regex, match => `<mark style="background-color: #ffe58f; color:#000;">${match}</mark>`);
+                                    });
+
+                                    // Roles highlighting
+                                    rolesEl.querySelectorAll('.badge').forEach(badge => {
+                                        const text = badge.textContent.toLowerCase();
+                                        if(query && text.includes(query)) {
+                                            badge.style.backgroundColor = '#ffe58f';
+                                            badge.style.color = '#000';
+                                        } else {
+                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)'; // subtle green default
+                                            badge.style.color = '#198754';
+                                        }
+                                    });
+                                });
+                            });
+                        </script>
+
+                        <!-- ================= Optional CSS Improvements ================= -->
+                        <style>
+                            .user-card {
+                                transition: all 0.3s ease;
+                                border-radius: 10px;
+                            }
+
+                                .user-card mark {
+                                    border-radius: 3px;
+                                    padding: 0 2px;
+                                }
+
+                            .sticky-bottom {
+                                position: sticky;
+                                bottom: 0;
+                                background: #f8f9fa;
+                                z-index: 10;
+                            }
+                        </style>
+
+                        <!-- ======================= Desktop Users =============================== -->
+                        <div class="d-none d-md-block table-responsive px-2">
+                            <table id="tableUser" class="table table-hover users-table nowrap table-bordered border-primary-subtle align-middle">
                                 <thead>
-                                    <tr>
-                                        <th>الاسم</th>
-                                        <th>اسم المستخدم</th>
-                                        <th class="d-none d-md-table-cell">التليفون</th>
-                                        <th class="d-none d-lg-table-cell">المجموعات</th>
-                                        <th class="text-center">إجراءات</th>
+                                    <tr class="text-center text-white" style="background: linear-gradient(135deg, #032b42 0%, #0b4a6f 50%, #415E72 100%);">
+                                        <th class="text-center text-white" style="background:#94B4C1">الاسم</th>
+                                        <th class="text-center text-white" style="background:#94B4C1">اسم المستخدم</th>
+                                        <th class="text-center text-white d-none d-md-table-cell" style="background:#94B4C1">التليفون</th>
+                                        <th class="text-center text-white d-none d-lg-table-cell" style="background:#94B4C1">المجموعات</th>
+                                        <th class="text-center text-white" style="background:#94B4C1">إجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -171,18 +311,36 @@
                                             <td data-label="اسم المستخدم">@user.UserName</td>
                                             <td data-label="التليفون" class="d-none d-md-table-cell">@user.PhoneNumber</td>
                                             <td data-label="المجموعات" class="d-none d-lg-table-cell">
-                                                @string.Join(" , ", user.Roles)
+                                                @foreach (var role in user.Roles)
+                                                {
+                                                    var roleColor = role switch
+                                                    {
+                                                        "Admin" => "#FFB6B9",
+                                                        "User" => "#B6E2D3",
+                                                        "Manager" => "#FFD6A5",
+                                                        _ => "#D3D3D3"
+                                                    };
+                                                    <span class="badge text-dark me-1" style="background-color:@roleColor">@role</span>
+                                                }
                                             </td>
                                             <td class="text-center actions">
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 text-center p-0 mx-1 fs-5" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id"><i class="bi bi-view-stacked"></i></a>
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 p-0 mx-1 fs-5" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id"><i class="bi bi-pencil-square"></i></a>
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent  border-0 p-0 mx-1 fs-5" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id"><i class="bi bi-trash3-fill"></i></a>
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
+                                                    <i class="bi bi-view-stacked"></i>
+                                                </a>
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent text-danger border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     }
                                 </tbody>
                             </table>
                         </div>
+
+                       
                     }
 
                 </div>
