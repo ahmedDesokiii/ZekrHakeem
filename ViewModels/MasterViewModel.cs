@@ -16,7 +16,7 @@ namespace ZekrHakeem_v11.ViewModels
         public StudentViewModel StudentVM { get; set; }
         public ReportViewModel ReportVM { get; set; }
         public PermissionsFormViewModel PermissionVM { get; set; }
-        public IEnumerable<UserViewModel>? UserVM { get; set; }
+        public IEnumerable<UserViewModel> UserVM { get; set; }
         public List<IdentityRole>? RoleVM { get; set; }
         public AccessDeniedModel AccessDeniedVM { get; set; }
 

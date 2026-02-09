@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>@ViewData["Title"] - ZekrHakeem_v11</title>
+    <title>@ViewData["Title"] - الذكر الحكيم</title>
     <link rel="icon" type="image/x-icon" href="~/zk.ico">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -17,27 +17,33 @@
     <link href="~/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
     <link href="~/css/bootswatchtheme.css" rel="stylesheet" />
 
-    <!-- custom font css : ah-desoki -->
+    <!-- custom alert pop : ah-desoki -->
+    <link href="~/sweetalert2/sweetalert2.css" rel="stylesheet" />
+    <link href="~/sweetalert2/sweetalert2.min.css" rel="stylesheet" />
+
+    <!-- custom font-arabic : ah-desoki-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Beiruti:wght@200..900&display=swap">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Beiruti:wght@200..900&display=swap" rel="stylesheet">
 
-    <!-- custom datatable css : ah-desoki -->
+    <!-- custom datatable css : ah-desoki-->
     <link rel="stylesheet" href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/columncontrol/1.1.1/css/columnControl.dataTables.css" />
 
-
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-     <script src="https://cdn.datatables.net/plug-ins/2.3.4/api/sum().js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.2.5/css/buttons.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/select/3.1.3/css/select.dataTables.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/datetime/1.6.1/css/dataTables.dateTime.min.css" />
 
     <!-- custom datatable js : ah-desoki -->
-    <script src="https://code.jquery.com/jquery-3.7.1.js" asp-append-version="true"></script> 
+    <script src="https://code.jquery.com/jquery-3.7.1.js" asp-append-version="true"></script>
     <script src=" https://cdn.datatables.net/2.3.4/js/dataTables.js" asp-append-version="true"></script>
-
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/2.3.4/api/sum().js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js   "></script>
     <script src="https://cdn.datatables.net/datetime/1.5.6/js/dataTables.dateTime.min.js "></script>
-
-
+    <script src="https://cdn.datatables.net/columncontrol/1.1.1/js/dataTables.columnControl.js"></script>
+    <script src="https://cdn.datatables.net/columncontrol/1.1.1/js/columnControl.dataTables.js"></script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://cdn.datatables.net/plug-ins/2.3.4/api/sum().js"></script>
 
 
     <!-- Swiper JS CSS-->
@@ -92,10 +98,10 @@
                             @if (User.IsInRole(Roles.Admin.ToString()))
                             {
                                 <li class="nav-item ">
-                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Users" asp-action="Index">Users</a>
+                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Users" asp-action="Index">المستخدمين</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
+                                    <a class="nav-link fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Roles" asp-action="Index">المجموعات</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link fs-5 fw-bold " style="color:darkgoldenrod;font-size:20px !important" asp-area="" asp-controller="Centers" asp-action="Centers">@ResourceApp_Ar.LayoutPage_NavCenters_lnk</a>
@@ -300,17 +306,16 @@
 
             </nav>
             <!-- Navbar -->
-            <div class="p-0 m-0">
+            <div class="p-0 m-0 top-image-section">
                 <img src="~/images/msqwv.png" alt="wave" class="mb-0" style="width:100%" />
             </div>
         </div>
         
     </header>
-     <div class="pt-0" style="background: #FBF8EF;">
+     <div class="p-0" style="background: #FBF8EF;">
         <div class="">
-            <main role="main" class="pb-3 mb-3">
+            <main role="main" class="p-0">
                 @RenderBody()
-               
             </main>
         </div>
     </div>
@@ -377,13 +382,11 @@
     </footer> *@
 
 
-
-
-
     <!-- JavaScript -->
     <script src="js/script.js"></script>
   
     <script src="~/js/site.js"      asp-append-version="true"></script>
+    <script src="~/js/Users.js"      asp-append-version="true"></script>
     <script src="~/js/Roles.js" asp-append-version="true"></script>
     <script src="~/js/Centers.js"   asp-append-version="true"></script>
     <script src="~/js/Districts.js"   asp-append-version="true"></script>
@@ -413,6 +416,38 @@
     <script src="~/sweetalert2/sweetalert2.js"></script>
     <script src="~/sweetalert2/sweetalert2.min.js"></script>
     @* <script src="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.2.2/b-3.2.2/fc-5.0.4/sc-2.4.3/sb-1.8.2/sp-2.3.3/sl-3.0.0/datatables.min.js" asp-append-version="true"></script> *@
+    <script>
+        document.addEventListener("scroll", () => {
+            const navbar = document.querySelector("header nav.navbar");
+            if (!navbar) return;
+
+            if (window.scrollY > 10) {
+                navbar.classList.add("scrolled");
+            } else {
+                navbar.classList.remove("scrolled");
+            }
+        });
+    </script>
+   @*  <script>
+        document.addEventListener("scroll", function () {
+            const section = document.querySelector(".top-image-section");
+
+            if (!section) return;
+
+            if (window.scrollY > 80) {
+                section.classList.add("hide-section");
+            } else {
+                section.classList.remove("hide-section");
+            }
+        });
+
+            //     if (window.scrollY > 40) {
+            // section.classList.add("hide-section");
+        //}
+
+    </script>
+ *@
+
 
 
 

@@ -14,6 +14,12 @@ var swiper = new Swiper(".mySwiper", {
 });
 
 
+
+
+
+
+
+
 // Nav open close
 const body = document.querySelector('body'),
       navMenu = body.querySelector('.menu-content'),

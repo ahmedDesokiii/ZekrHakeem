@@ -1,91 +1,66 @@
-﻿@model MasterViewModel
+﻿@*
+@model MasterViewModel
 
 @{
-    ViewData["Title"] = "Users";
+    ViewData["Title"] = "المستخدمين";
     int cNo = 0;
 }
 
 <div class="wrapper">
-    <!--Content-Header-->
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Users</h1>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!--End Content-Header-->
     <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex align-items-center justify-content-start">
-                        <div class="card-tools ">
-                            <!-- Button trigger modal -->
+    <section class="container-fluid">
+        <div class="row mb-3">
 
-                           @*  <button type="button" style="margin-left:20px" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
-                                Add User
-                            </button> *@
-                            <a class="btn btn-outline-primary" asp-action="AddUser" asp-controller="Users">Add User</a>
-                        </div>
+            <div class="col-md-1"></div>
+            <div class="col-md-10">
+                <div class="card p-0">
+                    <div class="card-header d-flex align-items-center justify-content-start bg-success-subtle">
+                        <!-- Button trigger modal -->
+                        <a title="إضافة مستخدم جديد" class="btn fs-5  rounded-3 text-white" style="background-color:#758A93" asp-action="AddUser" asp-controller="Users">
+                            <i class="bi bi-plus fs-4 fw-bold ps-2"></i> <span class="fw-bold"> اضافة مستخدم</span>
+                        </a>
                     </div>
                     <!-- /.card-header -->
 
-                    <div class="card-body">
-                        <!-- Tab links -->
-                        <div class="tab">
-                            <button class="tablinks" onclick="openCity(event, 'Users')" id="defaultOpen">Users</button>
-                        </div>
+                    <div class="card-body p-0">
+                    
                         <!-- Tab content -->
                         @if (!Model.UserVM.Any())
                         {
                             <div class="alert  alert-warning mt-5">
-                                <h4 class="alert-heading">No Users!</h4>
-                                <p class="mb-0">No users where added yet.</p>
+                                <h4 class="alert-heading">لا يوجد مستخدمين !</h4>
+                                <p class="mb-0">لم يتم اضافة مستخدمين للتطبيق حتي الآن</p>
                             </div>
                         }
                         else
                         {
-                            <div id="Users" class="tabcontent">
-                                <table class="table table-hover mt-4" id="tableUser">
-                                    <thead>
-                                        <tr class="bg-primary text-white ">
-                                            <th></th>
-                                            <th>Full Name</th>
-                                            @*  <th>Identity Number</th>
-                                            <th>Phone Number</th>
-                                            <th>User Name</th>
-                                            <th>Email</th> *@
-                                            <th>Roles</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var user in Model.UserVM)
-                                        {
-                                            cNo++;
-                                            <tr>
-                                                <td style="text-align:center">@cNo</td>
-                                                <td>@user.FullName</td>
-                                                @*  <td>@user.IdentityNum</td>
-                                                <td>@user.PhoneNumber</td>
-                                                <td>@user.UserName</td>
-                                                <td>@user.Email</td> *@
-                                                <td>@string.Join(" , ", user.Roles.ToList())</td>
-                                                <td>
-                                                    <a class="btn btn-warning" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">Roles</a>
-                                                    <a class="btn btn-info" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">Edit</a>
-                                                    <a href="javascript:del();" class="btn btn-danger js-delete" data-id="@user.Id">Delete</a>
-
+                            <table class="table table-hover display nowrap  px-0 table-bordered border-primary-subtle" id="tableUser">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">الاسـم</th>
+                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">اسم المستخدم</th>
+                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">التليفون</th>
+                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">المجموعات</th>
+                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.UserVM)
+                                    {
+                                        <tr class="text-center">
+                                            <td class="fs-6 text-center  px-1  py-1">@user.FullName</td>
+                                            <td class="fs-6 px-1">@user.UserName</td>
+                                            <td class="fs-6 text-center px-1">@user.PhoneNumber</td>
+                                            <td class=" fs-6 px-1 py-1">@string.Join(" , ", user.Roles.ToList())</td>
+                                             <td class="py-1">
+                                                    <a class="btn fw-bold btn-outline-dark bg-transparent border-0 text-center p-0 mx-1 fs-5" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id"><i class="bi bi-view-stacked"></i><br></a>
+                                                    <a class="btn fw-bold btn-outline-dark bg-transparent border-0 p-0 mx-1 fs-5" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id"><i class="bi bi-pencil-square"></i><br></a>
+                                                    <a class="btn fw-bold btn-outline-dark bg-transparent  border-0 p-0 mx-1 fs-5" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id"><i class="bi bi-trash3-fill"></i><br></a>
                                                 </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
                         }
                     </div>
                     <!-- /.card-body -->
@@ -93,6 +68,7 @@
                 <!-- /.card -->
                 <!-- /.card -->
             </div>
+            <div class="col-md-1"></div>
             <!-- /.col -->
         </div>
         <!-- /.row -->
@@ -102,50 +78,21 @@
 
 
 
-@section Scripts {
-    <script>
-        $(document).ready(function del () {
-            $('.js-delete')on('click', function del () {
-                var btn = $(this);
-                bootbox.confirm({
-                    message: "Are you sure that you need to delete this user ?",
-                    buttons: {
-                        confirm: {
-                            label: 'Yes',
-                            className: 'btn-success'
-                        },
-                        cancel: {
-                            label: 'No',
-                            className: 'btn-danger'
-                        }
-                    },
-                    callback: function (result) {
-                        console.log('This was logged in the callback: ' + result);
-                    }
-                });
-                // var result = confirm("Are you sure that you need to delete this user ?")
-                // if (result) { 
-                //     console.log(btn.data('id'));
-                // }
-            });
-        });
-    </script>
 
-@*     
-<partial name="AddRole" model="new RoleFormViewModel()" />
 
 @section Scripts {
+    <script src="~/js/Users.js"></script>
     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
     {
         if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
         {
             <script>
+
                 Swal.fire({
                     title: '@Context.Session.GetString(Helper.Title)',
                     text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
                     confirmButtonText: 'Ok',
                     icon: 'success'
-                    
                 });
             </script>
 
@@ -158,32 +105,89 @@
                     title: '@Context.Session.GetString(Helper.Title)',
                     text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
                     confirmButtonText: 'Ok',
-                    icon: 'warning'
-                    
+                    icon: 'error'
                 });
             </script>
         }
         Context.Session.SetString(Helper.MsgType, "");
     }
- *@
-    <script src="~/js/Users.js"></script>
-
-
-  @*   <script>
-
-        let lbTitleEdit = '@Html.Raw("Edit Role")';
-        let lbEdit = '@Html.Raw("Save Changes")';
-        let lbAddNewRole = '@Html.Raw("Add New Role")';
-        let lbbtnSave = '@Html.Raw("Add Role")';
-
-        let lbTitleMsgDelete = '@Html.Raw("Delete")';
-        let lbTextMsgDelete = '@Html.Raw($"Are you sure delete role ? ")';
-        let lbconfirmButtonText = '@Html.Raw("Yes , Delete it")';
-        let lbcancelButtonText = '@Html.Raw("Cancle")';
-
-        let lbTitleDeletedOk = '@Html.Raw("Done")';
-        let lbMsgDeletedOkRole = '@Html.Raw("Role Deleted Successfully")';
-        let lbSuccess = '@Html.Raw(Helper.Success)';
-
-    </script> *@
 }
+*@
+
+
+@model MasterViewModel
+@{
+    ViewData["Title"] = "المستخدمين";
+}
+
+<section class="container-fluid users-page ">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+
+            <div class="card users-card shadow-sm mt-4">
+
+                <!-- Header -->
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-people-fill me-1"></i> المستخدمين
+                    </h4>
+
+                    <a asp-action="AddUser" asp-controller="Users"
+                       class="btn btn-success d-flex align-items-center gap-1 rounded-3" >
+                        <i class="bi bi-plus-circle"></i>
+                        إضافة مستخدم
+                    </a>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body px-3 px-md-4 px-xl-5">
+
+                    @if (!Model.UserVM.Any())
+                    {
+                        <div class="alert alert-warning m-3 text-center">
+                            <h5>لا يوجد مستخدمين</h5>
+                            <p class="mb-0">لم يتم إضافة مستخدمين حتى الآن</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive text-center">
+                            <table id="tableUser"
+                                   class="table table-hover align-middle users-table nowrap">
+                                <thead>
+                                    <tr>
+                                        <th>الاسم</th>
+                                        <th>اسم المستخدم</th>
+                                        <th class="d-none d-md-table-cell">التليفون</th>
+                                        <th class="d-none d-lg-table-cell">المجموعات</th>
+                                        <th class="text-center">إجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var user in Model.UserVM)
+                                    {
+                                        <tr>
+                                            <td data-label="الاسم">@user.FullName</td>
+                                            <td data-label="اسم المستخدم">@user.UserName</td>
+                                            <td data-label="التليفون" class="d-none d-md-table-cell">@user.PhoneNumber</td>
+                                            <td data-label="المجموعات" class="d-none d-lg-table-cell">
+                                                @string.Join(" , ", user.Roles)
+                                            </td>
+                                            <td class="text-center actions">
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 text-center p-0 mx-1 fs-5" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id"><i class="bi bi-view-stacked"></i></a>
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 p-0 mx-1 fs-5" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id"><i class="bi bi-pencil-square"></i></a>
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent  border-0 p-0 mx-1 fs-5" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id"><i class="bi bi-trash3-fill"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>

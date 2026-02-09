@@ -53,15 +53,7 @@
                 if (user == null)
                 {
                     await userManager.CreateAsync(defaultUser, "$Aa123123");
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Parent.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Teacher.ToString());
                     await userManager.AddToRoleAsync(defaultUser, Roles.Admin.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Supervisor.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.SupervisorWomen.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.SupervisorCenterMen.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.SupervisorCenterWomen.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.TeacherWomen.ToString());
-
                 }
                 await roleManager.SeedClaimsForAdmin();
             }
@@ -90,9 +82,9 @@
                 if (user == null)
                 {
                     await userManager.CreateAsync(defaultUser, "$Aa123123");
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Parent.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.Teacher.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Roles.SupervisorCenterMen.ToString());
+                    //await userManager.AddToRoleAsync(defaultUser, Roles.Parent.ToString());
+                    //await userManager.AddToRoleAsync(defaultUser, Roles.Teacher.ToString());
+                    //await userManager.AddToRoleAsync(defaultUser, Roles.SupervisorCenterMen.ToString());
                     await userManager.AddToRoleAsync(defaultUser, Roles.Supervisor.ToString());
                 }
             }

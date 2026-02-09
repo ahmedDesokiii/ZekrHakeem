@@ -1,4 +1,6 @@
-﻿* {
+﻿
+
+* {
     font-family: "Beiruti", serif;
     font-optical-sizing: auto;
     font-weight: <weight>;
@@ -17,6 +19,18 @@ html {
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
+
+header nav.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1040;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease, box-shadow 0.3s ease;
+}
+    header nav.navbar.scrolled {
+        background-color: rgba(251, 248, 239, 0.75); /* نفس لونك بالظبط */
+        backdrop-filter: blur(10px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
 
 html {
   position: relative;
@@ -87,10 +101,164 @@ body {
 }
 
 
-/* background */
-.  {
-    background-image: url('../images/bg.PNG');
-    /*background-color: yellow;*/
-    /*background-size: cover;*/
-    background-repeat: repeat;
+.users-card {
+    border-radius: 14px;
 }
+
+    .users-card .card-header {
+        background: #f8f9fa;
+    }
+
+.users-table th {
+    background-color: #328E6E;
+    color: #fff;
+    text-align: center;
+}
+
+.users-table td {
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.users-table .actions .btn {
+    margin: 0 2px;
+}
+
+
+
+/* 📱 Mobile View */
+@media (max-width: 768px) {
+    .users-table thead {
+        display: none;
+    }
+
+    .users-table tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 0.75rem;
+    }
+
+    .users-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        padding: 0.5rem 0;
+    }
+
+        .users-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #555;
+        }
+
+        .users-table td.actions {
+            justify-content: center;
+            gap: 0.5rem;
+        }
+}
+
+.users-page {
+    min-height: 70vh;
+}
+
+/* ===== Desktop polish ===== */
+.users-table th {
+    background-color: #328E6E;
+    color: #fff;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.users-table td {
+    vertical-align: middle;
+    font-size: 0.95rem;
+}
+
+.users-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+    .users-table tbody tr:hover {
+        background-color: #f7f9fb;
+    }
+
+/* ===== Actions ===== */
+.users-table .actions a {
+    transition: transform 0.15s ease, color 0.15s ease;
+}
+
+    .users-table .actions a:hover {
+        transform: scale(1.15);
+        color: #0d6efd;
+    }
+
+/* ===== Mobile Card Style ===== */
+@media (max-width: 768px) {
+
+    .users-table thead {
+        display: none;
+    }
+
+    .users-table tr {
+        display: block;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        background: #fff;
+    }
+
+    .users-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: right;
+        padding: 0.4rem 0;
+        border: 0;
+    }
+
+        .users-table td::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: #555;
+            margin-left: 0.5rem;
+        }
+
+        .users-table td.actions {
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+}
+
+
+.users-table .actions a {
+    color: var(--text-muted);
+}
+
+    .users-table .actions a:hover {
+        color: var(--primary);
+        transform: scale(1.15);
+    }
+
+
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1030; /* أعلى من المحتوى وأقل من المودال */
+}
+.top-image-section {
+    transition: opacity 0.3s ease, transform 0.3s ease, height 0.35s ease, margin 0.35s ease, padding 0.35s ease;
+    overflow: hidden;
+}
+
+    .top-image-section.hide-section {
+        opacity: 0;
+        transform: translateY(-20px);
+        height: 0;
+        margin: 0;
+        padding: 0;
+    }

@@ -21,7 +21,7 @@ namespace ZekrHakeem_v11.Controllers
             _signInManager = signInManager;
             _context = context;
         }
-
+        [AllowAnonymous]
         #region All Users
         public IActionResult Index()
         {
