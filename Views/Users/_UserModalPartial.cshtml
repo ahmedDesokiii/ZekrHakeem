@@ -1,0 +1,142 @@
+﻿@model MasterViewModel
+
+<div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content shadow-lg border-0 rounded-4">
+
+            <!-- ===== Header ===== -->
+            <div class="modal-header text-white rounded-top-4"
+                 style="background: linear-gradient(135deg,#0d6efd,#0dcaf0);">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-person-circle me-2"></i>
+                    @(Model.AddUserVM.Id == null ? "إضافة مستخدم جديد" : "تعديل بيانات المستخدم")
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- ===== Body ===== -->
+            <div class="modal-body px-4">
+
+                <form asp-controller="Users"
+                      asp-action="@(Model.AddUserVM.Id == null ? "AddUser" : "EditUser")"
+                      method="post"
+                      novalidate>
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="AddUserVM.Id" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger small"></div>
+
+                    <!-- ===== User Info ===== -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="bi bi-person-lines-fill me-1"></i>
+                            بيانات المستخدم
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row g-3">
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.FullName" class="form-label fw-semibold"></label>
+                                    <input asp-for="AddUserVM.FullName" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.FullName" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.IdentityNum" class="form-label fw-semibold"></label>
+                                    <input asp-for="AddUserVM.IdentityNum" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.IdentityNum" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.PhoneNumber" class="form-label fw-semibold"></label>
+                                    <input asp-for="AddUserVM.PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.PhoneNumber" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.Email" class="form-label fw-semibold"></label>
+                                    <input asp-for="AddUserVM.Email" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.Email" class="text-danger small"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.UserName" class="form-label fw-semibold"></label>
+                                    <input asp-for="AddUserVM.UserName" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.UserName" class="text-danger small"></span>
+                                </div>
+
+                                @* Password يظهر في الإضافة فقط *@
+                                @if (Model.AddUserVM.Id == null)
+                                {
+                                    <div class="col-md-6">
+                                        <label asp-for="AddUserVM.Password" class="form-label fw-semibold"></label>
+                                        <input asp-for="AddUserVM.Password" class="form-control" />
+                                        <span asp-validation-for="AddUserVM.Password" class="text-danger small"></span>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label asp-for="AddUserVM.ConfirmPassword" class="form-label fw-semibold"></label>
+                                        <input asp-for="AddUserVM.ConfirmPassword" class="form-control" />
+                                        <span asp-validation-for="AddUserVM.ConfirmPassword" class="text-danger small"></span>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Roles ===== -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-light fw-bold">
+                            <i class="bi bi-shield-lock-fill me-1"></i>
+                            الصلاحيات
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                @for (int i = 0; i < Model.AddUserVM.Roles.Count; i++)
+                                {
+                                    <div class="col-md-4 col-sm-6">
+                                        <div class="form-check form-switch mb-2">
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].RoleId" />
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].DisplayValue" />
+
+                                            <input asp-for="AddUserVM.Roles[i].IsSelected"
+                                                   class="form-check-input" />
+
+                                            <label class="form-check-label fw-semibold">
+                                                @Model.AddUserVM.Roles[i].DisplayValue
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <span asp-validation-for="AddUserVM.Roles"
+                                  class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- ===== Footer ===== -->
+                    <div class="modal-footer border-0 mt-4 px-0">
+                        <button type="button" class="btn btn-outline-secondary px-4"
+                                data-bs-dismiss="modal">
+                            إلغاء
+                        </button>
+
+                        <button type="submit" class="btn btn-success px-5">
+                            <i class="bi bi-check-circle me-1"></i>
+                            حفظ
+                        </button>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />

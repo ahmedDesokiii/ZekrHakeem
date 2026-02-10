@@ -15,11 +15,12 @@
                         <i class="bi bi-people-fill me-1"></i> المستخدمين
                     </h4>
 
-                    <a asp-action="AddUser" asp-controller="Users"
-                       class="btn btn-success d-flex align-items-center gap-1 rounded-3" >
+                    <button class="btn btn-success"
+                            onclick="openUserModal('@Url.Action("AddUser", "Users")')">
                         <i class="bi bi-plus-circle"></i>
                         إضافة مستخدم
-                    </a>
+                    </button>
+
                 </div>
 
                 <!-- Body -->
@@ -35,13 +36,12 @@
                     else
                     {
                         <!-- ======================= Mobile Users =============================== -->
-                        <!-- ================= Search Bar ================= -->
                         <div class="d-block d-md-none px-2 mb-2">
                             <input type="text" id="userSearch" class="form-control shadow-sm"
                                    placeholder="ابحث هنا..." />
                         </div>
 
-                        <!-- ================= Users Cards ================= -->
+                        <!-- ================= Users Cards (Mobile) ================= -->
                         <div class="d-block d-md-none px-2" id="usersCardsContainer">
                             @foreach (var user in Model.UserVM)
                             {
@@ -52,14 +52,12 @@
                                      data-roles="@string.Join(",", user.Roles).ToLower()"
                                      style="transition: all 0.3s ease;">
 
-                                    <!-- Header -->
                                     <div class="card-header py-2 px-3 text-white d-flex align-items-center"
                                          style="background: linear-gradient(135deg, #D8E983 0%, #54C392 50%, #15B392 100%);">
                                         <i class="bi bi-person-circle fs-4 ms-2"></i>
                                         <h6 class="fw-bold mb-0 text-truncate user-name" title="@user.FullName">@user.FullName</h6>
                                     </div>
 
-                                    <!-- Body -->
                                     <div class="card-body py-2">
                                         <div class="data-row d-flex justify-content-between align-items-center">
                                             <span class="data-label mx-2">اسم المستخدم</span>
@@ -80,14 +78,15 @@
                                         </div>
                                     </div>
 
-                                    <!-- Footer / Actions -->
                                     <div class="card-footer bg-light border-0 d-flex justify-content-around py-2 sticky-bottom">
                                         <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
                                             <i class="bi bi-view-stacked"></i>
                                         </a>
-                                        <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
+                                        <button class="btn btn-outline-dark border-0 fs-4"
+                                                onclick="openUserModal('@Url.Action("EditUser", "Users", new { userId = user.Id })')">
                                             <i class="bi bi-pencil-square"></i>
-                                        </a>
+                                        </button>
+
                                         <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
                                             <i class="bi bi-trash3-fill"></i>
                                         </a>
@@ -96,123 +95,8 @@
                             }
                         </div>
 
-                        <!-- ================= Search + Highlight + Animation JS ================= -->
-                        <script>
-                            const searchInput = document.getElementById('userSearch');
-                            const cardsContainer = document.getElementById('usersCardsContainer');
-                            const cards = Array.from(cardsContainer.querySelectorAll('.user-card'));
-
-                            function escapeRegex(text) {
-                                return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-                            }
-
-                            // إزالة أي mark قديم
-                            function clearHighlight(el) {
-                                el.innerHTML = el.textContent;
-                            }
-
-                            searchInput.addEventListener('input', function () {
-                                const query = this.value.toLowerCase().trim();
-
-                                // لو البحث فاضي
-                                if (!query) {
-                                    cards.forEach(card => {
-                                        card.style.display = 'block';
-                                        card.style.opacity = 1;
-                                        card.style.transform = 'scale(1)';
-
-                                        card.querySelectorAll('.user-name, .user-username, .user-phone')
-                                            .forEach(clearHighlight);
-
-                                        // رجّع ألوان الـ roles
-                                        card.querySelectorAll('.user-roles .badge').forEach(badge => {
-                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)';
-                                            badge.style.color = '#198754';
-                                        });
-                                    });
-                                    return;
-                                }
-
-                                const regex = new RegExp(escapeRegex(query), 'gi');
-
-                                cards.forEach(card => {
-                                    const nameEl = card.querySelector('.user-name');
-                                    const usernameEl = card.querySelector('.user-username');
-                                    const phoneEl = card.querySelector('.user-phone');
-                                    const rolesEl = card.querySelector('.user-roles');
-
-                                    const name = card.getAttribute('data-name');
-                                    const username = card.getAttribute('data-username');
-                                    const phone = card.getAttribute('data-phone');
-                                    const roles = card.getAttribute('data-roles');
-
-                                    const matchFound =
-                                        name.includes(query) ||
-                                        username.includes(query) ||
-                                        phone.includes(query) ||
-                                        roles.includes(query);
-
-                                    // Animate visibility
-                                    if (matchFound) {
-                                        card.style.display = 'block';
-                                        requestAnimationFrame(() => {
-                                            card.style.opacity = 1;
-                                            card.style.transform = 'scale(1)';
-                                        });
-                                    } else {
-                                        card.style.opacity = 0;
-                                        card.style.transform = 'scale(0.95)';
-                                        setTimeout(() => card.style.display = 'none', 300);
-                                    }
-
-                                    // Clear old highlight first
-                                    [nameEl, usernameEl, phoneEl].forEach(clearHighlight);
-
-                                    // Highlight matches
-                                    [nameEl, usernameEl, phoneEl].forEach(el => {
-                                        el.innerHTML = el.textContent.replace(regex, match =>
-                                            `<mark style="background:#FEFFA7;color:#000;">${match}</mark>`
-                                        );
-                                    });
-
-                                    // Roles highlighting
-                                    rolesEl.querySelectorAll('.badge').forEach(badge => {
-                                        const text = badge.textContent.toLowerCase();
-                                        if (text.includes(query)) {
-                                            badge.style.backgroundColor = '#ffe58f';
-                                            badge.style.color = '#000';
-                                        } else {
-                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)';
-                                            badge.style.color = '#198754';
-                                        }
-                                    });
-                                });
-                            });
-                        </script>
-
-
-                        <!-- ================= Optional CSS Improvements ================= -->
-                        <style>
-                            .user-card {
-                                transition: all 0.3s ease;
-                                border-radius: 10px;
-                            }
-
-                                .user-card mark {
-                                    border-radius: 3px;
-                                    padding: 0 2px;
-                                }
-
-                            .sticky-bottom {
-                                position: sticky;
-                                bottom: 0;
-                                background: #f8f9fa;
-                                z-index: 10;
-                            }
-                        </style>
-
-                        <!-- ======================= Desktop Users =============================== -->
-                        <div class="d-none d-md-block table-responsive px-2">
+                        <!-- ================= Users Table (Desktop) ================= -->
+                        <div class="d-none d-lg-block  d-md-block table-responsive px-2">
                             <table id="tableUser" class="table table-hover users-table nowrap table-bordered border-primary-subtle align-middle">
                                 <thead>
                                     <tr class="text-center text-white" style="background: linear-gradient(135deg, #032b42 0%, #0b4a6f 50%, #415E72 100%);">
@@ -239,7 +123,6 @@
                                                         "Parent" => "#8CE4FF",
                                                         "Teacher" => "#FEEE91",
                                                         "Supervisor" => "#94FFD8",
-                                                        
                                                         _ => "#D3D3D3"
                                                     };
                                                     <span class="badge text-dark me-1" style="background-color:@roleColor">@role</span>
@@ -249,9 +132,12 @@
                                                 <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
                                                     <i class="bi bi-view-stacked"></i>
                                                 </a>
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
+                                                <button type="button"
+                                                        class="btn btn-outline-dark border-0 fs-4 edit-user-btn"
+                                                        data-url="@Url.Action("EditUser", "Users", new { userId = user.Id })">
                                                     <i class="bi bi-pencil-square"></i>
-                                                </a>
+                                                </button>
+
                                                 <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
                                                     <i class="bi bi-trash3-fill"></i>
                                                 </a>
@@ -262,7 +148,6 @@
                             </table>
                         </div>
 
-                       
                     }
 
                 </div>
@@ -271,3 +156,63 @@
         </div>
     </div>
 </section>
+
+<div id="modalContainer"></div>
+
+@section Scripts {
+    <script>
+            // لجميع أزرار التعديل في الديسكتوب
+    $(document).on('click', '.edit-user-btn', function () {
+        var url = $(this).data('url');
+        openUserModal(url);
+    });
+    </script>
+    <script>
+        // Open Add/Edit User Modal
+        function openUserModal(url) {
+            $("#modalContainer").empty();
+
+            $.get(url)
+                .done(function (data) {
+                    $("#modalContainer").html(data);
+
+                    // re-parse validation
+                    $.validator.unobtrusive.parse("#userModal");
+
+                    const modalEl = document.getElementById("userModal");
+                    let modal = bootstrap.Modal.getInstance(modalEl);
+                    if (!modal) {
+                        modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
+                    }
+                    modal.show();
+                })
+                .fail(function () {
+                    alert("حدث خطأ أثناء تحميل البيانات");
+                });
+        }
+
+        // Submit inside modal
+        $(document).on("submit", "#userModal form", function (e) {
+            e.preventDefault();
+            var form = $(this);
+            var submitBtn = form.find("button[type='submit']");
+            submitBtn.prop("disabled", true);
+
+            $.ajax({
+                url: form.attr("action"),
+                type: "POST",
+                data: form.serialize(),
+                success: function (res) {
+                    if (res.success) {
+                        bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+                        location.reload();
+                    } else {
+                        $("#modalContainer").html(res);
+                        $.validator.unobtrusive.parse("#userModal");
+                    }
+                },
+                complete: function () { submitBtn.prop("disabled", false); }
+            });
+        });
+    </script>
+}
