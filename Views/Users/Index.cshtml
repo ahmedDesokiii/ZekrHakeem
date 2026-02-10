@@ -1,121 +1,4 @@
-﻿@*
-@model MasterViewModel
-
-@{
-    ViewData["Title"] = "المستخدمين";
-    int cNo = 0;
-}
-
-<div class="wrapper">
-    <!-- Main content -->
-    <section class="container-fluid">
-        <div class="row mb-3">
-
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
-                <div class="card p-0">
-                    <div class="card-header d-flex align-items-center justify-content-start bg-success-subtle">
-                        <!-- Button trigger modal -->
-                        <a title="إضافة مستخدم جديد" class="btn fs-5  rounded-3 text-white" style="background-color:#758A93" asp-action="AddUser" asp-controller="Users">
-                            <i class="bi bi-plus fs-4 fw-bold ps-2"></i> <span class="fw-bold"> اضافة مستخدم</span>
-                        </a>
-                    </div>
-                    <!-- /.card-header -->
-
-                    <div class="card-body p-0">
-                    
-                        <!-- Tab content -->
-                        @if (!Model.UserVM.Any())
-                        {
-                            <div class="alert  alert-warning mt-5">
-                                <h4 class="alert-heading">لا يوجد مستخدمين !</h4>
-                                <p class="mb-0">لم يتم اضافة مستخدمين للتطبيق حتي الآن</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <table class="table table-hover display nowrap  px-0 table-bordered border-primary-subtle" id="tableUser">
-                                <thead>
-                                    <tr class="text-center">
-                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">الاسـم</th>
-                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">اسم المستخدم</th>
-                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">التليفون</th>
-                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;">المجموعات</th>
-                                        <th class=" text-white text-center fs-5" style="background-color:#328E6E !important;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var user in Model.UserVM)
-                                    {
-                                        <tr class="text-center">
-                                            <td class="fs-6 text-center  px-1  py-1">@user.FullName</td>
-                                            <td class="fs-6 px-1">@user.UserName</td>
-                                            <td class="fs-6 text-center px-1">@user.PhoneNumber</td>
-                                            <td class=" fs-6 px-1 py-1">@string.Join(" , ", user.Roles.ToList())</td>
-                                             <td class="py-1">
-                                                    <a class="btn fw-bold btn-outline-dark bg-transparent border-0 text-center p-0 mx-1 fs-5" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id"><i class="bi bi-view-stacked"></i><br></a>
-                                                    <a class="btn fw-bold btn-outline-dark bg-transparent border-0 p-0 mx-1 fs-5" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id"><i class="bi bi-pencil-square"></i><br></a>
-                                                    <a class="btn fw-bold btn-outline-dark bg-transparent  border-0 p-0 mx-1 fs-5" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id"><i class="bi bi-trash3-fill"></i><br></a>
-                                                </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        }
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-                <!-- /.card -->
-            </div>
-            <div class="col-md-1"></div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
-    </section>
-    <!-- /.content -->
-</div>
-
-
-
-
-
-@section Scripts {
-    <script src="~/js/Users.js"></script>
-    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
-    {
-        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'success'
-                });
-            </script>
-
-        }
-        else
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'error'
-                });
-            </script>
-        }
-        Context.Session.SetString(Helper.MsgType, "");
-    }
-}
-*@
-
-
-@model MasterViewModel
+﻿@model MasterViewModel
 @{
     ViewData["Title"] = "المستخدمين";
 }
@@ -155,7 +38,7 @@
                         <!-- ================= Search Bar ================= -->
                         <div class="d-block d-md-none px-2 mb-2">
                             <input type="text" id="userSearch" class="form-control shadow-sm"
-                                   placeholder="ابحث عن أي حاجة..." />
+                                   placeholder="ابحث هنا..." />
                         </div>
 
                         <!-- ================= Users Cards ================= -->
@@ -171,7 +54,7 @@
 
                                     <!-- Header -->
                                     <div class="card-header py-2 px-3 text-white d-flex align-items-center"
-                                         style="background: linear-gradient(135deg, #d9ead3 0%, #b7e1b4 50%, #9ccc9c 100%);">
+                                         style="background: linear-gradient(135deg, #D8E983 0%, #54C392 50%, #15B392 100%);">
                                         <i class="bi bi-person-circle fs-4 ms-2"></i>
                                         <h6 class="fw-bold mb-0 text-truncate user-name" title="@user.FullName">@user.FullName</h6>
                                     </div>
@@ -179,15 +62,15 @@
                                     <!-- Body -->
                                     <div class="card-body py-2">
                                         <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label">اسم المستخدم:</span>
+                                            <span class="data-label mx-2">اسم المستخدم</span>
                                             <span class="fw-bold user-username">@user.UserName</span>
                                         </div>
                                         <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label">التليفون:</span>
+                                            <span class="data-label mx-2">التليفون</span>
                                             <span class="fw-bold user-phone">@user.PhoneNumber</span>
                                         </div>
                                         <div class="data-row d-flex flex-wrap align-items-center">
-                                            <span class="data-label me-2">المجموعات:</span>
+                                            <span class="data-label mx-2">المجموعات</span>
                                             <span class="fw-bold user-roles d-flex flex-wrap">
                                                 @foreach (var role in user.Roles)
                                                 {
@@ -205,7 +88,7 @@
                                         <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
                                             <i class="bi bi-pencil-square"></i>
                                         </a>
-                                        <a class="btn fw-bold btn-outline-dark bg-transparent text-danger border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                        <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
                                             <i class="bi bi-trash3-fill"></i>
                                         </a>
                                     </div>
@@ -223,8 +106,33 @@
                                 return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                             }
 
-                            searchInput.addEventListener('input', function() {
+                            // إزالة أي mark قديم
+                            function clearHighlight(el) {
+                                el.innerHTML = el.textContent;
+                            }
+
+                            searchInput.addEventListener('input', function () {
                                 const query = this.value.toLowerCase().trim();
+
+                                // لو البحث فاضي
+                                if (!query) {
+                                    cards.forEach(card => {
+                                        card.style.display = 'block';
+                                        card.style.opacity = 1;
+                                        card.style.transform = 'scale(1)';
+
+                                        card.querySelectorAll('.user-name, .user-username, .user-phone')
+                                            .forEach(clearHighlight);
+
+                                        // رجّع ألوان الـ roles
+                                        card.querySelectorAll('.user-roles .badge').forEach(badge => {
+                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)';
+                                            badge.style.color = '#198754';
+                                        });
+                                    });
+                                    return;
+                                }
+
                                 const regex = new RegExp(escapeRegex(query), 'gi');
 
                                 cards.forEach(card => {
@@ -238,38 +146,50 @@
                                     const phone = card.getAttribute('data-phone');
                                     const roles = card.getAttribute('data-roles');
 
-                                    const matchFound = name.includes(query) || username.includes(query) || phone.includes(query) || roles.includes(query);
+                                    const matchFound =
+                                        name.includes(query) ||
+                                        username.includes(query) ||
+                                        phone.includes(query) ||
+                                        roles.includes(query);
 
                                     // Animate visibility
                                     if (matchFound) {
-                                        card.style.opacity = 1;
-                                        card.style.transform = 'scale(1)';
                                         card.style.display = 'block';
+                                        requestAnimationFrame(() => {
+                                            card.style.opacity = 1;
+                                            card.style.transform = 'scale(1)';
+                                        });
                                     } else {
                                         card.style.opacity = 0;
                                         card.style.transform = 'scale(0.95)';
-                                        setTimeout(() => { card.style.display = 'none'; }, 300);
+                                        setTimeout(() => card.style.display = 'none', 300);
                                     }
+
+                                    // Clear old highlight first
+                                    [nameEl, usernameEl, phoneEl].forEach(clearHighlight);
 
                                     // Highlight matches
                                     [nameEl, usernameEl, phoneEl].forEach(el => {
-                                        el.innerHTML = el.textContent.replace(regex, match => `<mark style="background-color: #ffe58f; color:#000;">${match}</mark>`);
+                                        el.innerHTML = el.textContent.replace(regex, match =>
+                                            `<mark style="background:#FEFFA7;color:#000;">${match}</mark>`
+                                        );
                                     });
 
                                     // Roles highlighting
                                     rolesEl.querySelectorAll('.badge').forEach(badge => {
                                         const text = badge.textContent.toLowerCase();
-                                        if(query && text.includes(query)) {
+                                        if (text.includes(query)) {
                                             badge.style.backgroundColor = '#ffe58f';
                                             badge.style.color = '#000';
                                         } else {
-                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)'; // subtle green default
+                                            badge.style.backgroundColor = 'rgba(25,135,84,0.1)';
                                             badge.style.color = '#198754';
                                         }
                                     });
                                 });
                             });
                         </script>
+
 
                         <!-- ================= Optional CSS Improvements ================= -->
                         <style>
@@ -309,15 +229,17 @@
                                         <tr>
                                             <td data-label="الاسم">@user.FullName</td>
                                             <td data-label="اسم المستخدم">@user.UserName</td>
-                                            <td data-label="التليفون" class="d-none d-md-table-cell">@user.PhoneNumber</td>
+                                            <td data-label="التليفون" class="d-none d-md-table-cell text-center">@user.PhoneNumber</td>
                                             <td data-label="المجموعات" class="d-none d-lg-table-cell">
                                                 @foreach (var role in user.Roles)
                                                 {
                                                     var roleColor = role switch
                                                     {
-                                                        "Admin" => "#FFB6B9",
-                                                        "User" => "#B6E2D3",
-                                                        "Manager" => "#FFD6A5",
+                                                        "Admin" => "#FF6464",
+                                                        "Parent" => "#8CE4FF",
+                                                        "Teacher" => "#FEEE91",
+                                                        "Supervisor" => "#94FFD8",
+                                                        
                                                         _ => "#D3D3D3"
                                                     };
                                                     <span class="badge text-dark me-1" style="background-color:@roleColor">@role</span>
@@ -330,7 +252,7 @@
                                                 <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="تعديل" asp-controller="Users" asp-action="EditUser" asp-route-userId="@user.Id">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </a>
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent text-danger border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                                <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
                                                     <i class="bi bi-trash3-fill"></i>
                                                 </a>
                                             </td>

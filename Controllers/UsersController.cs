@@ -21,7 +21,7 @@ namespace ZekrHakeem_v11.Controllers
             _signInManager = signInManager;
             _context = context;
         }
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         #region All Users
         public IActionResult Index()
         {
@@ -56,83 +56,109 @@ namespace ZekrHakeem_v11.Controllers
         }
         #endregion
 
-        #region User Process [Add & Update]
-        public async Task<IActionResult> AddUser(string userId)
-        {
-            var roles = await _roleManager.Roles.Select(r => new CheckBoxViewModel { RoleId = r.Id, DisplayValue = r.Name }).ToListAsync();
-            string usrId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            MasterViewModel master = new();
-            master.DemandVM = new()
+            // =========================
+            // GET: Add User
+            // =========================
+            public async Task<IActionResult> AddUser()
             {
-                Demands = _servicesDemand.GetAll(),
-                DemandsForMen = _servicesOfDemand.GetDemandsForMen(),
-                DemandsForWomen = _servicesOfDemand.GetDemandsForWomen(),
-                DemandsForTeacher = _servicesOfDemand.GetDemandsWithTeacher(usrId),
-                NewDemand = new Demand(),
-                DemandsForMen_Notify = _servicesOfDemand.GetDemandsForMen_Notify(),
-                DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
-                DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(usrId),
-            };
-            master.AddUserVM = new AddUserViewModel
-            {
-                Roles = roles
-            };
+                var roles = await _roleManager.Roles
+                    .Select(r => new CheckBoxViewModel
+                    {
+                        RoleId = r.Id,
+                        DisplayValue = r.Name
+                    })
+                    .ToListAsync();
 
-            return View(master);
-        }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddUser(MasterViewModel model)
-        {
-            if (!ModelState.IsValid)
-                return View(model);
-
-            if (!model.AddUserVM.Roles.Any(r => r.IsSelected))
-            {
-                ModelState.AddModelError("Roles", "please , select at least one role");
-                return View(model);
-            }
-
-            if (await _userManager.FindByNameAsync(model.AddUserVM.IdentityNum) != null)
-            {
-                ModelState.AddModelError("IdentityNum", "this Identity Number already exists");
-                return View(model);
-            }
-
-            if (await _userManager.FindByEmailAsync(model.AddUserVM.Email) != null)
-            {
-                ModelState.AddModelError("Email", "this email already exists");
-                return View(model);
-            }
-
-            if (await _userManager.FindByNameAsync(model.AddUserVM.UserName) != null)
-            {
-                ModelState.AddModelError("UserName", "this User Name already exists");
-                return View(model);
-            }
-
-            var user = new ApplicationUser()
-            {
-                FullName = model.AddUserVM.FullName,
-                IdentityNum = model.AddUserVM.IdentityNum,
-                PhoneNumber = model.AddUserVM.PhoneNumber,
-                UserName = model.AddUserVM.UserName,
-                Email = model.AddUserVM.Email
-            };
-            var result = await _userManager.CreateAsync(user, model.AddUserVM.Password);
-
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
+                var model = new MasterViewModel
                 {
-                    ModelState.AddModelError("Roles", error.Description);
-                }
+                    AddUserVM = new AddUserViewModel
+                    {
+                        Roles = roles
+                    }
+                };
+
                 return View(model);
             }
-            await _userManager.AddToRolesAsync(user, model.AddUserVM.Roles.Where(r => r.IsSelected).Select(r => r.DisplayValue));
 
-            return RedirectToAction(nameof(Index));
-        }
+            // =========================
+            // POST: Add User
+            // =========================
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> AddUser(MasterViewModel model)
+            {
+                if (!ModelState.IsValid)
+                {
+                    await ReloadRoles(model);
+                    return View(model);
+                }
+
+                if (!model.AddUserVM.Roles.Any(r => r.IsSelected))
+                {
+                    ModelState.AddModelError("AddUserVM.Roles", "Please select at least one role.");
+                    await ReloadRoles(model);
+                    return View(model);
+                }
+
+                if (await _userManager.FindByEmailAsync(model.AddUserVM.Email) != null)
+                {
+                    ModelState.AddModelError("AddUserVM.Email", "Email already exists.");
+                    await ReloadRoles(model);
+                    return View(model);
+                }
+
+                if (await _userManager.FindByNameAsync(model.AddUserVM.UserName) != null)
+                {
+                    ModelState.AddModelError("AddUserVM.UserName", "Username already exists.");
+                    await ReloadRoles(model);
+                    return View(model);
+                }
+
+                var user = new ApplicationUser
+                {
+                    FullName = model.AddUserVM.FullName,
+                    IdentityNum = model.AddUserVM.IdentityNum,
+                    PhoneNumber = model.AddUserVM.PhoneNumber,
+                    Email = model.AddUserVM.Email,
+                    UserName = model.AddUserVM.UserName
+                };
+
+                var result = await _userManager.CreateAsync(user, model.AddUserVM.Password);
+
+                if (!result.Succeeded)
+                {
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
+
+                    await ReloadRoles(model);
+                    return View(model);
+                }
+
+                await _userManager.AddToRolesAsync(
+                    user,
+                    model.AddUserVM.Roles
+                        .Where(r => r.IsSelected)
+                        .Select(r => r.DisplayValue)
+                );
+
+                TempData["Success"] = "User created successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // =========================
+            // Helper
+            // =========================
+            private async Task ReloadRoles(MasterViewModel model)
+            {
+                model.AddUserVM.Roles = await _roleManager.Roles
+                    .Select(r => new CheckBoxViewModel
+                    {
+                        RoleId = r.Id,
+                        DisplayValue = r.Name,
+                        IsSelected = model.AddUserVM.Roles.Any(x => x.DisplayValue == r.Name && x.IsSelected)
+                    })
+                    .ToListAsync();
+            }
 
         public async Task<IActionResult> EditUser(string userId)
         {
@@ -210,8 +236,6 @@ namespace ZekrHakeem_v11.Controllers
             await _userManager.UpdateAsync(user);
             return RedirectToAction(nameof(Index));
         }
-
-        #endregion
 
         #region Roles Process [Manage & Update]
         public async Task<IActionResult> ManageRoles(string userId)
