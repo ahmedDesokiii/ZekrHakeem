@@ -1,70 +1,116 @@
 ﻿@model MasterViewModel
 @{
-    ViewData["Title"] = "Add New User";
+    ViewData["Title"] = "اضافة مستخدم جديد";
 }
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="AddUser" method="post">
-            <h2>Create a new account.</h2>
-    
-             <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div> 
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.FullName" class="form-control" aria-required="true" placeholder="full name" />
-                <label asp-for="@Model.AddUserVM.FullName">Full Name</label>
-                <span asp-validation-for="@Model.AddUserVM.FullName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.IdentityNum" class="form-control" aria-required="true" placeholder="Identity number" />
-                <label asp-for="@Model.AddUserVM.IdentityNum">Identity Number</label>
-                <span asp-validation-for="@Model.AddUserVM.IdentityNum" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.PhoneNumber" class="form-control" aria-required="true" placeholder="phone number" />
-                <label asp-for="@Model.AddUserVM.PhoneNumber">Phone Number</label>
-                <span asp-validation-for="@Model.AddUserVM.PhoneNumber" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="@Model.AddUserVM.Email">Email</label>
-                <span asp-validation-for="@Model.AddUserVM.Email" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.UserName" class="form-control" aria-required="true" placeholder="name" />
-                <label asp-for="@Model.AddUserVM.UserName">User Name</label>
-                <span asp-validation-for="@Model.AddUserVM.UserName" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="@Model.AddUserVM.Password">Password</label>
-                <span asp-validation-for="@Model.AddUserVM.Password" class="text-danger"></span>
-            </div>
-            <div class="form-floating mb-3">
-                <input asp-for="@Model.AddUserVM.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label asp-for="@Model.AddUserVM.ConfirmPassword">Confirm Password</label>
-                <span asp-validation-for="@Model.AddUserVM.ConfirmPassword" class="text-danger"></span>
-            </div>
-            <hr />
-            <div>
-                <h6>Roles</h6>
-                @for (int i = 0; i < Model.AddUserVM.Roles.Count; i++)
-                {
-                    <div class="form-check m-1">
-                        <input type="hidden" asp-for="@Model.AddUserVM.Roles[i].DisplayValue" />
-                        <input asp-for="@Model.AddUserVM.Roles[i].IsSelected" class="form-check-input" />
-                        <label class="form-check-label" asp-for="@Model.AddUserVM.Roles[i].IsSelected">
-                            @Model.AddUserVM.Roles[i].DisplayValue
-                        </label>
+<section class="container-fluid users-page ">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+
+            <div class="card users-card shadow-sm mt-4">
+
+                <!-- Header -->
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-person-fill-add me-1"></i> اضافة مستخدم جديد
+                    </h4>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body px-3 px-md-4 px-xl-5 row">
+                    <div class="border rounded px-3 col-lg-7 text-center ">
+                        <span class="text-muted fw-bold fs-4 mx-auto" style="color:#15B392">بيانات المستخدم</span>
+                        <form asp-action="AddUser" method="post">
+
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                            <div class="row g-3 mt-4">
+                                <!-- Full Name -->
+                                <div class="input-group mt-2">
+                                    <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">الاسم الكامل</span>
+                                    <input id="nameAr" asp-for="AddUserVM.FullName" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل الاسم الكامل" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" autofocus />
+                                </div>
+                                <span asp-validation-for="AddUserVM.FullName" class="text-danger"></span>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.IdentityNum" class="form-label"></label>
+                                    <input asp-for="AddUserVM.IdentityNum" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.IdentityNum" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.PhoneNumber" class="form-label"></label>
+                                    <input asp-for="AddUserVM.PhoneNumber" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.PhoneNumber" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="AddUserVM.Email" class="form-label"></label>
+                                    <input asp-for="AddUserVM.Email" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.Email" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.UserName" class="form-label"></label>
+                                    <input asp-for="AddUserVM.UserName" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.UserName" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <label asp-for="AddUserVM.Password" class="form-label"></label>
+                                    <input asp-for="AddUserVM.Password" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.Password" class="text-danger"></span>
+                                </div>
+
+                                <div class="col-12">
+                                    <label asp-for="AddUserVM.ConfirmPassword" class="form-label"></label>
+                                    <input asp-for="AddUserVM.ConfirmPassword" class="form-control" />
+                                    <span asp-validation-for="AddUserVM.ConfirmPassword" class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <hr />
+
+                            <h6 class="fw-bold">Roles</h6>
+                            <div class="row">
+                                @for (int i = 0; i < Model.AddUserVM.Roles.Count; i++)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].RoleId" />
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].DisplayValue" />
+
+                                            <input asp-for="AddUserVM.Roles[i].IsSelected" class="form-check-input" />
+                                            <label class="form-check-label">
+                                                @Model.AddUserVM.Roles[i].DisplayValue
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+
+                            <span asp-validation-for="AddUserVM.Roles" class="text-danger"></span>
+
+                            <div class="d-flex justify-content-end mt-4">
+                                <button type="submit" class="btn btn-success px-4">
+                                    Save User
+                                </button>
+                            </div>
+                        </form>
                     </div>
-                }
-                <span asp-validation-for="@Model.AddUserVM.Roles" class="text-danger"></span>
+                    
+                </div>
             </div>
-    
-            <button type="submit" class="w-100 btn btn-lg btn-primary mt-4">Save</button> 
-    
-        </form>
+
         </div>
     </div>
+</section>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }
+
+
+
+
+
