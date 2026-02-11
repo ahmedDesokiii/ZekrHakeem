@@ -1,5 +1,148 @@
 ﻿@model MasterViewModel
 
+<div class="modal fade shadow" id="userModal" tabindex="-1" aria-hidden="true" dir="rtl">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px; background:linear-gradient(135deg,#f4f6f8,#e2ebee);">
+
+            <!-- Header -->
+            <div class="modal-header"
+                 style="border-radius:14px;background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">
+                <span class="fs-4 fw-bold">
+                    <i class="bi bi-person-circle ms-2"></i>
+                    @(Model.AddUserVM.Id == null ? "إضافة مستخدم جديد" : "تعديل بيانات المستخدم")
+                </span>
+                <a href="#" class="btn-close btn-close-white position-absolute start-0 mx-3"
+                   data-bs-dismiss="modal" aria-label="Close"></a>
+            </div>
+
+            <div class="modal-body d-flex align-items-center justify-content-center mt-3" dir="rtl">
+                <form asp-controller="Users"
+                      asp-action="@(Model.AddUserVM.Id == null ? "AddUser" : "EditUser")"
+                      method="post"
+                      novalidate>
+
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" asp-for="AddUserVM.Id" />
+
+                    <div asp-validation-summary="ModelOnly"
+                         class="alert alert-danger small"></div>
+                        <div class="row mx-auto">
+                        <!-- ===== User Info ===== -->
+                        <div class="card border-0 col-md-6 shadow px-0 mb-3">
+                            <div class="card-header bg-success-subtle fw-bold">
+                                <i class="bi bi-person-lines-fill ms-2"></i>
+                                بيانات المستخدم
+                            </div>
+
+                            <div class="card-body pb-5">
+                                <div class="row g-3">
+
+
+                                    <!-- FullName-->
+                                    <div class="input-group">
+                                        <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;الاسم الكامل&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <input id="FullName" asp-for="AddUserVM.FullName" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل الاسم الكامل للمستخدم" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                    </div>
+                                    <span asp-validation-for="AddUserVM.FullName" class="text-danger my-0"></span>
+
+                                    <!-- PhoneNumber-->
+                                    <div class="input-group mt-1">
+                                        <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;رقم التليفون&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <input id="PhoneNumber" asp-for="AddUserVM.PhoneNumber" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل رقم تليفون المستخدم" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                    </div>
+                                    <span asp-validation-for="AddUserVM.PhoneNumber" class="text-danger my-0"></span>
+
+                                    <!-- IdentityNum-->
+                                    <div class="input-group mt-1">
+                                        <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;الرقم القومي&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                        <input id="IdentityNum" asp-for="AddUserVM.IdentityNum" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل الرقم القومي للمستخدم" type="text" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                    </div>
+                                    <span asp-validation-for="AddUserVM.IdentityNum" class="text-danger my-0"></span>
+
+                                    <!-- Email-->
+                                    <div class="input-group mt-1">
+                                        <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;&nbsp;&nbsp;&nbsp;البريد الالكتروني&nbsp;&nbsp;&nbsp;</span>
+                                        <input id="Email" asp-for="AddUserVM.Email" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="example@domail.com" type="email" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                    </div>
+                                    <span asp-validation-for="AddUserVM.Email" class="text-danger my-0"></span>
+
+                                    @* Password يظهر في الإضافة فقط *@
+                                    @if (Model.AddUserVM.Id == null)
+                                    {
+                                        <!-- Password-->
+                                        <div class="input-group mt-1">
+                                            <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;كلمة المرور&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                            <input id="Password" asp-for="AddUserVM.Password" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل رقم كلمة المرور" type="password" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                        </div>
+                                        <span asp-validation-for="AddUserVM.Password" class="text-danger my-0"></span>
+                                        <!-- Password-->
+                                        <div class="input-group mt-1">
+                                            <span class="input-group-text bg-info-subtle fw-bold rounded-end-3" id="inputGroup-sizing-default ">&nbsp;اعادة كلمة المرور &nbsp;</span>
+                                                <input id="ConfirmPassword" asp-for="AddUserVM.ConfirmPassword" class="form-control text-center" autocomplete="on" aria-required="true" placeholder="ادخل رقم كلمة المرور" type="password" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default" style="border-top-left-radius : 20px ;">
+                                        </div>
+                                        <span asp-validation-for="AddUserVM.ConfirmPassword" class="text-danger my-0"></span>
+                                    }
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <!-- ===== Roles ===== -->
+                        <div class="card border-0 col-md-4 shadow px-0">
+                            <div class="card-header bg-success-subtle fw-bold">
+                                <i class="bi bi-shield-lock-fill ms-2"></i>
+                                المجموعات
+                            </div>
+
+                            <div class="card-body pb-0">
+                                @for (int i = 0; i < Model.AddUserVM.Roles.Count; i++)
+                                {
+                                    <div class=" ">
+                                        <div class="form-check form-switch mb-2">
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].RoleId" />
+                                            <input type="hidden" asp-for="AddUserVM.Roles[i].DisplayValue" />
+
+                                            <input asp-for="AddUserVM.Roles[i].IsSelected"
+                                                   class="form-check-input" />
+
+                                            <label class="form-check-label fw-semibold">
+                                                @Model.AddUserVM.Roles[i].DisplayValue
+                                            </label>
+                                        </div>
+                                    </div>
+                                }
+                                <span asp-validation-for="AddUserVM.Roles"
+                                      class="text-danger small"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <!-- ===== Footer ===== -->
+                        <div class="modal-footer border-0  mx-auto justify-content-center px-0">
+
+                            <button type="submit" class="btn btn-success px-5">
+                                <i class="bi bi-check-circle ms-2"></i>
+                                حفظ البيانات
+                            </button>
+                            <button type="button" class="btn btn-outline-dark px-4"
+                                    data-bs-dismiss="modal">
+                                إلغاء
+                            </button>
+
+                        </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
 <div class="modal fade" id="userModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content shadow-lg border-0 rounded-4">
