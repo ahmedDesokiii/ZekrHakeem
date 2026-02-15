@@ -1,49 +1,341 @@
 ﻿@model MasterViewModel
 
 @{
-    ViewData["Title"] = "Manage Permissions";
+    ViewData["Title"] = "اعداد صـلاحيات المجموعة ";
 }
 
-<form asp-action="ManagePermissions" method="post">
-    <div class="card mt-4">
-        <div class="card-header">
-            <h2>@Model.PermissionVM.RoleName</h2>
-            Add/Remove Permissions
-        </div>
-        <div class="card-body">
-            <input type="hidden" asp-for="PermissionVM.RoleId" />
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th></th>
-                        <th>Module</th>
-                        <th>Permission</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.PermissionVM.RoleCalims.Count; i++)
-                    {
-                        <tr>
-                            <td>
-                                <div class="form-check m-1">
-                                    <input type="hidden" asp-for="@Model.PermissionVM.RoleCalims[i].DisplayValue" />
-                                    <input asp-for="@Model.PermissionVM.RoleCalims[i].IsSelected" class="form-check-input" />
-                                    @*<label class="form-check-label" asp-for="@Model.Roles[i].IsSelected">
-                                @Model.Roles[i].DisplayValue
-                                </label>*@
+<section class="container-fluid permissions-page">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+
+            <form asp-action="ManagePermissions" method="post">
+
+                <div class="card permissions-card shadow-sm my-4 border-0 rounded-4">
+
+                    <!-- Header -->
+                    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2 text-white rounded-top-4"
+                         style="background: linear-gradient(135deg,#0d6efd,#0AC4E0);">
+
+                        <div>
+                            <h4 class="mb-1 fw-bold">
+                                <i class="bi bi-shield-lock ms-2"></i>
+                                اعداد صـلاحيات المجموعة
+                            </h4>
+
+                            <div class="opacity-75 small">
+                                المجموعة :
+                                <span class="fw-semibold">@Model.PermissionVM.RoleName</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Body -->
+                    <div class="card-body p-3 p-md-4">
+
+                        <input type="hidden" asp-for="PermissionVM.RoleId" />
+
+                        @{
+                            var groupedPermissions = Model.PermissionVM.RoleCalims
+                            .Select((value, index) => new { value, index })
+                            .GroupBy(x => x.value.DisplayValue.Split('.')[1])
+                            .OrderBy(g => g.Key)
+                            .ToList();
+                        }
+
+                        <!-- Global Controls -->
+                        <div class="d-flex flex-wrap align-items-center gap-3 mb-3">
+
+                            <div class="form-check">
+                                <input type="checkbox"
+                                       id="selectAllGlobal"
+                                       class="form-check-input">
+                                <label class="form-check-label fw-semibold">
+                                    تحديد الكل
+                                </label>
+                            </div>
+
+                            <button type="button"
+                                    id="expandAll"
+                                    class="btn btn-sm btn-outline-primary">
+                                فتح الكل
+                            </button>
+
+                            <button type="button"
+                                    id="collapseAll"
+                                    class="btn btn-sm btn-outline-secondary">
+                                اغلاق الكل
+                            </button>
+
+                            <div class="ms-auto col-md-4 col-12">
+                                <input type="text"
+                                       id="permissionSearch"
+                                       class="form-control form-control-sm"
+                                       placeholder="بحث داخل الصلاحيات...">
+                            </div>
+
+                        </div>
+
+                        <div class="permissions-container row">
+
+                            @foreach (var moduleGroup in groupedPermissions)
+                            {
+                                var collapseId = "collapse_" + moduleGroup.Key.Replace(" ", "_");
+
+                                <div class="card shadow-sm border-0 rounded-4 mb-4 col-md-3 col-6 module-card"
+                                     data-module="@moduleGroup.Key.ToLower()">
+
+                                    <!-- Module Header -->
+                                    <div class="card-header fw-bold d-flex justify-content-between align-items-center"
+                                         style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7); cursor:pointer;"
+                                         data-bs-toggle="collapse"
+                                         data-bs-target="#@collapseId">
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <i class="bi bi-chevron-down toggle-icon"></i>
+
+                                            <span class="fs-5">
+                                                <i class="bi bi-folder2-open ms-2 fs-5 text-primary"></i>
+                                                @moduleGroup.Key
+                                            </span>
+
+                                        </div>
+
+                                        <div class="d-flex align-items-center gap-2">
+
+                                            <!-- Select Module -->
+                                            <input type="checkbox"
+                                                   class="form-check-input select-module">
+
+                                            <span class="badge bg-primary fs-6 rounded-pill">
+                                                @moduleGroup.Count()
+                                            </span>
+
+                                        </div>
+
+                                    </div>
+
+                                    <!-- Module Permissions -->
+                                    <div id="@collapseId"
+                                         class="collapse show module-body">
+
+                                        <div class="card-body p-0">
+
+                                            <!-- Desktop -->
+                                            <div class="table-responsive d-none d-md-block">
+
+                                                <table class="table align-middle table-hover mb-0">
+
+                                                    <tbody>
+
+                                                        @foreach (var item in moduleGroup)
+                                                        {
+                                                            var permissionName = item.value.DisplayValue.Split('.')[2];
+
+                                                            <tr class="permission-row"
+                                                                data-permission="@permissionName.ToLower()">
+
+                                                                <td>
+                                                                    <div class="form-check m-0">
+
+                                                                        <input type="hidden"
+                                                                               asp-for="PermissionVM.RoleCalims[item.index].DisplayValue" />
+
+                                                                        <input asp-for="PermissionVM.RoleCalims[item.index].IsSelected"
+                                                                               class="form-check-input permission-checkbox" />
+
+                                                                    </div>
+                                                                </td>
+
+                                                                <td>
+                                                                    <span class="badge text-start bg-info-subtle text-primary fs-6 fw-semibold">
+                                                                        @permissionName
+                                                                    </span>
+                                                                </td>
+
+                                                            </tr>
+                                                        }
+
+                                                    </tbody>
+
+                                                </table>
+
+                                            </div>
+
+                                            <!-- Mobile -->
+                                            <div class="d-md-none p-2">
+
+                                                @foreach (var item in moduleGroup)
+                                                {
+                                                    var permissionName = item.value.DisplayValue.Split('.')[2];
+
+                                                    <div class="card border-0 shadow-sm mb-2 rounded-3 permission-row"
+                                                         data-permission="@permissionName.ToLower()">
+
+                                                        <div class="card-body py-2 px-3 d-flex align-items-center gap-3">
+
+                                                            <input type="hidden"
+                                                                   asp-for="PermissionVM.RoleCalims[item.index].DisplayValue" />
+
+                                                            <input asp-for="PermissionVM.RoleCalims[item.index].IsSelected"
+                                                                   class="form-check-input permission-checkbox permission-checkbox-mobile" />
+
+                                                            <div class="fw-semibold small">
+                                                                @permissionName
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+                                                }
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
-                            </td>
-                            <td>@Model.PermissionVM.RoleCalims[i].DisplayValue.Split('.')[1]</td>
-                            <td>@Model.PermissionVM.RoleCalims[i].DisplayValue.Split('.')[2]</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <div asp-validation-summary="All" class="text-danger"></div>
-        </div>
-        <div class="card-footer">
-            <button type="submit" class="btn btn-primary">Save</button>
-            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                            }
+
+                        </div>
+
+                        <!-- Validation -->
+                        <div asp-validation-summary="All" class="text-danger mt-3"></div>
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="card-footer bg-white border-0 d-flex justify-content-between flex-wrap gap-2 p-3 p-md-4">
+
+                        <button type="submit"
+                                class="btn btn-success px-4 shadow-sm">
+
+                            <i class="bi bi-check-lg me-1"></i>
+                            حفظ البيانات
+
+                        </button>
+
+                        <a asp-action="Index"
+                           class="btn btn-outline-secondary px-4 shadow-sm">
+
+                            <i class="bi bi-x-lg me-1"></i>
+                            الغـاء
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </form>
+
         </div>
     </div>
-</form>
+</section>
+
+<style>
+
+    .permissions-card {
+        transition: all .2s ease;
+    }
+
+    .permission-checkbox,
+    .permission-checkbox-mobile {
+        cursor: pointer;
+        width: 18px;
+        height: 18px;
+    }
+
+    .module-card {
+        transition: transform .15s ease;
+    }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+        }
+
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const globalCheckbox = document.getElementById("selectAllGlobal");
+
+        // تحديث حالة Select All Global
+        function updateGlobalState() {
+            const all = document.querySelectorAll(".permission-checkbox");
+            const checked = document.querySelectorAll(".permission-checkbox:checked");
+            globalCheckbox.checked = all.length === checked.length;
+        }
+
+        // تحديث حالة Select All لكل Module
+        function updateModuleState(moduleCard) {
+            const all = moduleCard.querySelectorAll(".permission-checkbox");
+            const checked = moduleCard.querySelectorAll(".permission-checkbox:checked");
+            const moduleSelect = moduleCard.querySelector(".select-module");
+            if (moduleSelect)
+                moduleSelect.checked = all.length === checked.length;
+        }
+
+        // عند تغيير أي Permission
+        document.querySelectorAll(".permission-checkbox").forEach(cb => {
+            cb.addEventListener("change", function () {
+                const moduleCard = this.closest(".module-card");
+                updateModuleState(moduleCard);
+                updateGlobalState();
+            });
+        });
+
+        // Select per Module
+        document.querySelectorAll(".select-module").forEach(moduleCheckbox => {
+            moduleCheckbox.addEventListener("change", function (e) {
+                e.stopPropagation();
+                const moduleCard = this.closest(".module-card");
+                moduleCard.querySelectorAll(".permission-checkbox").forEach(cb => cb.checked = this.checked);
+                updateGlobalState();
+            });
+        });
+
+        // Select All Global
+        globalCheckbox.addEventListener("change", function () {
+            const checked = this.checked;
+            document.querySelectorAll(".permission-checkbox").forEach(cb => cb.checked = checked);
+            document.querySelectorAll(".select-module").forEach(cb => cb.checked = checked);
+        });
+
+        // Expand / Collapse All
+        document.getElementById("expandAll").addEventListener("click", function () {
+            document.querySelectorAll(".module-body").forEach(el => bootstrap.Collapse.getOrCreateInstance(el).show());
+        });
+        document.getElementById("collapseAll").addEventListener("click", function () {
+            document.querySelectorAll(".module-body").forEach(el => bootstrap.Collapse.getOrCreateInstance(el).hide());
+        });
+
+        // Search
+        document.getElementById("permissionSearch").addEventListener("keyup", function () {
+            const value = this.value.toLowerCase();
+            document.querySelectorAll(".module-card").forEach(module => {
+                const moduleName = module.dataset.module;
+                const rows = module.querySelectorAll(".permission-row");
+                let found = false;
+                rows.forEach(row => {
+                    const perm = row.dataset.permission;
+                    if (perm.includes(value) || moduleName.includes(value)) {
+                        row.style.display = "";
+                        found = true;
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+                module.style.display = found ? "" : "none";
+            });
+        });
+
+        // Initial state after load (important after Save)
+        document.querySelectorAll(".module-card").forEach(module => updateModuleState(module));
+        updateGlobalState();
+
+    });
+</script>

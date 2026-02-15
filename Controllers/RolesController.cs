@@ -92,6 +92,9 @@ namespace ZekrHakeem_v11.Controllers
         {
             var role = _roleManager.Roles.FirstOrDefault(x => x.Id == Id);
 
+            if (role == null)
+                { return View("Error"); }
+
             if ((await _roleManager.DeleteAsync(role)).Succeeded)
                 return RedirectToAction(nameof(Index));
 
@@ -101,7 +104,7 @@ namespace ZekrHakeem_v11.Controllers
 
         #region Manage Permissions
         public async Task<IActionResult> ManagePermissions(string roleId)
-        {
+            {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var role = await _roleManager.FindByIdAsync(roleId);
 

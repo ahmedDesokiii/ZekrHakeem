@@ -204,3 +204,21 @@ header {
         margin: 0;
         padding: 0;
     }
+<style >
+
+.updated-row {
+    animation: highlightFade 2s ease;
+}
+
+@keyframes highlightFade {
+
+    0% {
+        background-color: #fff3cd;
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
+</style >

@@ -7,7 +7,7 @@
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
 
-            <div class="card users-card shadow-sm mt-4">
+            <div class="card users-card shadow-sm my-4">
 
                 <!-- Header -->
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
@@ -16,11 +16,10 @@
                     </h4>
 
                     <button class="btn btn-success"
-                            onclick="openUserModal('@Url.Action("AddUser", "Users")')">
+                            onclick="openUserModal('@Url.Action("AddUser", "Users")') ; Reset();">
                         <i class="bi bi-plus-circle ms-2"></i>
                         إضافة مستخدم
                     </button>
-
                 </div>
 
                 <!-- Body -->
@@ -35,14 +34,14 @@
                     }
                     else
                     {
-                        <!-- ======================= Mobile Users =============================== -->
+                        <!-- ======================= Mobile Search Users  =============================== -->
                         <div class="d-block d-md-none px-2 mb-2">
                             <input type="text" id="userSearch" class="form-control shadow-sm"
                                    placeholder="ابحث هنا..." />
                         </div>
 
                         <!-- ================= Users Cards (Mobile) ================= -->
-                        <div class="d-block d-md-none px-2" id="usersCardsContainer">
+                        <div class="d-block d-md-none px-2" id="usersCardsContainer" style="max-height: 70vh; overflow-y: auto;">
                             @foreach (var user in Model.UserVM)
                             {
                                 <div class="card user-card mb-3 shadow-sm mt-2 position-relative"
@@ -66,6 +65,14 @@
                                         <div class="data-row d-flex justify-content-between align-items-center">
                                             <span class="data-label mx-2">التليفون</span>
                                             <span class="fw-bold user-phone">@user.PhoneNumber</span>
+                                        </div>
+                                        <div class="data-row d-flex justify-content-between align-items-center">
+                                            <span class="data-label mx-2">رقم الهوية</span>
+                                            <span class="fw-bold user-identity">@user.IdentityNum</span>
+                                        </div>
+                                        <div class="data-row d-flex justify-content-between align-items-center">
+                                            <span class="data-label mx-2">البريد الالكتروني</span>
+                                            <span class="fw-bold user-email">@user.Email</span>
                                         </div>
                                         <div class="data-row d-flex flex-wrap align-items-center">
                                             <span class="data-label mx-2">المجموعات</span>
@@ -97,48 +104,51 @@
 
                         <!-- ================= Users Table (Desktop) ================= -->
                         <div class="d-none d-lg-block  d-md-block table-responsive px-2">
+                           
                             <table id="tableUser" class="table table-hover users-table nowrap table-bordered border-primary-subtle align-middle">
                                 <thead>
-                                    <tr class="text-center text-white" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">
-                                        <th class="text-center text-white" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">الاسم</th>
-                                        <th class="text-center text-white" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اسم المستخدم</th>
-                                        <th class="text-center text-white d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">التليفون</th>
-                                        <th class="text-center text-white d-none d-lg-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">المجموعات</th>
-                                        <th class="text-center text-white" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">إجراءات</th>
+                                    <tr class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">
+                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">الاسم</th>
+                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اسم المستخدم</th>
+                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">التليفون</th>
+                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">رقم الهوية</th>
+                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">البريد الالكتروني</th>
+                                        <th class="text-center text-white py-2 d-none d-lg-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">المجموعات</th>
+                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">إجراءات</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var user in Model.UserVM)
                                     {
                                         <tr>
-                                            <td data-label="الاسم">@user.FullName</td>
-                                            <td data-label="اسم المستخدم">@user.UserName</td>
-                                            <td data-label="التليفون" class="d-none d-md-table-cell text-center">@user.PhoneNumber</td>
-                                            <td data-label="المجموعات" class="d-none d-lg-table-cell">
+                                            <td data-label="الاسم" class="py-0 text-primary fw-bold">@user.FullName</td>
+                                            <td data-label="اسم المستخدم" class="py-0">@user.UserName</td>
+                                            <td data-label="التليفون" class="py-0 d-none d-md-table-cell text-center">@user.PhoneNumber</td>
+                                            <td data-label="رقم الهوية" class="py-0 d-none d-md-table-cell text-center">@user.IdentityNum</td>
+                                            <td data-label="البريد الالكتروني" class="py-0 d-none d-md-table-cell text-center">@user.Email</td>
+                                            <td data-label="المجموعات" class="py-0 d-none d-lg-table-cell">
                                                 @foreach (var role in user.Roles)
                                                 {
-                                                    var roleColor = role switch
-                                                    {
-                                                        "Admin" => "#FF6464",
-                                                        "Parent" => "#8CE4FF",
-                                                        "Teacher" => "#FEEE91",
-                                                        "Supervisor" => "#94FFD8",
-                                                        _ => "#D3D3D3"
-                                                    };
-                                                    <span class="badge text-dark me-1" style="background-color:@roleColor">@role</span>
+                                                    <span class="py-2 badge me-1 my-1 fs-6 rounded-4 " style="background-color: rgba(25,135,84,0.1); color:#198754;">@role</span>
+                                                    <br class="p-0 m-0">
                                                 }
                                             </td>
-                                            <td class="text-center actions">
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
+                                            <td class="text-center actions py-0">
+                                                <a href="javascript:void(0)"
+                                                   class="btn fw-bold btn-outline-dark py-0 bg-transparent border-0 mx-1 fs-4"
+                                                   title="مجموعات"
+                                                   onclick="openRolesModal('@user.Id')">
+
                                                     <i class="bi bi-view-stacked"></i>
                                                 </a>
+
                                                 <button type="button"
-                                                        class="btn btn-outline-dark border-0 fs-4 edit-user-btn"
+                                                        class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn"
                                                         data-url="@Url.Action("EditUser", "Users", new { userId = user.Id })">
                                                     <i class="bi bi-pencil-square"></i>
                                                 </button>
 
-                                                <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
                                                     <i class="bi bi-trash3-fill"></i>
                                                 </a>
                                             </td>
@@ -158,14 +168,93 @@
 </section>
 
 <div id="modalContainer"></div>
+<div id="rolesModalContainer"></div>
+
+@if (TempData["Msg"] != null)
+{
+    <script>
+        Swal.fire({
+            icon: '@TempData["MsgType"]',
+            title: '@TempData["MsgTitle"]',
+            text: '@TempData["Msg"]',
+            confirmButtonText: 'حسناً'
+        });
+    </script>
+}
+
+@if (Model != null && Model.IsUserModalOpen)
+{
+    <script>
+        var myModal = new bootstrap.Modal(document.getElementById('userModal'));
+        myModal.show();
+    </script>
+}
 
 @section Scripts {
+    @* <script src="~/js/Users.js"></script> *@
     <script>
-            // لجميع أزرار التعديل في الديسكتوب
-    $(document).on('click', '.edit-user-btn', function () {
-        var url = $(this).data('url');
-        openUserModal(url);
-    });
+
+        function refreshUsersTable() {
+
+            if ($.fn.DataTable.isDataTable('#usersTable')) {
+
+                $('#usersTable').DataTable().ajax.reload(null, false);
+
+            }
+            else {
+
+                location.reload();
+
+            }
+
+        }
+
+    </script>
+
+    <script>
+        function openRolesModal(userId) {
+
+            $.get('/Users/ManageRoles', { userId: userId }, function (data) {
+
+                $('#rolesModalContainer').html(data);
+
+                var modal = new bootstrap.Modal(document.getElementById('manageRolesModal'));
+
+                modal.show();
+
+            });
+
+        }
+    </script>
+
+    <script>
+                const Reset = () => {
+
+            const form = document.getElementById("userForm");
+
+            if (form) {
+                form.reset(); // يمسح كل الحقول مرة واحدة
+            }
+
+            // optional: إزالة validation
+            form?.classList.remove("was-validated");
+
+            // optional: إزالة أي رسائل خطأ
+            document.querySelectorAll(".text-danger").forEach(e => e.innerText = "");
+        };
+
+    </script>
+    <script>
+                $('#UserName').on('input', function () {
+            this.value = this.value.toLowerCase().replace(/\s/g, '');
+        });
+    </script>
+    <script>
+        // لجميع أزرار التعديل في الديسكتوب
+        $(document).on('click', '.edit-user-btn', function () {
+            var url = $(this).data('url');
+            openUserModal(url);
+        });
     </script>
     <script>
         // Open Add/Edit User Modal
@@ -202,17 +291,105 @@
                 url: form.attr("action"),
                 type: "POST",
                 data: form.serialize(),
-                success: function (res) {
-                    if (res.success) {
-                        bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
-                        location.reload();
-                    } else {
-                        $("#modalContainer").html(res);
-                        $.validator.unobtrusive.parse("#userModal");
-                    }
-                },
+               success: function (res) {
+            if (res.success) {
+                window.location.href = res.redirectUrl;
+            } else {
+                $("#modalContainer").html(res);
+                $.validator.unobtrusive.parse("#userModal");
+            }
+        },
                 complete: function () { submitBtn.prop("disabled", false); }
             });
         });
     </script>
+    <script>
+              $(document).on("submit", "#manageRolesForm", function (e) {
+            e.preventDefault();
+
+            var form = $(this);
+            var btn = $("#saveRolesBtn");
+            btn.prop("disabled", true);
+            btn.find(".btn-text").addClass("d-none");
+            btn.find(".btn-loading").removeClass("d-none");
+
+            $.ajax({
+                url: form.attr("action"),
+                type: "POST",
+                data: form.serialize(),
+           success: function(res) {
+            if(res.success){
+                var modalEl = document.getElementById('manageRolesModal');
+                var modal = bootstrap.Modal.getInstance(modalEl);
+                modal.hide();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم الحفظ',
+                    text: res.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                // تحديث الصف المحدث
+                var row = $('#tableUsers').find('tr[data-userid="'+res.userId+'"]');
+
+                // تحديث المجموعات (Roles) داخل الصف مباشرة
+                var rolesHtml = '';
+                res.updatedRoles.forEach(role => {
+                    rolesHtml += `<span class="py-2 badge me-1 my-1 fs-6 rounded-4" style="background-color: rgba(25,135,84,0.1); color:#198754;">${role}</span><br class="p-0 m-0">`;
+                });
+
+                row.find('td[data-label="المجموعات"]').html(rolesHtml);
+
+                // Highlight الصف
+                row.addClass('updated-row');
+                setTimeout(() => row.removeClass('updated-row'), 2000);
+            }
+        },
+
+                error: function () {
+                    Swal.fire('خطأ', 'حدث خطأ أثناء الحفظ', 'error');
+                },
+                complete: function () {
+                    btn.prop("disabled", false);
+                    btn.find(".btn-text").removeClass("d-none");
+                    btn.find(".btn-loading").addClass("d-none");
+                }
+            });
+        });
+                if ($.fn.DataTable.isDataTable('#tableUser')) {
+            $('#tableUser').DataTable().ajax.reload(null, false); // يعيد تحميل بيانات الـ DataTable فقط
+        } else {
+             // fallback لو الجدول ليس DataTable، يعيد تحميل الصفحة بالكامل
+        }
+
+    </script>
+    <script>
+
+           // Search للموبايل
+        document.getElementById('userSearch')?.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll('#usersCardsContainer .user-card');
+
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                const username = card.getAttribute('data-username') || '';
+                const phone = card.getAttribute('data-phone') || '';
+                const roles = card.getAttribute('data-roles') || '';
+
+                // تحقق لو البحث موجود في أي من هذه الحقول
+                if (name.includes(query) || username.includes(query) || phone.includes(query) || roles.includes(query)) {
+                    card.style.display = ''; // عرض الكارد
+                } else {
+                    card.style.display = 'none'; // إخفاء الكارد
+                }
+            });
+        });
+    </script>
+
+     
+
+    
 }
+

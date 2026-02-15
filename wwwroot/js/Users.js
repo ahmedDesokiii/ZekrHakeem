@@ -2,7 +2,7 @@
 //// DataTables initialisation
 
 $('#tableUser').dataTable({
-
+    "ordering": false, // يمنع الترتيب التلقائي
     columnControl: {
         target: 1,
         content: ['search']
@@ -120,6 +120,10 @@ Rest = () => {
     document.getElementById("UserId").value = "";
     document.getElementById("UserName").value = "";
 
+}
+Reset = () => {
+    document.getElementById("UserName").value = "";
+    document.getElementById("Password").value = "";
 }
 
 ManageRoles = (id) => {

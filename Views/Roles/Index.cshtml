@@ -1,132 +1,138 @@
 ﻿@model MasterViewModel
 
 @{
-    ViewData["Title"] = "Roles";
+    ViewData["Title"] = "المجموعات";
     int cNo = 0;
 }
 
-<div class="wrapper">
-    <!--Content-Header-->
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1 class="m-0 text-dark">Roles</h1>
+<section class="container-fluid roles-page">
+    <div class="row justify-content-center">
+        <div class="col-12 col-xl-10">
+
+            <div class="card roles-card shadow-sm my-4">
+
+                <!-- Header -->
+                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
+                    <h4 class="mb-0 fw-bold"><i class="bi bi-collection-fill ms-2"></i> المجموعات</h4>
+
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest();">
+                        <i class="bi bi-plus-circle ms-2"></i> إضافة مجموعة
+                    </button>
+                </div>
+
+                <!-- Body -->
+                <div class="card-body px-3 px-md-4 px-xl-5">
+
+                    @if (!Model.RoleVM.Any())
+                    {
+                        <div class="alert alert-warning m-3 text-center">
+                            <h5>لا توجد مجموعات</h5>
+                            <p class="mb-0">لم يتم إضافة أي مجموعة بعد</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Mobile Search -->
+                        <div class="d-block d-md-none px-2 mb-2">
+                            <input type="text" id="roleSearch" class="form-control shadow-sm" placeholder="ابحث هنا..." />
+                        </div>
+
+                        <!-- Mobile Cards -->
+                        <div class="d-block d-md-none px-2" id="rolesCardsContainer" style="max-height:70vh; overflow-y:auto;">
+                            @foreach (var role in Model.RoleVM)
+                            {
+                                <div class="card role-card mb-3 shadow-sm mt-2 position-relative"
+                                     data-name="@role.Name.ToLower()"
+                                     style="transition: all 0.3s ease;">
+                                    <div class="card-header py-2 px-3 text-white" style="background: linear-gradient(135deg, #D8E983 0%, #54C392 50%, #15B392 100%);">
+                                        <h6 class="fw-bold mb-0 text-truncate" title="@role.Name">@role.Name</h6>
+                                    </div>
+                                    <div class="card-body py-2 d-flex justify-content-around">
+                                        <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات" asp-action="ManagePermissions" asp-route-Id="@role.Id">
+                                            <i class="bi bi-shield-lock-fill"></i>
+                                        </a>
+
+                                        <a class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn" title="تعديل"
+                                           onclick="Edit('@role.Id', '@role.Name')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" onclick="Delete('@role.Id')">
+                                            <i class="bi bi-trash3-fill"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Desktop Table -->
+                        <div class="d-none d-md-block table-responsive px-2">
+                            <table class="table table-hover roles-table nowrap table-bordered border-primary-subtle align-middle" id="tableRole">
+                                <thead>
+                                    <tr class="bg-primary text-white text-center">
+                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;"></th>
+                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اسم المجموعة</th>
+                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اجراءات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var role in Model.RoleVM)
+                                    {
+                                        cNo++;
+                                        <tr>
+                                            <td class="text-center">@cNo</td>
+                                            <td class="text-center fw-bold fs-5 text-primary" >@role.Name</td>
+                                            <td class="text-center">
+                                                @* <a class="btn btn-warning btn-sm" asp-action="ManagePermissions" asp-route-roleId="@role.Id">Permissions</a>
+                                                <input type="button" class="btn btn-info btn-sm" onclick="Edit('@role.Id', '@role.Name')" value="Edit" data-bs-toggle="modal" data-bs-target="#exampleModal" />
+                                                <input type="button" class="btn btn-danger btn-sm" onclick="Delete('@role.Id')" value="Delete" />
+                                             *@
+                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات"  asp-action="ManagePermissions" asp-route-roleId="@role.Id">
+                                                    <i class="bi bi-shield-lock-fill"></i>
+                                                </a>
+
+                                                <a class="btn btn-outline-dark bg-transparent text-dark border-0 py-0 fs-4 edit-user-btn"
+                                                   onclick="Edit('@role.Id', '@role.Name')" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </a>
+
+                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" onclick="Delete('@role.Id')">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </a>
+                                            
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+
                 </div>
             </div>
+
         </div>
     </div>
-    <!--End Content-Header-->
-    <!-- Main content -->
-    <section class="content">
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex align-items-center justify-content-start">
-                        <div class="card-tools ">
-                            <!-- Button trigger modal -->
-                           
-                                <button type="button" style="margin-left:20px"class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest()">
-                                    Add Role
-                                </button>
-
-                        </div>
-                    </div>
-                    <!-- /.card-header -->
-
-                    <div class="card-body">
-                        <!-- Tab links -->
-                        <div class="tab">
-                            <button class="tablinks" onclick="openCity(event, 'Roles')" id="defaultOpen">Roles</button>
-                        </div>
-                        <!-- Tab content -->
-                        @if (!Model.RoleVM.Any())
-                        {
-                            <div class="alert  alert-warning mt-5">
-                                <h4 class="alert-heading">No Roles!</h4>
-                                <p class="mb-0">No roles where added yet.</p>
-                            </div>
-                        }
-                        else
-                        {
-                            <div id="Roles" class="tabcontent">
-                                <table class="table table-hover mt-4" id="tableRole">
-                                    <thead>
-                                        <tr class="bg-primary text-white ">
-                                            <th></th>
-                                            <th>Role Name</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var role in Model.RoleVM)
-                                        {
-                                            cNo++;
-                                            <tr>
-                                                <td style="text-align:center">@cNo</td>
-                                                <td>@role.Name</td>
-
-                                                <td>
-                                                    <a class="btn btn-warning" asp-action="ManagePermissions" asp-route-roleId="@role.Id">Permissions</a>
-                                                    <input type="button" class="btn btn-info" onclick="Edit('@role.Id', '@role.Name',)" value="Edit" data-bs-toggle="modal" data-bs-target="#exampleModal" />
-                                                    <input type="button" class="btn btn-danger" onclick="Delete('@role.Id')" value="Delete" />
-                                                </td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-                        }
-                    </div>
-                    <!-- /.card-body -->
-                </div>
-                <!-- /.card -->
-                <!-- /.card -->
-            </div>
-            <!-- /.col -->
-        </div>
-        <!-- /.row -->
-    </section>
-    <!-- /.content -->
-</div>
-
-
+</section>
 
 <partial name="AddRole" model="new RoleFormViewModel()" />
 
 @section Scripts {
-    @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
-    {
-        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
-        {
-            <script>
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'success'
-                    
-                });
-            </script>
+    <script>
+        // Mobile search functionality
+        document.getElementById('roleSearch')?.addEventListener('input', function () {
+            const query = this.value.toLowerCase();
+            const cards = document.querySelectorAll('#rolesCardsContainer .role-card');
 
-        }
-        else
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'warning'
-                    
-                });
-            </script>
-        }
-        Context.Session.SetString(Helper.MsgType, "");
-    }
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = name.includes(query) ? '' : 'none';
+            });
+        });
+    </script>
 
     <script src="~/js/Roles.js"></script>
+}
 
 
     <script>

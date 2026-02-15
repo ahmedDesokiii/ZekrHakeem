@@ -339,6 +339,8 @@
    
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+
+
     <!-- تضمين مكتبة خرائط جوجل -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDy2BMMMCDn3JczdO1y8hZRYQkf8dDS4x0&callback=initMap" async defer asp-append-version="true"></script>
     <script src="~/sweetalert2/sweetalert2.all.js"></script>
@@ -362,7 +364,9 @@
             }
         });
     </script>
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>

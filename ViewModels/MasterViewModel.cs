@@ -3,6 +3,7 @@ namespace ZekrHakeem_v11.ViewModels
 {
     public class MasterViewModel
     {
+        public bool IsUserModalOpen { get; set; }
         public CenterViewModel CenterVM { get; set; }
         public LocationViewModel LocationVM { get; set; }
         public DemandViewModel DemandVM { get; set; }
