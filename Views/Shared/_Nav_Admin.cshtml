@@ -1,0 +1,84 @@
+﻿@*  <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px !important" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    الذكر الحكيم
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#about">عن جمعية الذكر الحكيم</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" target="_blank" href="https://www.quranumluj.org.sa">منصة الجمعية</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#">موقع الجمعية علي الخريطة</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#vision">الرؤية و الرسالة</a></li>
+                                    <li><a class="dropdown-item text-dark fw-bold" href="#managment">إدارة الجمعية</a></li>
+                                </ul>
+                            </li> *@
+<li class="nav-item">
+    <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px;" asp-area="" asp-controller="Users" asp-action="index">المستخدمين</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px;" asp-area="" asp-controller="Roles" asp-action="index">المجموعات</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px;" asp-area="" asp-controller="Centers" asp-action="Centers">@ResourceApp_Ar.LayoutPage_NavCenters_lnk</a>
+</li>
+@* <li class="nav-item">
+    <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px;" asp-area="" asp-controller="Districts" asp-action="Districts">@ResourceApp_Ar.LayoutPage_NavDistricts_lnk</a>
+</li> *@
+<li class="nav-item">
+    <a class="nav-link fw-bold" style="color:darkgoldenrod;font-size:20px;" asp-area="" asp-controller="Locations" asp-action="Locations">@ResourceApp_Ar.LayoutPage_NavLocations_lnk</a>
+</li>
+
+@* البرامج *@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownProgs" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @ResourceApp_Ar.LayoutPage_NavProgs_lnk
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownProgs">
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="Progs">قائمة البرامج النوعية <i class="bi bi-collection-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">قائمة الحلقات النوعية <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">طلاب الحلقات النوعية <i class="bi bi-people fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="StudentsWithEpisodeProg">إسناد الطلاب للحلقات النوعية <i class="bi bi-person-rolodex fs-5 px-2"></i></a></li>
+    </ul>
+</li>
+
+@* الحلقات *@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownEpisodes" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @ResourceApp_Ar.LayoutPage_NavEpisodes_lnk
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownEpisodes">
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Episodes" asp-action="Episodes">حلقات أساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
+    </ul>
+</li>
+
+@* الطلاب *@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        @ResourceApp_Ar.LayoutPage_NavStudents_lnk
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownStudents">
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">طلاب حلقات أساسية <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">طلاب حلقات نوعية <i class="bi bi-people fs-5 px-2"></i></a></li>
+    </ul>
+</li>
+
+@* التقارير *@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        التقارير
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Reports" asp-action="TeachersAttendance">حضور وانصراف المعلمين <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Reports" asp-action="StudentsDailyEvaluations">التقييم اليومي للطلاب <i class="bi bi-bar-chart-line-fill fs-5 px-2"></i></a></li>
+    </ul>
+</li>
+
+@* خدمات أخرى *@
+<li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        خدمات أخرى
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="navbarDropdownServices">
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات أولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
+    </ul>
+</li>

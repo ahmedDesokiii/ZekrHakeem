@@ -12,7 +12,7 @@
                 <!-- Header -->
                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
                     <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-people-fill me-1"></i> المستخدمين
+                        <i class="bi bi-people-fill ms-2"></i> المستخدمين
                     </h4>
 
                     <button class="btn btn-success"
@@ -86,17 +86,23 @@
                                     </div>
 
                                     <div class="card-footer bg-light border-0 d-flex justify-content-around py-2 sticky-bottom">
-                                        <a class="btn fw-bold btn-outline-dark bg-transparent border-0 mx-1 fs-4" title="مجموعات" asp-controller="Users" asp-action="ManageRoles" asp-route-userId="@user.Id">
-                                            <i class="bi bi-view-stacked"></i>
-                                        </a>
-                                        <button class="btn btn-outline-dark border-0 fs-4"
-                                                onclick="openUserModal('@Url.Action("EditUser", "Users", new { userId = user.Id })')">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </button>
+                                       <a href="javascript:void(0)"
+                                                   class="btn fw-bold btn-outline-dark py-0 bg-transparent border-0 mx-1 fs-4"
+                                                   title="مجموعات"
+                                                   onclick="openRolesModal('@user.Id')">
 
-                                        <a class="btn fw-bold btn-outline-dark bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </a>
+                                                    <i class="bi bi-view-stacked"></i>
+                                                </a>
+
+                                                <button type="button"
+                                                        class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn"
+                                                        data-url="@Url.Action("EditUser", "Users", new { userId = user.Id })">
+                                                    <i class="bi bi-pencil-square"></i>
+                                                </button>
+
+                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
+                                                    <i class="bi bi-trash3-fill"></i>
+                                                </a>
                                     </div>
                                 </div>
                             }
@@ -191,6 +197,34 @@
 }
 
 @section Scripts {
+     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
     @* <script src="~/js/Users.js"></script> *@
     <script>
 

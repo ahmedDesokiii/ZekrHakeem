@@ -19,6 +19,7 @@ namespace ZekrHakeem_v11.ViewModels
         public PermissionsFormViewModel PermissionVM { get; set; }
         public IEnumerable<UserViewModel> UserVM { get; set; }
         public List<IdentityRole>? RoleVM { get; set; }
+        public RoleFormViewModel AddRoleVM { get; set; }
         public AccessDeniedModel AccessDeniedVM { get; set; }
 
         public AddUserViewModel AddUserVM { get; set; }

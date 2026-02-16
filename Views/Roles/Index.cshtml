@@ -87,7 +87,7 @@
                                                 <input type="button" class="btn btn-info btn-sm" onclick="Edit('@role.Id', '@role.Name')" value="Edit" data-bs-toggle="modal" data-bs-target="#exampleModal" />
                                                 <input type="button" class="btn btn-danger btn-sm" onclick="Delete('@role.Id')" value="Delete" />
                                              *@
-                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات"  asp-action="ManagePermissions" asp-route-roleId="@role.Id">
+                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات"  asp-action="ManagePermissions" asp-route-Id="@role.Id">
                                                     <i class="bi bi-shield-lock-fill"></i>
                                                 </a>
 
@@ -115,9 +115,37 @@
     </div>
 </section>
 
-<partial name="AddRole" model="new RoleFormViewModel()" />
+<partial name="_SaveRole"/>
 
 @section Scripts {
+     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
+    {
+        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'success'
+                });
+            </script>
+        }
+        else
+        {
+            <script>
+
+                Swal.fire({
+                    title: '@Context.Session.GetString(Helper.Title)',
+                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
+                    confirmButtonText: 'Ok',
+                    icon: 'error'
+                });
+            </script>
+        }
+        Context.Session.SetString(Helper.MsgType, "");
+    }
     <script>
         // Mobile search functionality
         document.getElementById('roleSearch')?.addEventListener('input', function () {
@@ -132,24 +160,56 @@
     </script>
 
     <script src="~/js/Roles.js"></script>
-}
 
 
     <script>
+      
 
-        let lbTitleEdit = '@Html.Raw("Edit Role")';
-        let lbEdit = '@Html.Raw("Save Changes")';
-        let lbAddNewRole = '@Html.Raw("Add New Role")';
-        let lbbtnSave = '@Html.Raw("Add Role")';
+        let lbTitleMsgDelete = '@Html.Raw("حذف مجموعة")';
+        let lbTextMsgDelete = '@Html.Raw($"هل انت متأكد من حذف هذه المجموعة وكل ما يتعلق بها ؟ ")';
+        let lbconfirmButtonText = '@Html.Raw("نعم")';
+        let lbcancelButtonText = '@Html.Raw("الغاء")';
 
-        let lbTitleMsgDelete = '@Html.Raw("Delete")';
-        let lbTextMsgDelete = '@Html.Raw($"Are you sure delete role ? ")';
-        let lbconfirmButtonText = '@Html.Raw("Yes , Delete it")';
-        let lbcancelButtonText = '@Html.Raw("Cancle")';
-
-        let lbTitleDeletedOk = '@Html.Raw("Done")';
-        let lbMsgDeletedOkRole = '@Html.Raw("Role Deleted Successfully")';
+        let lbTitleDeletedOk = '@Html.Raw("تم المسح")';
+        let lbMsgDeletedOkRole = '@Html.Raw("تم مسح المجموعة بنجاح")';
         let lbSuccess = '@Html.Raw(Helper.Success)';
-
     </script>
+    <script>
+
+    // Reset form for Add
+    function Rest() {
+
+        document.getElementById("roleId").value = "";
+        document.getElementById("roleName").value = "";
+
+        document.getElementById("modalTitle").innerHTML =
+            '<i class="bi bi-box-fill ms-2"></i> إضافة مجموعة جديدة';
+
+    }
+
+
+    // Edit Role
+    function Edit(id, name) {
+
+        document.getElementById("roleId").value = id;
+        document.getElementById("roleName").value = name;
+
+        document.getElementById("modalTitle").innerHTML =
+            '<i class="bi bi-box-fill ms-2"></i> تعديل بيانات المجموعة';
+
+    }
+
+
+    // Loading state
+    document.getElementById("roleForm")
+        .addEventListener("submit", function () {
+
+            document.getElementById("btnSave")
+                .querySelector(".btn-loading")
+                .classList.remove("d-none");
+
+        });
+
+</script>
+
 }

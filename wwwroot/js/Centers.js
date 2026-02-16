@@ -1,14 +1,89 @@
 ﻿
-$('#tableCenter').dataTable({
+if (!$.fn.DataTable.isDataTable('#tableCenter')) {
+    $('#tableCenter').DataTable({
+        "ordering": false, // يمنع الترتيب التلقائي
+        columnControl: {
+            target: 1,
+            content: ['search']
+        },
         "autoWidth": true,
         "responsive": true,
-        //"searching":false
-        "language": { "sSearch": "بحث:", "sLengthMenu": "_MENU_", }
+        layout: {
+            topStart: {
+                search: {
+                    placeholder: 'ابحث هنا... !'
+                }
+            },
+            topEnd: {
+                pageLength: {
+                    menu: [10, 25, 50, 100, 200, 400, 1000]
+                }
+            },
+            bottomEnd: {
+                paging: {
+                    buttons: 6
+                }
+            }
+        },
+        language: {
+            search: ' <i class="bi bi-search"></i>',
+            lengthMenu: ' _MENU_ ',
+            info: 'إظهار _START_ إلى _END_ من أصل _TOTAL_ سجل',
+            zeroRecords: 'لم يعثر على أي سجل',
+            paginate: {
+                first: 'الأول',
+                previous: 'السابق',
+                next: 'التالي',
+                last: 'الأخير'
+            }
+        }
     });
+}
+
+
+
 $('#tableLogCenter').dataTable({
+    "ordering": false, // يمنع الترتيب التلقائي
+    columnControl: {
+        target: 1,
+        content: ['search']
+    },
+    "autoWidth": true,
+    "responsive": true,
+
+    layout: {
+        topStart: {
+            search: {
+                placeholder: 'ابحث هنا... !'
+            }
+        },
+        topEnd: {
+            pageLength: {
+                menu: [10, 25, 50, 100, 200, 400, 1000]
+            }
+        },
+        bottomEnd: {
+            paging: {
+                buttons: 6
+            }
+        }
+    },
+    language: {
         "autoWidth": true,
-        "responsive": true
-    });
+        "responsive": true,
+        search: ' <i class=\"bi bi-search\"></i>', // Customize the search input label
+        lengthMenu: ' _MENU_ ', // Customize the "Show X entries" label
+        info: 'إظهار _START_ إلى _END_ من أصل _TOTAL_ سجل', // Customize the info text
+        zeroRecords: 'لم يعثر على أي سجل', // No records message
+        paginate: {
+            first: 'الأول',
+            previous: 'السابق',
+            next: 'التالي',
+            last: 'الأخير'
+        }
+    }
+});
+
 
 function Pause(id) {
     Swal.fire({
@@ -17,7 +92,7 @@ function Pause(id) {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'secondary',
+        cancelButtonColor: '#BFC6C4',
         confirmButtonText: lbconfirmButtonTextPause,
         cancelButtonText: lbcancelButtonText
     }).then((result) => {
@@ -38,7 +113,7 @@ function Resume(id) {
         icon: 'success',
         showCancelButton: true,
         confirmButtonColor: '#228B22',
-        cancelButtonColor: 'secondary',
+        cancelButtonColor: '#BFC6C4',
         confirmButtonText: lbconfirmButtonTextResume,
         cancelButtonText: lbcancelButtonText
     }).then((result) => {
@@ -61,7 +136,7 @@ function Delete(id) {
         icon: 'error',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'secondary',
+        cancelButtonColor: '#BFC6C4',
         confirmButtonText: lbconfirmButtonText,
         cancelButtonText: lbcancelButtonText
     }).then((result) => {
@@ -83,7 +158,7 @@ function DeleteLog(id) {
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'secondary',
+        cancelButtonColor: '#BFC6C4',
         confirmButtonText: lbconfirmButtonText,
         cancelButtonText: lbcancelButtonText
     }).then((result) => {

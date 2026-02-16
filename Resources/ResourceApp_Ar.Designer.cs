@@ -19,7 +19,7 @@ namespace ZekrHakeem_v11.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "18.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class ResourceApp_Ar {
@@ -1060,7 +1060,7 @@ namespace ZekrHakeem_v11.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to الأمــاكن.
+        ///   Looks up a localized string similar to المساجد.
         /// </summary>
         public static string LayoutPage_NavLocations_lnk {
             get {

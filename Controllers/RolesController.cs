@@ -1,4 +1,5 @@
-﻿using ZekrHakeem_v11.IRepository.ServicesRepository;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using ZekrHakeem_v11.IRepository.ServicesRepository;
 
 namespace ZekrHakeem_v11.Controllers
 {
@@ -8,12 +9,14 @@ namespace ZekrHakeem_v11.Controllers
         private readonly IServicesRepository<Demand> _servicesDemand;
         private readonly IServicesDemand _servicesOfDemand;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ApplicationDbContext _context;
 
-        public RolesController(IServicesRepository<Demand> servicesDemand, IServicesDemand servicesOfDemand, RoleManager<IdentityRole> roleManager)
+        public RolesController(IServicesRepository<Demand> servicesDemand, IServicesDemand servicesOfDemand, RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
             _servicesDemand = servicesDemand;
             _servicesOfDemand = servicesOfDemand;
             _roleManager = roleManager;
+            _context = context;
         }
 
         private void SessionMsg(string MsgType, string Title, string Msg)
@@ -40,9 +43,13 @@ namespace ZekrHakeem_v11.Controllers
                     DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
                     DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(userId),
                 },
-                RoleVM = await _roleManager.Roles.OrderBy(x => x.Name).ToListAsync()
+            //    RoleVM = await _roleManager.Roles.OrderBy(x => x.Name).ToListAsync()
             };
 
+            // جلب كل المجموعات
+            var roles = await _context.Roles.OrderBy(x=>x.Name).ToListAsync();
+            master.RoleVM = roles;
+            master.AddRoleVM = new RoleFormViewModel();
             return View(master);
         }
         #endregion
@@ -50,39 +57,33 @@ namespace ZekrHakeem_v11.Controllers
         #region Add|Edit Roles [Create & Update]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddRole(RoleFormViewModel model)
-        {
+        public async Task<IActionResult> AddRole(MasterViewModel model)
+       {
 
-            if (await _roleManager.RoleExistsAsync(model.Name))
+            if (await _roleManager.RoleExistsAsync(model.AddRoleVM.Name))
+                SessionMsg(Helper.Error, "مجموعة مكررة!", "اسم المجموعة موجود من قبل !");
+
+            else if (model.AddRoleVM.RoleId == null) // Create
             {
-                SessionMsg(Helper.Error, "Exist Role !", "Role is exists !");
-                return View("Index", await _roleManager.Roles.OrderBy(x => x.Name).ToListAsync());
+                var result = await _roleManager.CreateAsync(new IdentityRole(model.AddRoleVM.Name.Trim()));
+
+                if (result.Succeeded)// Succeeded 
+                    SessionMsg(Helper.Success, "تم الاضافة !", "تم اضافة مجموعة المستخدم بنجاح !");
+                else // Not Successeded
+                    SessionMsg(Helper.Error, "خطأ", "حدث خطأ اثناء حفظ المعلومات !");
             }
-
-            if (!ModelState.IsValid)
+            else // Update
             {
-                if (model.RoleId == null)
-                {
-                    var result = await _roleManager.CreateAsync(new IdentityRole(model.Name.Trim()));
-
-                    if (result.Succeeded)// Succeeded 
-                        SessionMsg(Helper.Success, "Done !", "Role Added Successfully");
-                    else // Not Successeded
-                        SessionMsg(Helper.Error, "Not Saved", "Role Not Added !");
-                }
-                return View("Index", await _roleManager.Roles.OrderBy(x => x.Name).ToListAsync());
-            }
-            else
-            {
-                var RoleUpdate = await _roleManager.FindByIdAsync(model.RoleId);
-                RoleUpdate.Id = model.RoleId;
-                RoleUpdate.Name = model.Name;
+                var RoleUpdate = await _roleManager.FindByIdAsync(model.AddRoleVM.RoleId);
+                RoleUpdate.Id = model.AddRoleVM.RoleId;
+                RoleUpdate.Name = model.AddRoleVM.Name;
                 var Result = await _roleManager.UpdateAsync(RoleUpdate);
                 if (Result.Succeeded) // Succeeded
-                    SessionMsg(Helper.Success, "Role Update", "Role is Updated Successfully");
+                    SessionMsg(Helper.Success, "تم التعديل", "تم تعديل بيانات المجموعة بنجاح !");
                 else  // Not Successeded
-                    SessionMsg(Helper.Error, "Role Not Update", "Role isn't Updated !");
+                    SessionMsg(Helper.Error, "خطأ ", "حدث خأ اثناء تعديل الحلقة !");
             }
+
             return RedirectToAction(nameof(Index));
         }
         #endregion
@@ -103,10 +104,10 @@ namespace ZekrHakeem_v11.Controllers
         #endregion
 
         #region Manage Permissions
-        public async Task<IActionResult> ManagePermissions(string roleId)
+        public async Task<IActionResult> ManagePermissions(string Id)
             {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var role = await _roleManager.FindByIdAsync(roleId);
+            var role = await _roleManager.FindByIdAsync(Id);
 
             if (role == null)
                 return NotFound();
@@ -121,13 +122,11 @@ namespace ZekrHakeem_v11.Controllers
                     permission.IsSelected = true;
             }
 
-
-
             MasterViewModel master = new()
             {
                 PermissionVM = new()
                 {
-                    RoleId = roleId,
+                    RoleId = Id,
                     RoleName = role.Name,
                     RoleCalims = allPermissions
                 },

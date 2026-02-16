@@ -1,5 +1,7 @@
 ﻿
-    $('#tableRole').dataTable({
+
+if (!$.fn.DataTable.isDataTable('#tableRole')) {
+    $('#tableRole').DataTable({
         "ordering": false, // يمنع الترتيب التلقائي
         columnControl: {
             target: 1,
@@ -7,7 +9,6 @@
         },
         "autoWidth": true,
         "responsive": true,
-
         layout: {
             topStart: {
                 search: {
@@ -26,12 +27,10 @@
             }
         },
         language: {
-            "autoWidth": true,
-            "responsive": true,
-            search: ' <i class=\"bi bi-search\"></i>', // Customize the search input label
-            lengthMenu: ' _MENU_ ', // Customize the "Show X entries" label
-            info: 'إظهار _START_ إلى _END_ من أصل _TOTAL_ سجل', // Customize the info text
-            zeroRecords: 'لم يعثر على أي سجل', // No records message
+            search: ' <i class="bi bi-search"></i>',
+            lengthMenu: ' _MENU_ ',
+            info: 'إظهار _START_ إلى _END_ من أصل _TOTAL_ سجل',
+            zeroRecords: 'لم يعثر على أي سجل',
             paginate: {
                 first: 'الأول',
                 previous: 'السابق',
@@ -40,6 +39,8 @@
             }
         }
     });
+}
+
 function Delete(id) {
     Swal.fire({
         title: lbTitleMsgDelete,
@@ -47,7 +48,7 @@ function Delete(id) {
         icon: 'error',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        cancelButtonColor: 'secondary',
+        cancelButtonColor: '#BFC6C4',
         confirmButtonText: lbconfirmButtonText,
         cancelButtonText: lbcancelButtonText,
         
@@ -59,16 +60,15 @@ function Delete(id) {
 }
 
 Edit = (id, name) => {
-    document.getElementById("title").innerHTML = lbTitleEdit;
-    document.getElementById("btnSave").value = lbEdit;
+    //document.getElementById("title").innerHTML = lbTitleEdit;
+   // document.getElementById("btnSave").value = lbEdit;
     document.getElementById("roleId").value = id;
     document.getElementById("roleName").value = name;
-
 }
 
 Rest = () => {
-    document.getElementById("title").innerHTML = lbAddNewRole;
-    document.getElementById("btnSave").value = lbbtnSave;
+    //document.getElementById("title").innerHTML = lbAddNewRole;
+    //document.getElementById("btnSave").value = lbbtnSave;
     document.getElementById("roleId").value = "";
     document.getElementById("roleName").value = "";
 
