@@ -1,4 +1,13 @@
-﻿using ZekrHakeem_v11.IRepository.ServicesRepository;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using ZekrHakeem_v11.Data;
+using ZekrHakeem_v11.IRepository.ServicesRepository;
+using ZekrHakeem_v11.Models;
+using ZekrHakeem_v11.ViewModels;
 
 namespace ZekrHakeem_v11.Controllers
 {
@@ -13,7 +22,15 @@ namespace ZekrHakeem_v11.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext _context;
 
-        public CentersController(IServicesRepository<Demand> servicesDemand, IServicesDemand servicesOfDemand, IServicesRepository<Center> servicesCenter, IServicesRepositoryLog<LogCenter> servicesCenterLog, IServicesCenter servicesOfCenter, IServicesLocation servicesOfLoction, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public CentersController(
+            IServicesRepository<Demand> servicesDemand,
+            IServicesDemand servicesOfDemand,
+            IServicesRepository<Center> servicesCenter,
+            IServicesRepositoryLog<LogCenter> servicesCenterLog,
+            IServicesCenter servicesOfCenter,
+            IServicesLocation servicesOfLoction,
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext context)
         {
             _servicesDemand = servicesDemand;
             _servicesOfDemand = servicesOfDemand;
@@ -32,104 +49,111 @@ namespace ZekrHakeem_v11.Controllers
             HttpContext.Session.SetString(Helper.Msg, Msg);
         }
 
-        #region Users Grouped
-        //var allusers = _context.Users.Select(user => new UserViewModel()
-        //{
-        //    Id = user.Id,
-        //    FullName = user.FullName,
-        //    IdentityNum = user.IdentityNum,
-        //    PhoneNumber = user.PhoneNumber,
-        //    UserName = user.UserName,
-        //    Email = user.Email,
-        //    Roles = _userManager.GetRolesAsync(user).Result
-        //}).ToList();
-
-        ////Admins
-        //var admins = allusers.Where(x => x.Roles.Select(role => role).Contains("Admin")).ToList();
-        //var adminsVM = admins.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////General Supervisors Men
-        //var supervisorsmen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.Supervisor.ToString())).ToList();
-        //var supervisorsmenVM = supervisorsmen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////General Supervisors Women
-        //var supervisorswomen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.SupervisorWomen.ToString())).ToList();
-        //var supervisorswomenVM = supervisorswomen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////Center Supervisors Men
-        //var supervisorscentermen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.SupervisorCenterMen.ToString())).ToList();
-        //var supervisorscentermenVM = supervisorscentermen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////Center Supervisors Women
-        //var supervisorscenterwomen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.SupervisorCenterWomen.ToString())).ToList();
-        //var supervisorscenterwomenVM = supervisorscenterwomen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////Teacher Men
-        //var teachersmen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.Teacher.ToString())).ToList();
-        //var teachersmenVM = teachersmen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////Teacher Women
-        //var teacherswomen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.TeacherWomen.ToString())).ToList();
-        //var teacherswomenVM = teacherswomen.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        ////Parent
-        //var parents = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.Parent.ToString())).ToList();
-        //var parentsVM = parents.Select(user => new UserViewModel { FullName = user.FullName }).ToList();
-
-        #endregion
-
         #region List Of Centers [View]
-        [Authorize(Permissions.Centers.View)]
-        public IActionResult Centers()
-        {
-            //Users Grouped
-            var allusers = _context.Users.Select(user => new UserViewModel()
-            {
-                Id = user.Id,
-                FullName = user.FullName,
-                IdentityNum = user.IdentityNum,
-                PhoneNumber = user.PhoneNumber,
-                UserName = user.UserName,
-                Email = user.Email,
-                Roles = _userManager.GetRolesAsync(user).Result
-            }).ToList();
 
-            var supervisorscentermen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.SupervisorCenterMen.ToString())).ToList();
-            var supervisorscenterwomen = allusers.Where(x => x.Roles.Select(role => role).Contains(Roles.SupervisorCenterWomen.ToString())).ToList();
+        [Authorize(Permissions.Centers.View)]
+        public async Task<IActionResult> Centers()
+        {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            MasterViewModel master = new MasterViewModel()
+            // ==============================
+            // Supervisors
+            // ==============================
+
+            var supervisorsMen = await _userManager
+                .GetUsersInRoleAsync(Roles.SupervisorCenterMen.ToString());
+
+            var supervisorsWomen = await _userManager
+                .GetUsersInRoleAsync(Roles.SupervisorCenterWomen.ToString());
+
+            // ==============================
+            // Centers Query Optimized
+            // ==============================
+
+            var centers = await _context.Centers
+                .AsNoTracking()
+                .Include(x => x.ApplicationUser)
+                .Include(x => x.Locations)
+                .OrderByDescending(x => x.CreatedDate)
+                .ToListAsync();
+
+            // ==============================
+            // Role Filtering
+            // ==============================
+
+            List<Center> filteredCenters = centers;
+
+            if (User.IsInRole(Roles.Supervisor.ToString()))
+            {
+                filteredCenters = centers
+                    .Where(x => x.Type == "men")
+                    .ToList();
+            }
+            else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
+            {
+                filteredCenters = centers
+                    .Where(x => x.Type == "women")
+                    .ToList();
+            }
+
+            // ==============================
+            // ViewBag Permissions
+            // ==============================
+
+            ViewBag.CanViewDetails = User.HasClaim("Permission", Permissions.Centers.ViewDetails);
+            ViewBag.CanCreate = User.HasClaim("Permission", Permissions.Centers.Create);
+            ViewBag.CanEdit = User.HasClaim("Permission", Permissions.Centers.Edit);
+            ViewBag.CanDelete = User.HasClaim("Permission", Permissions.Centers.Delete);
+            ViewBag.CanPause = User.HasClaim("Permission", Permissions.Centers.Pause);
+
+            // ==============================
+            // Model
+            // ==============================
+
+            MasterViewModel master = new()
             {
                 CenterVM = new()
                 {
-                    Centers = _servicesCenter.GetAll(),
-                    LogCenters = _servicesCenterLog.GetAll(),
+                    Centers = filteredCenters,
+                    LogCenters = await _context.LogCenters
+                        .AsNoTracking()
+                        .ToListAsync(),
+
                     NewCenter = new Center(),
-                    CentersForMen = _servicesOfCenter.GetCentersForMen(),
-                    CentersForWomen = _servicesOfCenter.GetCentersForWomen(),
-                    SupervisorsMenCenter = new SelectList(supervisorscentermen.OrderByDescending(x => x.Id).ToList(), "Id", "FullName"),
-                    SupervisorsWomenCenter = new SelectList(supervisorscenterwomen.OrderByDescending(x => x.Id).ToList(), "Id", "FullName"),
-                    CentersForSupervisorCenter = _servicesOfCenter.GetCentersWithSupervisor(userId),
+
+                    SupervisorsMenCenter = supervisorsMen
+                        .Select(x => new SelectListItem
+                        {
+                            Value = x.Id,
+                            Text = x.FullName
+                        }),
+
+                    SupervisorsWomenCenter = supervisorsWomen
+                        .Select(x => new SelectListItem
+                        {
+                            Value = x.Id,
+                            Text = x.FullName
+                        }),
+
+                    CentersForSupervisorCenter = centers
+                        .Where(x => !string.IsNullOrEmpty(x.ApplicationUserId)
+                                 && x.ApplicationUserId == userId)
+                        .ToList()
                 },
+
                 DemandVM = new()
                 {
-                    NewDemand = new Demand(),
-                    Demands = _servicesDemand.GetAll(),
-                    DemandsForMen = _servicesOfDemand.GetDemandsForMen(),
-                    DemandsForWomen = _servicesOfDemand.GetDemandsForWomen(),
-                    DemandsForTeacher = _servicesOfDemand.GetDemandsWithTeacher(userId),
-                    DemandsForMen_Notify = _servicesOfDemand.GetDemandsForMen_Notify(),
-                    DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
-                    DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(userId),
+                    NewDemand = new Demand()
                 }
             };
 
             return View(master);
         }
-        #endregion
 
-        #region Pause | Resume Center [Pause & Resume]
-        [Authorize(Permissions.Centers.Pause)]
+        #endregion
+    
+#region Pause | Resume Center [Pause & Resume]
+[Authorize(Permissions.Centers.Pause)]
         public IActionResult Pause(Guid Id)
         {
             //var userId = _userManager.GetUserId(User);
@@ -210,33 +234,26 @@ namespace ZekrHakeem_v11.Controllers
         }
         #endregion
 
-        #region Details Of Center [List Of Locations]
+        #region Details Of Center [Dashboard]
         [HttpGet]
         public IActionResult SelectedCenter(Guid id)
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var center = _servicesOfCenter.GetById(id);
+
+            if (center == null)
+                return NotFound();
 
             MasterViewModel master = new()
             {
                 CenterVM = new()
                 {
-                    NewCenter = _servicesOfCenter.GetById(id),
+                    NewCenter = center,
                     LocationsOfCenter = _servicesOfCenter.GetLocationsForCenter(id),
                     EpisodesOfCenter = _servicesOfCenter.GetEpisodesForCenter(id),
                     StudentsOfCenter = _servicesOfCenter.GetStudentsForCenter(id)
-                },
-                DemandVM = new()
-                {
-                    Demands = _servicesDemand.GetAll(),
-                    DemandsForMen = _servicesOfDemand.GetDemandsForMen(),
-                    DemandsForWomen = _servicesOfDemand.GetDemandsForWomen(),
-                    DemandsForTeacher = _servicesOfDemand.GetDemandsWithTeacher(userId),
-                    NewDemand = new Demand(),
-                    DemandsForMen_Notify = _servicesOfDemand.GetDemandsForMen_Notify(),
-                    DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
-                    DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(userId)
                 }
             };
+
             return View(master);
         }
         #endregion

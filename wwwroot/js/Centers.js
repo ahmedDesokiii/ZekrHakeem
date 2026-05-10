@@ -194,38 +194,68 @@ function SelectType() {
 }
 function Edit(id, name, type, description, appuserid) {
 
-    document.getElementById("title").innerHTML = lbTitleEditCenter;
-    document.getElementById("btnSave").value = lbEdit;
+    // Modal Title
+    document.getElementById("title").innerHTML =
+        `<i class="bi bi-buildings-fill ms-2"></i> ${lbTitleEditCenter}`;
 
-    document.getElementById("CenterId").value = id;
-    document.getElementById("CenterName").value = name;
-    document.getElementById("description").value = description;
-    document.getElementById("Super").value = appuserid;
+    // Save Button
+    document.getElementById("btnSave").innerHTML =
+        `<i class="bi bi-check-lg ms-1"></i> ${lbEdit}`;
 
-    if (type == "men") {
-        document.getElementById("CenterType").selectedIndex = 1;
-        document.getElementById("CenterType").disabled = true;
+    // Fill Data
+    document.getElementById("CenterId").value = id || "";
+    document.getElementById("CenterName").value = name || "";
+    document.getElementById("description").value = description || "";
+
+    // Supervisor
+    const superSelect = document.getElementById("Super");
+
+    if (appuserid && appuserid !== "null") {
+        superSelect.value = appuserid;
+    } else {
+        superSelect.selectedIndex = 0;
     }
-    else if (type == "women") {
-        document.getElementById("CenterType").selectedIndex = 2;
-        document.getElementById("CenterType").disabled = true;
+
+    // Center Type
+    const centerType = document.getElementById("CenterType");
+
+    if (centerType) {
+
+        centerType.disabled = true;
+
+        if (type === "men") {
+            centerType.value = "men";
+        }
+        else if (type === "women") {
+            centerType.value = "women";
+        }
     }
 }
-function Rest() {
-    document.getElementById("title").innerHTML = lbAddNewCenter;
-    document.getElementById("btnSave").value = lbbtnSave;
 
-    document.getElementById("CenterId").value = null;
+function Rest() {
+
+    // Modal Title
+    document.getElementById("title").innerHTML =
+        `<i class="bi bi-buildings-fill ms-2"></i> ${lbAddNewCenter}`;
+
+    // Save Button
+    document.getElementById("btnSave").innerHTML =
+        `<i class="bi bi-check-lg ms-1"></i> ${lbbtnSave}`;
+
+    // Reset Fields
+    document.getElementById("CenterId").value = "";
     document.getElementById("CenterName").value = "";
     document.getElementById("description").value = "";
-    document.getElementById("CenterType").disabled = false;
-    document.getElementById("CenterType").selectedIndex = "0";
-    document.getElementById("Super").selectedIndex = "0";
 
+    // Reset Type
+    const centerType = document.getElementById("CenterType");
 
+    if (centerType) {
+        centerType.disabled = false;
+        centerType.selectedIndex = 0;
+    }
 
+    // Reset Supervisor
+    document.getElementById("Super").selectedIndex = 0;
 }
-
-
-
 

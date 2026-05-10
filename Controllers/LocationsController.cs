@@ -158,34 +158,96 @@ namespace ZekrHakeem_v11.Controllers
         }
         #endregion
 
-        #region Details Of Every Location  [List Of Episodes]
+        #region Selected Location Details
+
         [HttpGet]
+        [Authorize(Permissions.Locations.View)]
         public IActionResult SelectedLocation(Guid id)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var location = _servicesOfLocation.GetById(id);
+
+            if (location == null)
+            {
+                TempData["Error"] = "المسجد / الدار غير موجود";
+                return RedirectToAction(nameof(Locations));
+            }
+
             MasterViewModel master = new()
             {
+                LocationVM = new()
+                {
+                    NewLocation = location,
+
+                    EpisodesOfLocation = _servicesOfLocation.GetEpisodesForLocation(id),
+
+                    StudentsOfLocation = _servicesOfLocation.GetStudentsForLocation(id)
+                },
+
                 DemandVM = new()
                 {
                     NewDemand = new Demand(),
+
                     Demands = _servicesDemand.GetAll(),
+
                     DemandsForMen = _servicesOfDemand.GetDemandsForMen(),
+
                     DemandsForWomen = _servicesOfDemand.GetDemandsForWomen(),
+
                     DemandsForTeacher = _servicesOfDemand.GetDemandsWithTeacher(userId),
+
                     DemandsForMen_Notify = _servicesOfDemand.GetDemandsForMen_Notify(),
+
                     DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
+
                     DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(userId),
-                },
-                LocationVM = new()
-                {
-                    NewLocation = _servicesOfLocation.GetById(id),
-                    EpisodesOfLocation = _servicesOfLocation.GetEpisodesForLocation(id),
-                    StudentsOfLocation = _servicesOfLocation.GetStudentsForLocation(id),
                 }
             };
 
+            ViewBag.TotalEpisodes =
+                master.LocationVM.EpisodesOfLocation?.Episodes?.Count ?? 0;
+
+            ViewBag.TotalStudents =
+                master.LocationVM.StudentsOfLocation?.Students?.Count ?? 0;
+
+            ViewBag.ActiveEpisodes =
+                master.LocationVM.EpisodesOfLocation?.Episodes?
+                .Count(x => x.PauseState > 0) ?? 0;
+
             return View(master);
         }
+
         #endregion
+
+        //#region Details Of Every Location  [List Of Episodes]
+        //[HttpGet]
+        //public IActionResult SelectedLocation(Guid id)
+        //{
+        //    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    MasterViewModel master = new()
+        //    {
+        //        DemandVM = new()
+        //        {
+        //            NewDemand = new Demand(),
+        //            Demands = _servicesDemand.GetAll(),
+        //            DemandsForMen = _servicesOfDemand.GetDemandsForMen(),
+        //            DemandsForWomen = _servicesOfDemand.GetDemandsForWomen(),
+        //            DemandsForTeacher = _servicesOfDemand.GetDemandsWithTeacher(userId),
+        //            DemandsForMen_Notify = _servicesOfDemand.GetDemandsForMen_Notify(),
+        //            DemandsForWomen_Notify = _servicesOfDemand.GetDemandsForWomen_Notify(),
+        //            DemandsForTeacher_Notify = _servicesOfDemand.GetDemandsWithTeacher_Notify(userId),
+        //        },
+        //        LocationVM = new()
+        //        {
+        //            NewLocation = _servicesOfLocation.GetById(id),
+        //            EpisodesOfLocation = _servicesOfLocation.GetEpisodesForLocation(id),
+        //            StudentsOfLocation = _servicesOfLocation.GetStudentsForLocation(id),
+        //        }
+        //    };
+
+        //    return View(master);
+        //}
+        //#endregion
     }
 }

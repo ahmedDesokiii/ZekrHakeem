@@ -1,5 +1,4 @@
 ﻿@inject IAuthorizationService AuthorizationService
-@inject UserManager<ApplicationUser> userManager
 @inject RoleManager<IdentityRole> roleManager
 
 @model MasterViewModel
@@ -30,21 +29,35 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
     <div class="row justify-content-center">
         <div class="col-12 col-xl-10">
 
-            <div class="card centers-card shadow-sm my-4">
+            <div class="card locations-card shadow-sm border-0 my-4 overflow-hidden rounded-top-5">
 
                 <!-- Header -->
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" 
-                    style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-building ms-2"></i>  المراكز التعليمية
-                    </h4>
+                <div class="card-header border-0 py-3 px-4 rounded-top-5"
+                     style="background:linear-gradient(135deg,#FBF8EF,#B1F0F7);">
 
-                    @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Create).Result.Succeeded)
-                    {
-                        <button class="btn btn-success" onclick="openCenterModal('@Url.Action("Save", "Centers")'); Rest();">
-                            <i class="bi bi-plus-circle ms-2"></i> إضافة مركز
-                        </button>
-                    }
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                    <div>
+                        <h3 class="fw-bold mb-1 text-dark">
+                            <i class="bi bi-buildings-fill ms-2"></i>
+                            المراكز التعليمية
+                        </h3>
+
+                        <div class="text-muted small">
+                            إدارة المراكز التعليمية
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap">
+
+                            @if (ViewBag.CanCreate)
+                            {
+                                <button class="btn btn-success" onclick="openCenterModal('@Url.Action("Save", "Centers")');Rest();">
+                                    <i class="bi bi-plus-circle ms-2"></i> إضافة مركز
+                                </button>
+                            }
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Body -->
@@ -68,7 +81,7 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                         <div class="d-block d-md-none" id="centersCardsContainer" style="max-height:70vh; overflow-y:auto;">
                             @foreach (var center in CentersData)
                             {
-                                <div class="card center-card mb-3 shadow-sm" data-name="@center.Name.ToLower()" data-supervisor="@center.ApplicationUserId.ToLower()">
+                                <div class="card center-card mb-3 shadow-sm" data-name="@center.Name.ToLower()" data-supervisor="@(center.ApplicationUserId?.ToLower() ?? "")">
                                     <div class="card-header text-white d-flex align-items-center" style="background: linear-gradient(135deg,#D8E983,#54C392,#15B392);">
                                         <i class="bi bi-building fs-4 ms-2"></i>
                                         <h6 class="fw-bold mb-0 text-truncate">@center.Name</h6>
@@ -80,7 +93,9 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                                         </div>
                                         <div class="data-row d-flex justify-content-between">
                                             <span class="data-label">المسؤول</span>
-                                            <span class="fw-bold">@userManager.FindByIdAsync(center.ApplicationUserId)?.Result?.FullName</span>
+                                            <span class="fw-bold">
+                                                @(center.ApplicationUser?.FullName ?? "بدون مسؤول")
+                                            </span>
                                         </div>
                                         <div class="data-row d-flex justify-content-between">
                                             <span class="data-label">عدد المساجد</span>
@@ -88,14 +103,14 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                                         </div>
                                     </div>
                                     <div class="card-footer d-flex justify-content-around">
-                                        @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Edit).Result.Succeeded)
-                                                {
-                                                    <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" onclick="Edit('@center.Id','@center.Name','@center.Type','@center.Description','@center.ApplicationUserId')" data-bs-toggle="modal" data-bs-target="#centerModal">
+                                                @if (ViewBag.CanEdit){
+                                                    <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" 
+                                                    title="تعديل"
+                                                    onclick="Edit('@center.Id','@center.Name','@center.Type','@center.Description','@center.ApplicationUserId')">
                                                         <i class="bi bi-pencil-square fs-4"></i>
                                                     </button>
                                                 }
-                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Pause).Result.Succeeded)
-                                                {
+                                                @if (ViewBag.CanPause){
                                                     if (center.PauseState > 0)
                                                     {
                                                         <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" onclick="Pause('@center.Id')">
@@ -109,8 +124,7 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                                                         </button>
                                                     }
                                                 }
-                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Delete).Result.Succeeded)
-                                                {
+                                                @if (ViewBag.CanDelete){
                                                     <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" onclick="Delete('@center.Id')">
                                                         <i class="bi bi-trash fs-4"></i>
                                                     </button>
@@ -138,16 +152,25 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                                         <tr>
                                             <td class="text-center">@center.Name</td>
                                             <td class="text-center">@center.Type</td>
-                                            <td class="text-center">@userManager.FindByIdAsync(center.ApplicationUserId)?.Result?.FullName</td>
+                                            <td class="text-center">@(center.ApplicationUser?.FullName ?? "بدون مسؤول")</td>
                                             <td class="text-center">@center.Locations.Count()</td>
                                             <td class="text-center">
-                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Edit).Result.Succeeded)
+                                                @if (ViewBag.CanViewDetails)
                                                 {
-                                                    <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="تعديل" onclick="Edit('@center.Id','@center.Name','@center.Type','@center.Description','@center.ApplicationUserId')" data-bs-toggle="modal" data-bs-target="#centerModal">
-                                                        <i class="bi bi-pencil-square fs-4"></i>
+                                                    <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="عرض تفاصيل" asp-controller="Centers" asp-action="SelectedCenter" asp-route-Id="@center.Id">
+                                                        <i class="bi bi-eye-fill fs-4"></i>
+                                                    </a>
+                                                }
+                                                @if (ViewBag.CanEdit)
+                                                {
+                                                    <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" 
+                                                    title="تعديل" 
+                                                    onclick="openCenterModal('@Url.Action("Save", "Centers")');Edit('@center.Id','@center.Name','@center.Type','@center.Description','@center.ApplicationUserId')" 
+                                                    >
+                                                    <i class="bi bi-pencil-square fs-4"></i>
                                                     </button>
                                                 }
-                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Pause).Result.Succeeded)
+                                                @if (ViewBag.CanPause)
                                                 {
                                                     if (center.PauseState > 0)
                                                     {
@@ -162,7 +185,7 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
                                                         </button>
                                                     }
                                                 }
-                                                @if (AuthorizationService.AuthorizeAsync(User, Permissions.Centers.Delete).Result.Succeeded)
+                                                @if (ViewBag.CanDelete)
                                                 {
                                                     <button class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" onclick="Delete('@center.Id')">
                                                         <i class="bi bi-trash fs-4"></i>
@@ -192,7 +215,7 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
             <div class="modal-header text-white rounded-top-3"
                  style="border-radius:14px;background: linear-gradient(135deg,#0d6efd,#0AC4E0);">
 
-                <h5 class="modal-title fw-bold" id="titleModal">
+                <h5 class="modal-title fw-bold" id="title">
                     <i class="bi bi-building ms-2"></i>
                     @(Model.CenterVM.NewCenter.Id == null ? "إضافة مركز جديد" : "تعديل بيانات المركز")
                 </h5>
@@ -297,11 +320,6 @@ else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
             modal.show();
         }
 
-        function Rest() {
-            document.getElementById('CenterName').value = '';
-            document.getElementById('CenterType').value = '';
-            document.getElementById('Super').selectedIndex = 0;
-        }
     </script>
 
     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))

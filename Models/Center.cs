@@ -11,6 +11,7 @@
         [MaxLength(10)]
         public string? Type { get; set; }
         public string? Description { get; set; } = " ";
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
 
         public ICollection<Location> Locations { get; set; } = new List<Location>();
         //public ICollection<District> Districts { get; set; } = new List<District>();

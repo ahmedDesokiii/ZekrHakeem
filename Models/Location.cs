@@ -23,7 +23,7 @@ namespace ZekrHakeem_v11.Models
         [ForeignKey("LoCenterId")]
         public Center? LoCenter { get; set; }
 
-        [Required(ErrorMessage = "فضلا , حدد الحي التابع له المسجد")]
+        //[Required(ErrorMessage = "فضلا , حدد الحي التابع له المسجد")]
         public Guid? DistrictId { get; set; }
         [ForeignKey("DistrictId")]
         public District? District { get; set; }

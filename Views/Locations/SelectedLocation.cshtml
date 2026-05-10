@@ -1,0 +1,432 @@
+﻿@model MasterViewModel
+
+@{
+    ViewData["Title"] = "تفاصيل المسجد / الدار";
+
+    var location = Model.LocationVM.NewLocation;
+
+    var episodes = Model.LocationVM.EpisodesOfLocation?.Episodes ?? new List<Episode>();
+
+    var students = Model.LocationVM.StudentsOfLocation?.Students ?? new List<Student>();
+}
+
+<section class="container-fluid py-4 selected-location-page">
+
+    <div class="row justify-content-center">
+
+        <div class="col-12 col-xxl-11">
+
+            <!-- HERO CARD -->
+            <div class="card border-0 shadow-lg rounded-5 overflow-hidden mb-4">
+
+                <div class="card-body p-0">
+
+                    <div class="hero-header position-relative overflow-hidden">
+
+                        <div class="hero-overlay"></div>
+
+                        <div class="container-fluid position-relative z-1 py-5 px-4">
+
+                            <div class="row align-items-center">
+
+                                <div class="col-lg-8">
+
+                                    <div class="d-flex align-items-center flex-wrap gap-3">
+
+                                        <div class="hero-icon">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+
+                                        <div>
+
+                                            <h1 class="fw-bold text-white mb-2">
+                                                @location.Name
+                                            </h1>
+
+                                            <div class="d-flex flex-wrap gap-2">
+
+                                                <span class="badge rounded-pill bg-light text-dark px-3 py-2">
+                                                    @(location.Type == "mosque"
+                                                        ? "مساجد رجال"
+                                                        : "دور نساء")
+                                                </span>
+
+                                                <span class="badge rounded-pill bg-success px-3 py-2">
+                                                    @location.LoCenter?.Name
+                                                </span>
+
+                                                <span class="badge rounded-pill bg-dark px-3 py-2">
+                                                    @location.District?.Name
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-lg-4 mt-4 mt-lg-0">
+
+                                    <div class="row g-3">
+
+                                        <div class="col-4">
+                                            <div class="kpi-card">
+                                                <h2>@ViewBag.TotalEpisodes</h2>
+                                                <span>الحلقات</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="kpi-card">
+                                                <h2>@ViewBag.TotalStudents</h2>
+                                                <span>الطلاب</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-4">
+                                            <div class="kpi-card">
+                                                <h2>@ViewBag.ActiveEpisodes</h2>
+                                                <span>النشطة</span>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- DETAILS -->
+            <div class="row g-4">
+
+                <!-- INFO -->
+                <div class="col-lg-4">
+
+                    <div class="card border-0 shadow-sm rounded-5 h-100 overflow-hidden">
+
+                        <div class="card-header bg-transparent border-0 pt-4 px-4">
+
+                            <h4 class="fw-bold mb-0">
+                                <i class="bi bi-info-circle-fill text-primary ms-2"></i>
+                                بيانات المسجد
+                            </h4>
+
+                        </div>
+
+                        <div class="card-body px-4 pb-4">
+
+                            <div class="info-item">
+                                <label>المركز</label>
+                                <div>@location.LoCenter?.Name</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label>الحي</label>
+                                <div>@location.District?.Name</div>
+                            </div>
+
+                            <div class="info-item">
+                                <label>الوصف</label>
+
+                                <div>
+                                    @(string.IsNullOrWhiteSpace(location.Description)
+                                        ? "لا يوجد وصف"
+                                        : location.Description)
+                                </div>
+                            </div>
+
+                            <!-- MAP -->
+                            <div class="mt-4">
+
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+
+                                    <label class="fw-bold mb-0">
+                                        <i class="bi bi-geo-alt-fill text-danger ms-1"></i>
+                                        موقع المسجد
+                                    </label>
+
+                                    <a href="https://www.google.com/maps?q=@location.Latitude,@location.Longitude"
+                                           target="_blank"
+                                           class="btn btn-sm btn-outline-primary rounded-pill">
+
+                                        <i class="bi bi-box-arrow-up-left ms-1"></i>
+                                        فتح بالخريطة
+                                    </a>
+
+                                </div>
+
+                                <div id="locationMap"
+                                     class="rounded-4 overflow-hidden shadow-sm border"
+                                     style="height:320px;">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- EPISODES -->
+                <div class="col-lg-8">
+
+                    <div class="card border-0 shadow-sm rounded-5">
+
+                        <div class="card-header bg-transparent border-0 pt-4 px-4">
+
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+                                <h4 class="fw-bold mb-0">
+                                    <i class="bi bi-collection-play-fill text-success ms-2"></i>
+                                    حلقات المسجد
+                                </h4>
+
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    @episodes.Count حلقة
+                                </span>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-body px-3 pb-4">
+
+                            @if (!episodes.Any())
+                            {
+                                <div class="alert alert-warning rounded-4 text-center">
+                                    لا توجد حلقات
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="table-responsive">
+
+                                    <table class="table align-middle modern-table">
+
+                                        <thead>
+
+                                            <tr>
+                                                <th>الحلقة</th>
+                                                <th>المعلم</th>
+                                                <th>الطلاب</th>
+                                                <th>الحالة</th>
+                                            </tr>
+
+                                        </thead>
+
+                                        <tbody>
+
+                                            @foreach (var ep in episodes)
+                                            {
+                                                <tr>
+
+                                                    <td class="fw-bold">
+                                                        @ep.Name
+                                                    </td>
+
+                                                    <td>
+                                                        @(ep.ApplicationUser?.FullName ?? "-")
+                                                    </td>
+
+                                                    <td>
+                                                        @(ep.Students?.Count ?? 0)
+                                                    </td>
+
+                                                    <td>
+
+                                                        @if (ep.PauseState > 0)
+                                                        {
+                                                            <span class="badge bg-success rounded-pill px-3">
+                                                                نشطة
+                                                            </span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-danger rounded-pill px-3">
+                                                                متوقفة
+                                                            </span>
+                                                        }
+
+                                                    </td>
+
+                                                </tr>
+                                            }
+
+                                        </tbody>
+
+                                    </table>
+
+                                </div>
+                            }
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<script>
+
+    let detailsMap;
+    let detailsMarker;
+
+    function initLocationMap() {
+
+        const locationPosition = {
+            lat: Number('@location.Latitude'),
+            lng: Number('@location.Longitude')
+        };
+
+        detailsMap = new google.maps.Map(
+            document.getElementById("locationMap"),
+            {
+                center: locationPosition,
+                zoom: 16,
+                mapTypeId: "hybrid",
+                fullscreenControl: true,
+                streetViewControl: false,
+                mapTypeControl: true
+            }
+        );
+
+        detailsMarker = new google.maps.Marker({
+            position: locationPosition,
+            map: detailsMap,
+            animation: google.maps.Animation.DROP,
+            title: '@location.Name'
+        });
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: `
+                <div style="min-width:180px;text-align:right">
+                    <h6 style="margin-bottom:5px;font-weight:bold;">
+                        @location.Name
+                    </h6>
+
+                    <div>
+                        @location.LoCenter?.Name
+                    </div>
+                </div>
+            `
+        });
+
+        detailsMarker.addListener("click", () => {
+            infoWindow.open(detailsMap, detailsMarker);
+        });
+
+    }
+
+    window.addEventListener("load", () => {
+
+        setTimeout(() => {
+            initLocationMap();
+        }, 300);
+
+    });
+
+</script>
+<style>
+
+    .hero-header {
+        background: linear-gradient(135deg,#0d6efd,#0AC4E0,#54C392);
+    }
+
+    .hero-overlay {
+        position: absolute;
+        inset: 0;
+        backdrop-filter: blur(2px);
+        opacity: .15;
+    }
+
+    .hero-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 30px;
+        background: rgba(255,255,255,.15);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 40px;
+        backdrop-filter: blur(10px);
+    }
+
+    .kpi-card {
+        background: rgba(255,255,255,.15);
+        backdrop-filter: blur(10px);
+        border-radius: 24px;
+        padding: 18px;
+        text-align: center;
+        color: #fff;
+    }
+
+        .kpi-card h2 {
+            font-size: 30px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+    .info-item {
+        padding: 14px 0;
+        border-bottom: 1px dashed #e5e5e5;
+    }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-item label {
+            display: block;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .info-item div {
+            font-weight: 600;
+            color: #222;
+        }
+
+    .modern-table thead th {
+        background: #f8fafc;
+        border: none;
+        padding: 16px;
+        font-weight: 700;
+        color: #555;
+    }
+
+    .modern-table tbody td {
+        padding: 16px;
+        vertical-align: middle;
+        border-color: #f1f1f1;
+    }
+
+    .modern-table tbody tr {
+        transition: .2s ease;
+    }
+
+        .modern-table tbody tr:hover {
+            transform: translateY(-2px);
+            background: #fafcff;
+        }
+
+</style>

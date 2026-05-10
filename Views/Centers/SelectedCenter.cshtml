@@ -1,107 +1,402 @@
 ﻿@model MasterViewModel
+
 @{
-    ViewData["Title"] = "Centers";
-    var i = 0;
+    ViewData["Title"] = "تفاصيل المركز";
+
+    var center = Model.CenterVM.NewCenter;
+    var locations = Model.CenterVM.LocationsOfCenter?.Locations ?? new List<Location>();
+
+    var locationsCount = locations.Count();
+    var episodesCount = Model.CenterVM.EpisodesOfCenter?.Episodes?.Count() ?? 0;
+    var studentsCount = Model.CenterVM.StudentsOfCenter?.Students?.Count() ?? 0;
 }
-<div class="wrapper" dir="rtl">
-    <!--Content-->
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-12">
-                    <div class="card">
-                        <div class="card-header">
 
-                            <div class="row d-flex justify-content-center text-center align-items-stretch">
-                                <div class="col-sm-2 col-6 mb-2">
-                                    <div class="card">
-                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_CenterName_card</h6></div>
-                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.NewCenter.Name</h6></div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 col-6">
-                                    <div class="card ">
-                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_Supervisor_card</h6></div>
-                                        @if (@Model.CenterVM.NewCenter.ApplicationUser == null)
-                                        {
-                                            <div class="card-body py-0 text-danger"><h6 class="card-title"> بدون مشرف مركز </h6></div>
+<section class="container-fluid py-4 center-details-page">
 
-                                        }
-                                        else
-                                        {
-                                            <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.NewCenter.ApplicationUser.FullName</h6></div>
+    <!-- HERO -->
+    <div class="center-hero shadow-lg mb-4">
 
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 col-4">
-                                    <div class="card ">
-                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_LocationsCenterMen_card</h6></div>
-                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.LocationsOfCenter.Locations.Count()</h6></div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 col-4">
-                                    <div class="card">
-                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_EpisodesCenter_card</h6></div>
-                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.EpisodesOfCenter.Episodes.Count()</h6></div>
-                                    </div>
-                                </div>
-                                <div class="col-sm-2 col-4 ">
-                                    <div class="card ">
-                                        <div class="card-header py-0 bg-dark-subtle fw-bold"><h6>@ResourceApp_Ar.SelectedCenterPage_MainHeader_StudentsCenter_card</h6></div>
-                                        <div class="card-body py-0"><h6 class="card-title">@Model.CenterVM.StudentsOfCenter.Students.Count()</h6></div>
-                                    </div>
-                                </div>
+        <div class="overlay-pattern"></div>
 
-                            </div>
+        <div class="row align-items-center position-relative">
+
+            <div class="col-lg-8">
+
+                <div class="d-flex align-items-center flex-wrap gap-3">
+
+                    <div class="hero-icon">
+                        <i class="bi bi-buildings-fill"></i>
+                    </div>
+
+                    <div>
+
+                        <h1 class="hero-title mb-2">
+                            @center.Name
+                        </h1>
+
+                        <div class="d-flex flex-wrap gap-2">
+
+                            <span class="hero-badge">
+                                <i class="bi bi-diagram-3"></i>
+                                @(center.Type == "men" ? "مراكز رجال" : "مراكز نساء")
+                            </span>
+
+                            <span class="hero-badge">
+                                <i class="bi bi-person-badge"></i>
+                                @(center.ApplicationUser?.FullName ?? "بدون مشرف")
+                            </span>
+
+                            <span class="hero-badge">
+                                <i class="bi bi-clock-history"></i>
+                                @center.CreatedDate?.ToString("yyyy/MM/dd")
+                            </span>
+
                         </div>
-                        <div class="card-body" style="background: #FBF8EF;">
 
-                            <div class="row d-flex justify-content-center text-center ">
-                                @foreach (var location in Model.CenterVM.LocationsOfCenter.Locations)
-                                {
-                                    <div class="col-sm-3 mb-2">
+                    </div>
 
-                                        <div class="card" onmouseover="Details()">
-                                            <a class="btn btn-transparent p-0" asp-action="SelectedLocationCenter" asp-controller="Centers" asp-route-Id="@location.Id">
-                                                <img class="card-img-top bg-transparent" src="~/images/loclogo.png" style="height:100px;width:auto" alt="zhcenter">
-                                                <div class="card-header bg-danger-subtle text-dark-emphasis fs-4 fw-bold">@location.Name</div>
-                                                <div class="card-body w-100  ">
-                                                    <div>
-                                                        <input type="text" class="form-control  mb-2" hidden id="txtLatitudeLoc" readonly asp-for="@location.Latitude" />
-                                                        <input type="text" class="form-control  mb-2" hidden id="txtLongitudeLoc" readonly asp-for="@location.Longitude" />
-                                                    </div>
-                                                    <div id="mapLoc" hidden style="height: 200px;border: 1px solid #ddd;"></div>
-                                                </div>
-                                                <div class="card-footer bg-white">
-                                                    <div class="row d-flex justify-content-center text-center"> 
-                                                        <div class="col-sm-6 col-6">
-                                                            <div class="card">
-                                                                <div class="card-header py-0 bg-success-subtle"><h6>@ResourceApp_Ar.SelectedCenterPage_SmallHeader_EpisodesLocation_card</h6></div>
-                                                                <div class="card-body py-0"><h6 class="card-title">@location.Episodes.Count()</h6></div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-sm-6 col-6">
-                                                            <div class="card">
-                                                                <div class="card-header py-0 bg-success-subtle"><h6>@ResourceApp_Ar.SelectedCenterPage_SmallHeader_StudentsLocation_card</h6></div>
-                                                                <div class="card-body py-0"><h6 class="card-title">@location.TotalStudents</h6></div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-                                    </div>
-                                    i++;
-                                }
-                            </div>
-                        </div>
                 </div>
+
+                @if (!string.IsNullOrWhiteSpace(center.Description))
+                {
+                    <div class="hero-description mt-4 mb-2">
+                        @center.Description
+                    </div>
+                }
+
             </div>
+
+            <div class="col-lg-4">
+
+                <div class="hero-stats">
+
+                    <div class="stat-card">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <h3>@locationsCount</h3>
+                            <span>المساجد</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <i class="bi bi-collection-play-fill"></i>
+                        <div>
+                            <h3>@episodesCount</h3>
+                            <span>الحلقات</span>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <i class="bi bi-people-fill"></i>
+                        <div>
+                            <h3>@studentsCount</h3>
+                            <span>الطلاب</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
     </div>
-    <!--End Content-->
-</div>
-</div>
 
+    <!-- LOCATIONS -->
+    <div class="locations-section">
+
+        <div class="section-title mb-4">
+            <h3>
+                <i class="bi bi-pin-map-fill ms-2"></i>
+                المساجد التابعة للمركز
+            </h3>
+        </div>
+
+        <div class="row">
+
+            @foreach (var location in locations)
+            {
+                <div class="col-12 col-md-6 col-xl-3 mb-4">
+
+                    <div class="location-card h-100">
+
+                        <div class="location-top">
+
+                            <div class="location-icon">
+                                <i class="bi bi-building"></i>
+                            </div>
+
+                            <div class="location-status">
+                                @(location.PauseState > 0 ? "نشط" : "متوقف")
+                            </div>
+
+                        </div>
+
+                        <h4 class="location-name">
+                            @location.Name
+                        </h4>
+
+                        <div class="location-info">
+
+                            <div class="info-item">
+                                <i class="bi bi-diagram-2"></i>
+                                <span>
+                                    @location.Episodes.Count() حلقات
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="bi bi-people"></i>
+                                <span>
+                                    @location.TotalStudents طالب
+                                </span>
+                            </div>
+
+                            <div class="info-item">
+                                <i class="bi bi-geo"></i>
+                                <span>
+                                    @(location.District?.Name ?? "بدون حي")
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="location-footer">
+
+                            <a asp-action="SelectedLocation"
+                                   asp-controller="Locations"
+                                   asp-route-id="@location.Id"
+                                   class="btn btn-location">
+
+                                <i class="bi bi-arrow-left-circle-fill ms-1"></i>
+                                عرض التفاصيل
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</section>
+
+<style>
+
+    .center-details-page {
+        background: #FBF8EF;
+        min-height: 100vh;
+    }
+
+    /* HERO */
+
+    .center-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        padding: 40px;
+        background: linear-gradient(135deg,#0d6efd,#0AC4E0,#093C5D);
+        color: #fff;
+    }
+
+    .overlay-pattern {
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(rgba(255,255,255,.08) 1px, transparent 1px);
+        background-size: 20px 20px;
+        opacity: .5;
+    }
+
+    .hero-icon {
+        width: 90px;
+        height: 90px;
+        border-radius: 25px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,.12);
+        backdrop-filter: blur(8px);
+        font-size: 40px;
+    }
+
+    .hero-title {
+        font-size: 38px;
+        font-weight: 800;
+    }
+
+    .hero-badge {
+        background: rgba(255,255,255,.12);
+        padding: 10px 18px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(8px);
+        font-size: 14px;
+    }
+
+    .hero-description {
+        background: rgba(255,255,255,.08);
+        padding: 18px;
+        border-radius: 20px;
+        line-height: 2;
+        font-size: 15px;
+    }
+
+    /* STATS */
+
+    .hero-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .stat-card {
+        background: rgba(255,255,255,.12);
+        backdrop-filter: blur(10px);
+        border-radius: 22px;
+        padding: 18px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        transition: .3s;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 30px;
+        }
+
+        .stat-card h3 {
+            margin: 0;
+            font-weight: 800;
+        }
+
+    /* SECTION */
+
+    .section-title h3 {
+        font-weight: 800;
+        color: #2c3e50;
+    }
+
+    /* LOCATION CARD */
+
+    .location-card {
+        background: #fff;
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.05);
+        transition: .35s;
+        position: relative;
+        overflow: hidden;
+    }
+
+        .location-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,.08);
+        }
+
+    .location-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .location-icon {
+        width: 70px;
+        height: 70px;
+        border-radius: 22px;
+        background: linear-gradient(135deg,#4facfe,#00f2fe);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 28px;
+    }
+
+    .location-status {
+        background: #dcfce7;
+        color: #166534;
+        padding: 8px 16px;
+        border-radius: 50px;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .location-name {
+        font-weight: 800;
+        margin-bottom: 20px;
+        color: #1f2937;
+    }
+
+    .location-info {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #4b5563;
+        font-weight: 600;
+    }
+
+    .location-footer {
+        margin-top: 25px;
+    }
+
+    .btn-location {
+        width: 100%;
+        border-radius: 16px;
+        padding: 12px;
+        background: linear-gradient(135deg,#0ea5e9,#2563eb);
+        color: #fff;
+        border: none;
+        font-weight: 700;
+        transition: .3s;
+    }
+
+        .btn-location:hover {
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+    /* MOBILE */
+
+    @@media(max-width:768px) {
+
+        .center-hero {
+            padding: 25px;
+        }
+
+        .hero-title {
+            font-size: 28px;
+        }
+
+        .hero-icon {
+            width: 70px;
+            height: 70px;
+            font-size: 30px;
+        }
+
+        .hero-badge {
+            font-size: 12px;
+        }
+
+        .location-card {
+            border-radius: 22px;
+        }
+    }
+
+</style>
  <script src="~/js/SelectedCenter.js"></script> 

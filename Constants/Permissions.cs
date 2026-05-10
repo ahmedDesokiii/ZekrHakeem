@@ -25,7 +25,8 @@
                 $"Permissions.{module}.Delete",
                 $"Permissions.{module}.Pause",
                 $"Permissions.{module}.Resume",
-                $"Permissions.{module}.DeleteLog"
+                $"Permissions.{module}.DeleteLog",
+                $"Permissions.{module}.ViewDetails"
             };
         }
         public static List<string> GenerateProgPermissionsList(string module)
@@ -192,6 +193,7 @@
             public const string Pause = "Permissions.Centers.Pause";
             public const string Resume = "Permissions.Centers.Resume";
             public const string DeleteLog = "Permissions.Centers.DeleteLog";
+            public const string ViewDetails = "Permissions.Centers.ViewDetails";
 
         }
         public static class Progs

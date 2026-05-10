@@ -294,7 +294,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EpisodeProgId");
 
-                    b.ToTable("Attendances", (string)null);
+                    b.ToTable("Attendances");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Center", b =>
@@ -306,6 +306,9 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.Property<string>("ApplicationUserId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int?>("CurrentState")
                         .HasColumnType("int");
@@ -330,12 +333,13 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("ApplicationUserId");
 
-                    b.ToTable("Centers", (string)null);
+                    b.ToTable("Centers");
 
                     b.HasData(
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
+                            CreatedDate = new DateTime(2026, 5, 8, 8, 7, 50, 425, DateTimeKind.Local).AddTicks(4724),
                             CurrentState = 0,
                             Name = "C_RemoteM",
                             PauseState = 0,
@@ -344,6 +348,7 @@ namespace ZekrHakeem_v11.Data.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
+                            CreatedDate = new DateTime(2026, 5, 8, 8, 7, 50, 425, DateTimeKind.Local).AddTicks(4913),
                             CurrentState = 0,
                             Name = "C_RemoteW",
                             PauseState = 0,
@@ -422,7 +427,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("Demands", (string)null);
+                    b.ToTable("Demands");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.District", b =>
@@ -445,7 +450,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Districts", (string)null);
+                    b.ToTable("Districts");
 
                     b.HasData(
                         new
@@ -519,7 +524,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EpisodeTypeId");
 
-                    b.ToTable("Episodes", (string)null);
+                    b.ToTable("Episodes");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.EpisodeProg", b =>
@@ -587,7 +592,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EpProgLocationId");
 
-                    b.ToTable("EpisodeProgs", (string)null);
+                    b.ToTable("EpisodeProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.EpisodeType", b =>
@@ -610,7 +615,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("EpisodesTypes", (string)null);
+                    b.ToTable("EpisodesTypes");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Evaluation", b =>
@@ -708,7 +713,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EvStudentId");
 
-                    b.ToTable("Evaluations", (string)null);
+                    b.ToTable("Evaluations");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.EvaluationProg", b =>
@@ -764,7 +769,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EvStudentProgId");
 
-                    b.ToTable("EvaluationProgs", (string)null);
+                    b.ToTable("EvaluationProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.HealthCondition", b =>
@@ -787,7 +792,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("HealthConditions", (string)null);
+                    b.ToTable("HealthConditions");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LessonData", b =>
@@ -892,7 +897,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("LevelDataId");
 
-                    b.ToTable("LessonsData", (string)null);
+                    b.ToTable("LessonsData");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LevelData", b =>
@@ -923,7 +928,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("PlanDataId");
 
-                    b.ToTable("LevelsData", (string)null);
+                    b.ToTable("LevelsData");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Location", b =>
@@ -975,7 +980,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("LoCenterId");
 
-                    b.ToTable("Locations", (string)null);
+                    b.ToTable("Locations");
 
                     b.HasData(
                         new
@@ -1028,7 +1033,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("AttendanceId");
 
-                    b.ToTable("LogAttendances", (string)null);
+                    b.ToTable("LogAttendances");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogCenter", b =>
@@ -1054,7 +1059,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("CenterId");
 
-                    b.ToTable("LogCenters", (string)null);
+                    b.ToTable("LogCenters");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogDemand", b =>
@@ -1080,7 +1085,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("DemandId");
 
-                    b.ToTable("LogDemands", (string)null);
+                    b.ToTable("LogDemands");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogEpisode", b =>
@@ -1106,7 +1111,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EpisodeId");
 
-                    b.ToTable("LogEpisodes", (string)null);
+                    b.ToTable("LogEpisodes");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogEpisodeProg", b =>
@@ -1132,7 +1137,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EpisodeProgId");
 
-                    b.ToTable("LogEpisodeProgs", (string)null);
+                    b.ToTable("LogEpisodeProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogEvaluation", b =>
@@ -1158,7 +1163,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("EvaluationId");
 
-                    b.ToTable("LogEvaluations", (string)null);
+                    b.ToTable("LogEvaluations");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogLevelData", b =>
@@ -1184,7 +1189,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("LevelDataId");
 
-                    b.ToTable("LogLevelsData", (string)null);
+                    b.ToTable("LogLevelsData");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogLocation", b =>
@@ -1210,7 +1215,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("LogLocations", (string)null);
+                    b.ToTable("LogLocations");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogPlanData", b =>
@@ -1236,7 +1241,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("PlanDataId");
 
-                    b.ToTable("LogPlansData", (string)null);
+                    b.ToTable("LogPlansData");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogProg", b =>
@@ -1262,7 +1267,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("ProgId");
 
-                    b.ToTable("LogProgs", (string)null);
+                    b.ToTable("LogProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogStudent", b =>
@@ -1288,7 +1293,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("LogStudents", (string)null);
+                    b.ToTable("LogStudents");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.LogStudentProg", b =>
@@ -1314,7 +1319,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("StudentProgId");
 
-                    b.ToTable("LogStudentProgs", (string)null);
+                    b.ToTable("LogStudentProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Nationality", b =>
@@ -1334,7 +1339,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Nationalities", (string)null);
+                    b.ToTable("Nationalities");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.PlanData", b =>
@@ -1360,7 +1365,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PlansData", (string)null);
+                    b.ToTable("PlansData");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.PrayerTime", b =>
@@ -1385,7 +1390,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PrayerTimes", (string)null);
+                    b.ToTable("PrayerTimes");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Prog", b =>
@@ -1435,7 +1440,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("PlanId");
 
-                    b.ToTable("Progs", (string)null);
+                    b.ToTable("Progs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Student", b =>
@@ -1574,7 +1579,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("VerseId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.StudentProg", b =>
@@ -1642,7 +1647,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("SurahId");
 
-                    b.ToTable("StudentProgs", (string)null);
+                    b.ToTable("StudentProgs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Surah", b =>
@@ -1659,7 +1664,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Surahs", (string)null);
+                    b.ToTable("Surahs");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Verse", b =>
@@ -1702,7 +1707,7 @@ namespace ZekrHakeem_v11.Data.Migrations
 
                     b.HasIndex("SurahId");
 
-                    b.ToTable("Verses", (string)null);
+                    b.ToTable("Verses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
