@@ -1,215 +1,99 @@
-﻿@model MasterViewModel
-
 @{
-    ViewData["Title"] = "المجموعات";
-    int cNo = 0;
+    ViewData["Title"] = "المجموعات والصلاحيات";
 }
 
-<section class="container-fluid roles-page">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
-
-            <div class="card roles-card shadow-sm my-4">
-
-                <!-- Header -->
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
-                    <h4 class="mb-0 fw-bold"><i class="bi bi-collection-fill ms-2"></i> المجموعات</h4>
-
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="Rest();">
-                        <i class="bi bi-plus-circle ms-2"></i> إضافة مجموعة
-                    </button>
-                </div>
-
-                <!-- Body -->
-                <div class="card-body px-3 px-md-4 px-xl-5">
-
-                    @if (!Model.RoleVM.Any())
-                    {
-                        <div class="alert alert-warning m-3 text-center">
-                            <h5>لا توجد مجموعات</h5>
-                            <p class="mb-0">لم يتم إضافة أي مجموعة بعد</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <!-- Mobile Search -->
-                        <div class="d-block d-md-none px-2 mb-2">
-                            <input type="text" id="roleSearch" class="form-control shadow-sm" placeholder="ابحث هنا..." />
-                        </div>
-
-                        <!-- Mobile Cards -->
-                        <div class="d-block d-md-none px-2" id="rolesCardsContainer" style="max-height:70vh; overflow-y:auto;">
-                            @foreach (var role in Model.RoleVM)
-                            {
-                                <div class="card role-card mb-3 shadow-sm mt-2 position-relative"
-                                     data-name="@role.Name.ToLower()"
-                                     style="transition: all 0.3s ease;">
-                                    <div class="card-header py-2 px-3 text-white" style="background: linear-gradient(135deg, #D8E983 0%, #54C392 50%, #15B392 100%);">
-                                        <h6 class="fw-bold mb-0 text-truncate" title="@role.Name">@role.Name</h6>
-                                    </div>
-                                    <div class="card-body py-2 d-flex justify-content-around">
-                                        <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات" asp-action="ManagePermissions" asp-route-Id="@role.Id">
-                                            <i class="bi bi-shield-lock-fill"></i>
-                                        </a>
-
-                                        <a class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn" title="تعديل"
-                                           onclick="Edit('@role.Id', '@role.Name')" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-
-                                        <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" onclick="Delete('@role.Id')">
-                                            <i class="bi bi-trash3-fill"></i>
-                                        </a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-
-                        <!-- Desktop Table -->
-                        <div class="d-none d-md-block table-responsive px-2">
-                            <table class="table table-hover roles-table nowrap table-bordered border-primary-subtle align-middle" id="tableRole">
-                                <thead>
-                                    <tr class="bg-primary text-white text-center">
-                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;"></th>
-                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اسم المجموعة</th>
-                                        <th class="text-center text-white py-2 fs-5" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var role in Model.RoleVM)
-                                    {
-                                        cNo++;
-                                        <tr>
-                                            <td class="text-center">@cNo</td>
-                                            <td class="text-center fw-bold fs-5 text-primary" >@role.Name</td>
-                                            <td class="text-center">
-                                                @* <a class="btn btn-warning btn-sm" asp-action="ManagePermissions" asp-route-roleId="@role.Id">Permissions</a>
-                                                <input type="button" class="btn btn-info btn-sm" onclick="Edit('@role.Id', '@role.Name')" value="Edit" data-bs-toggle="modal" data-bs-target="#exampleModal" />
-                                                <input type="button" class="btn btn-danger btn-sm" onclick="Delete('@role.Id')" value="Delete" />
-                                             *@
-                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="صـلاحيات"  asp-action="ManagePermissions" asp-route-Id="@role.Id">
-                                                    <i class="bi bi-shield-lock-fill"></i>
-                                                </a>
-
-                                                <a class="btn btn-outline-dark bg-transparent text-dark border-0 py-0 fs-4 edit-user-btn"
-                                                   onclick="Edit('@role.Id', '@role.Name')" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </a>
-
-                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" onclick="Delete('@role.Id')">
-                                                    <i class="bi bi-trash3-fill"></i>
-                                                </a>
-                                            
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-
-                </div>
+<section class="zh-page">
+    <div class="zh-container">
+        <div class="zh-hero d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <div class="zh-crumb"><a asp-controller="Home" asp-action="Index">الرئيسية</a><i class="bi bi-chevron-left"></i><span>الإدارة</span></div>
+                <h1><i class="bi bi-shield-lock-fill ms-2"></i>المجموعات والصلاحيات</h1>
+                <p>كل مجموعة تحدد ما يستطيع أعضاؤها رؤيته وفعله. أي تعديل يُطبّق فورًا على المستخدمين المتصلين.</p>
+                <span class="zh-live-pill mt-3 off" id="liveState"><span class="zh-pulse-dot"></span><span>جارٍ الاتصال…</span></span>
             </div>
-
+            <div class="zh-hero-actions">
+                <a class="zh-btn zh-btn-glass" asp-controller="Users" asp-action="Index" data-cap="Users.View" hidden><i class="bi bi-people"></i> المستخدمين</a>
+                <button class="zh-btn zh-btn-gold" id="btnAddRole" type="button" data-cap="Roles.Create" hidden><i class="bi bi-plus-circle-fill"></i> مجموعة جديدة</button>
+            </div>
         </div>
+
+        <div class="zh-card zh-toolbar">
+            <div class="zh-search">
+                <i class="bi bi-search"></i>
+                <input class="zh-input" id="q" type="search" placeholder="ابحث عن مجموعة…" />
+            </div>
+            <div class="zh-muted fw-bold" id="rolesSummary"></div>
+        </div>
+
+        <div class="zh-grid" id="roles" style="grid-template-columns:repeat(auto-fill,minmax(300px,1fr))"></div>
     </div>
 </section>
 
-<partial name="_SaveRole"/>
+<div class="zh-drawer-backdrop" id="drawerBackdrop"></div>
+
+<!-- Role form -->
+<aside class="zh-drawer" id="roleDrawer" aria-hidden="true">
+    <div class="zh-drawer-head">
+        <h3 id="roleFormTitle">مجموعة جديدة</h3>
+        <button class="zh-btn zh-btn-ghost zh-btn-icon" data-close><i class="bi bi-x-lg"></i></button>
+    </div>
+    <form class="zh-drawer-body zh-scroll" id="roleForm" autocomplete="off">
+        <input type="hidden" name="id" />
+        <div id="roleErrors"></div>
+
+        <div class="zh-card zh-role-card mb-4" id="rolePreview" style="--c:#15B392;animation:none">
+            <div class="d-flex align-items-center gap-3"><span class="ri"><i class="bi bi-people-fill"></i></span>
+                <div><h4 data-p="name">اسم المجموعة</h4><code data-p="code">RoleName</code></div></div>
+        </div>
+
+        <div class="zh-field">
+            <label class="zh-label">الاسم بالعربية <span class="req">*</span></label>
+            <input class="zh-input" name="nameAr" maxlength="150" placeholder="مثال: مدير مركز" />
+        </div>
+        <div class="zh-field">
+            <label class="zh-label">الاسم البرمجي (إنجليزي) <span class="req">*</span></label>
+            <input class="zh-input zh-ltr" name="name" maxlength="100" placeholder="CenterManager" />
+            <div class="zh-hint">يُستخدم داخل النظام — حروف إنجليزية وأرقام بدون مسافات.</div>
+        </div>
+        <div class="zh-field">
+            <label class="zh-label">الوصف</label>
+            <textarea class="zh-textarea" name="description" rows="2" maxlength="400"></textarea>
+        </div>
+        <div class="zh-field">
+            <label class="zh-label">اللون</label>
+            <div class="zh-color-pick" id="colorPick"></div>
+        </div>
+        <div class="zh-field">
+            <label class="zh-label">الأيقونة</label>
+            <div class="zh-icon-pick" id="iconPick"></div>
+        </div>
+        <div class="zh-field" id="copyFromBlock">
+            <label class="zh-label">نسخ الصلاحيات من مجموعة</label>
+            <select class="zh-select" name="copyFromRoleId"><option value="">— بدون —</option></select>
+        </div>
+        <label class="zh-switch">
+            <input type="checkbox" name="isDefaultForRegistration" />
+            <span class="track"></span>
+            <span>المجموعة الافتراضية للمستخدمين الجدد عند التسجيل</span>
+        </label>
+    </form>
+    <div class="zh-drawer-foot">
+        <button class="zh-btn zh-btn-light" data-close type="button">إلغاء</button>
+        <button class="zh-btn zh-btn-primary" id="btnSaveRole" type="button"><i class="bi bi-check2-circle"></i> حفظ</button>
+    </div>
+</aside>
+
+<!-- Role members -->
+<aside class="zh-drawer" id="membersDrawer" aria-hidden="true">
+    <div class="zh-drawer-head">
+        <h3 id="membersTitle">أعضاء المجموعة</h3>
+        <button class="zh-btn zh-btn-ghost zh-btn-icon" data-close><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="zh-drawer-body zh-scroll" id="membersBody"></div>
+</aside>
 
 @section Scripts {
-     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
-    {
-        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'success'
-                });
-            </script>
-        }
-        else
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'error'
-                });
-            </script>
-        }
-        Context.Session.SetString(Helper.MsgType, "");
-    }
-    <script>
-        // Mobile search functionality
-        document.getElementById('roleSearch')?.addEventListener('input', function () {
-            const query = this.value.toLowerCase();
-            const cards = document.querySelectorAll('#rolesCardsContainer .role-card');
-
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                card.style.display = name.includes(query) ? '' : 'none';
-            });
-        });
-    </script>
-
-    <script src="~/js/Roles.js"></script>
-
-
-    <script>
-      
-
-        let lbTitleMsgDelete = '@Html.Raw("حذف مجموعة")';
-        let lbTextMsgDelete = '@Html.Raw($"هل انت متأكد من حذف هذه المجموعة وكل ما يتعلق بها ؟ ")';
-        let lbconfirmButtonText = '@Html.Raw("نعم")';
-        let lbcancelButtonText = '@Html.Raw("الغاء")';
-
-        let lbTitleDeletedOk = '@Html.Raw("تم المسح")';
-        let lbMsgDeletedOkRole = '@Html.Raw("تم مسح المجموعة بنجاح")';
-        let lbSuccess = '@Html.Raw(Helper.Success)';
-    </script>
-    <script>
-
-    // Reset form for Add
-    function Rest() {
-
-        document.getElementById("roleId").value = "";
-        document.getElementById("roleName").value = "";
-
-        document.getElementById("modalTitle").innerHTML =
-            '<i class="bi bi-box-fill ms-2"></i> إضافة مجموعة جديدة';
-
-    }
-
-
-    // Edit Role
-    function Edit(id, name) {
-
-        document.getElementById("roleId").value = id;
-        document.getElementById("roleName").value = name;
-
-        document.getElementById("modalTitle").innerHTML =
-            '<i class="bi bi-box-fill ms-2"></i> تعديل بيانات المجموعة';
-
-    }
-
-
-    // Loading state
-    document.getElementById("roleForm")
-        .addEventListener("submit", function () {
-
-            document.getElementById("btnSave")
-                .querySelector(".btn-loading")
-                .classList.remove("d-none");
-
-        });
-
-</script>
-
+    <script>window.ZH_ROLES = { permissionsUrl: '@Url.Action("Permissions", "Roles")', usersUrl: '@Url.Action("Index", "Users")' };</script>
+    <script src="~/js/zh-admin-common.js" asp-append-version="true"></script>
+    <script src="~/js/zh-roles-admin.js" asp-append-version="true"></script>
 }

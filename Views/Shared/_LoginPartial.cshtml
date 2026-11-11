@@ -1,46 +1,53 @@
-﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.Identity
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
-<style>
-    a.dropdown-toggle::after {
-    content: none;
-    }
-</style>
-
-<ul class="navbar-nav">
-
 @if (SignInManager.IsSignedIn(User))
 {
-        @if (UserManager.GetUserAsync(User).Result.ProfilePicture != null)
-        {
-            <li class="nav-item">
-                <img class="avatar  rounded-circle "  alt="profile" src="data:image/*;base64,@(Convert.ToBase64String(UserManager.GetUserAsync(User).Result.ProfilePicture))" />
+    var me = await UserManager.GetUserAsync(User);
+    var fullName = me?.FullName ?? User.Identity?.Name ?? "";
+    var initials = string.Concat(fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0]));
+    <div class="dropdown">
+        <a href="#" class="zh-user-btn" data-bs-toggle="dropdown" aria-expanded="false" aria-label="حسابي">
+            <span class="zh-user-name">@fullName</span>
+            <span class="zh-avatar zh-avatar-sm" data-zh-avatar>
+                @if (me?.ProfilePicture != null)
+                {
+                    <img src="@Url.Action("Avatar", "Users", new { area = "", id = me.Id })" alt="" />
+                }
+                else
+                {
+                    @initials
+                }
+                <span class="presence on" id="zhSelfPresence"></span>
+            </span>
+        </a>
+        <ul class="dropdown-menu dropdown-menu-start zh-dropdown">
+            <li class="px-3 pt-2 pb-2">
+                <div class="fw-bold">@fullName</div>
+                <div class="zh-muted small zh-ltr text-end">@me?.Email</div>
             </li>
-        }
-        <li class="nav-item">
-                <a class="nav-link text-primary" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"> @UserManager.GetUserAsync(User).Result.FullName</a>
-        </li>
-        <li class="nav-item">
-            <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("index", "Home", new { area = "" })">
-                    <button type="submit" class=" btn btn-danger btn-sm rounded-3" style="font-size:16px !important">
-                        <i class="bi bi-door-open-fill fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_LogOut_lnk
-                    </button>
-            </form>
-        </li>
+            <li><hr class="dropdown-divider" /></li>
+            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">الملف الشخصي <i class="bi bi-person-circle"></i></a></li>
+            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">تغيير كلمة المرور <i class="bi bi-key-fill"></i></a></li>
+            <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Activity">نشاط حسابي <i class="bi bi-clock-history"></i></a></li>
+            <li><hr class="dropdown-divider" /></li>
+            <li>
+                <form id="zhLogoutForm" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" method="post">
+                    <button type="submit" class="dropdown-item text-danger">@ResourceApp_Ar.LayoutPage_LogOut_lnk <i class="bi bi-box-arrow-left text-danger"></i></button>
+                </form>
+            </li>
+        </ul>
+    </div>
 }
 else
 {
-    <li class="nav-item">
-            <a class="btn btn-dark fw-bold fs-6 m-1 btn-sm rounded-3" style="font-size:16px !important" asp-area="Identity" asp-page="/Account/Register">
-                <i class="bi bi-person-circle fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_Register_lnk
-            </a>
-    </li>
-    <li class="nav-item">
-            <a class="btn btn-outline-success fw-bold fs-6 m-1 btn-sm rounded-3" style="font-size:16px !important" asp-area="Identity" asp-page="/Account/Login">
-                <i class="bi bi-door-closed fs-5 ps-2"></i>@ResourceApp_Ar.LayoutPage_SignIn_lnk
-            </a>
-    </li>
+    <div class="d-flex gap-2 flex-wrap">
+        <a class="zh-btn zh-btn-light zh-btn-sm" asp-area="Identity" asp-page="/Account/Register">
+            <i class="bi bi-person-plus-fill"></i>@ResourceApp_Ar.LayoutPage_Register_lnk
+        </a>
+        <a class="zh-btn zh-btn-primary zh-btn-sm" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-left"></i>@ResourceApp_Ar.LayoutPage_SignIn_lnk
+        </a>
+    </div>
 }
-</ul>
-

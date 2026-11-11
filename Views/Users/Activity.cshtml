@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "سجل النشاط";
+}
+<section class="zh-page">
+    <div class="zh-container" style="max-width:1000px">
+        <div class="zh-hero">
+            <div class="zh-crumb"><a asp-controller="Users" asp-action="Index">المستخدمين</a><i class="bi bi-chevron-left"></i><span>سجل النشاط</span></div>
+            <h1><i class="bi bi-activity ms-2"></i>سجل النشاط</h1>
+            <p>كل عمليات الدخول والتعديلات على المستخدمين والمجموعات — يتحدث لحظيًا.</p>
+            <span class="zh-live-pill mt-3 off" id="liveState"><span class="zh-pulse-dot"></span><span>جارٍ الاتصال…</span></span>
+        </div>
+        <div class="zh-card zh-card-pad">
+            <div id="log"><div class="zh-skel" style="height:300px"></div></div>
+            <div class="text-center mt-3"><button class="zh-btn zh-btn-light" id="more" hidden><i class="bi bi-arrow-down-circle"></i> المزيد</button></div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/js/zh-admin-common.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            const { esc, formatDate, timeAgo, debounce } = ZH;
+            let page = 1, items = [];
+            const icons = { Login: ['bi-box-arrow-in-left', '#15B392'], LoginFailed: ['bi-shield-exclamation', '#D64545'], Logout: ['bi-box-arrow-right', '#5E7A74'], PasswordReset: ['bi-key', '#E5A023'], RolesChanged: ['bi-shield-check', '#1D7AA8'], PermissionsChanged: ['bi-ui-checks-grid', '#1D7AA8'], RolePermissionsChanged: ['bi-ui-checks-grid', '#5B4BB7'], UserCreated: ['bi-person-plus', '#15B392'], UserUpdated: ['bi-pencil', '#1D7AA8'], UserDeleted: ['bi-trash3', '#D64545'], UserActivated: ['bi-play-circle', '#15B392'], UserDeactivated: ['bi-pause-circle', '#D64545'], Register: ['bi-stars', '#C9A227'], RoleCreated: ['bi-plus-circle', '#5B4BB7'], RoleUpdated: ['bi-pencil', '#5B4BB7'], RoleDeleted: ['bi-trash3', '#D64545'], ProfileUpdated: ['bi-person-gear', '#1D7AA8'] };
+            const render = () => {
+                document.getElementById('log').innerHTML = items.length ? `<ul class="zh-timeline">${items.map(a => {
+                    const [ic, c] = icons[a.action] || ['bi-dot', '#15B392'];
+                    return `<li style="--c:${c}"><span class="ic"><i class="bi ${ic}"></i></span>
+                        <b>${esc(a.actionAr)}</b>${a.userName ? ` · <a href="/Users?user=${encodeURIComponent(a.userId)}">${esc(a.userName)}</a>` : ''}
+                        ${a.details ? `<span class="zh-muted"> — ${esc(a.details)}</span>` : ''}
+                        <small title="${esc(formatDate(a.createdAt, true))}">${esc(timeAgo(a.createdAt))}${a.actorName ? ` · بواسطة ${esc(a.actorName)}` : ''}${a.ipAddress ? ` · <span class="zh-ltr">${esc(a.ipAddress)}</span>` : ''}</small></li>`;
+                }).join('')}</ul>` : '<div class="zh-empty"><div class="icon"><i class="bi bi-clock-history"></i></div><h5>لا يوجد نشاط بعد</h5></div>';
+            };
+            const { conn, call } = ZH.connectAdminHub(async () => { page = 1; items = []; await more(); });
+            async function more() {
+                const res = await call('GetActivity', null, page, 30);
+                items = items.concat(res.items); render();
+                document.getElementById('more').hidden = page >= res.pages;
+            }
+            document.getElementById('more').onclick = () => { page++; more(); };
+            const refresh = debounce(async () => { const res = await call('GetActivity', null, 1, 30); const ids = new Set(items.map(i => i.id)); items = res.items.filter(i => !ids.has(i.id)).concat(items); render(); }, 600);
+            conn.on('usersChanged', refresh); conn.on('rolesChanged', refresh); conn.on('presenceChanged', refresh);
+        })();
+    </script>
+}

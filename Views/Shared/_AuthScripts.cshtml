@@ -1,0 +1,33 @@
+<style>.empty-hide.validation-summary-valid{display:none}.zh-alert ul{list-style:none;padding:0;margin:0}</style>
+<script>
+    (function () {
+        document.querySelectorAll('[data-toggle-pw]').forEach(btn => btn.addEventListener('click', () => {
+            const i = btn.parentElement.querySelector('input');
+            i.type = i.type === 'password' ? 'text' : 'password';
+            btn.innerHTML = `<i class="bi bi-eye${i.type === 'text' ? '-slash' : ''}"></i>`;
+        }));
+        const warn = document.getElementById('capsWarn');
+        if (warn) document.addEventListener('keyup', e => { if (e.getModifierState) warn.hidden = !e.getModifierState('CapsLock'); });
+
+        // password strength + rules
+        const pw = document.querySelector('[data-strength]');
+        if (pw) {
+            const bars = document.querySelectorAll('#pwStrength span');
+            const rules = document.querySelectorAll('[data-rule]');
+            const tests = { len: v => v.length >= 6, lower: v => /[a-z]/.test(v), upper: v => /[A-Z]/.test(v), digit: v => /\d/.test(v), sym: v => /[#$^+=!*()@@%&]/.test(v) };
+            pw.addEventListener('input', () => {
+                const v = pw.value; let score = 0;
+                rules.forEach(r => { const ok = tests[r.dataset.rule](v); r.classList.toggle('ok', ok); if (ok) score++; });
+                const lvl = !v ? 0 : score <= 2 ? 1 : score === 3 ? 2 : score === 4 ? 3 : 4;
+                const colors = ['#E3E9E7', '#D64545', '#E5A023', '#54C392', '#15B392'];
+                bars.forEach((b, i) => b.style.background = i < lvl ? colors[lvl] : '#E3E9E7');
+            });
+        }
+        // prevent double submit
+        document.querySelectorAll('form').forEach(f => f.addEventListener('submit', () => {
+            if (window.jQuery && jQuery(f).valid && !jQuery(f).valid()) return;
+            const b = f.querySelector('button[type=submit]');
+            if (b && !b.name) { setTimeout(() => { b.disabled = true; b.innerHTML = '<span class="spinner-border spinner-border-sm"></span> لحظة…'; }, 0); }
+        }));
+    })();
+</script>

@@ -137,6 +137,33 @@
 
 
             base.OnModelCreating(builder);
+
+            // ===== Users / Roles / Permissions (DB driven) =====
+            builder.Entity<ApplicationUser>().Property(u => u.CreatedAt).HasDefaultValueSql("(getutcdate())");
+
+            builder.Entity<AppPermission>()
+                .HasOne(p => p.Module).WithMany(m => m.Permissions)
+                .HasForeignKey(p => p.ModuleId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Role).WithMany()
+                .HasForeignKey(rp => rp.RoleId).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<RolePermission>()
+                .HasOne(rp => rp.Permission).WithMany(p => p.RolePermissions)
+                .HasForeignKey(rp => rp.PermissionId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserPermission>()
+                .HasOne(up => up.User).WithMany()
+                .HasForeignKey(up => up.UserId).OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<UserPermission>()
+                .HasOne(up => up.Permission).WithMany(p => p.UserPermissions)
+                .HasForeignKey(up => up.PermissionId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<RoleInfo>()
+                .HasOne(ri => ri.Role).WithOne()
+                .HasForeignKey<RoleInfo>(ri => ri.RoleId).OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserActivity>().Property(a => a.CreatedAt).HasDefaultValueSql("(getutcdate())");
         }
         public DbSet<Center> Centers { get; set; }
         public DbSet<LogCenter> LogCenters { get; set; }
@@ -177,6 +204,14 @@
         public DbSet<PrayerTime> PrayerTimes { get; set; }
 
         public DbSet<Attendance> Attendances { get; set; }
+
+        // Security
+        public DbSet<AppModule> AppModules { get; set; }
+        public DbSet<AppPermission> AppPermissions { get; set; }
+        public DbSet<RolePermission> RolePermissions { get; set; }
+        public DbSet<UserPermission> UserPermissions { get; set; }
+        public DbSet<RoleInfo> RoleInfos { get; set; }
+        public DbSet<UserActivity> UserActivities { get; set; }
         public DbSet<LogAttendance> LogAttendances { get; set; }
     }
 }

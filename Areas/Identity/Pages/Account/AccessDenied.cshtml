@@ -1,15 +1,18 @@
 ﻿@page
-@model MasterViewModel
+@model AccessDeniedModel
 @{
-    ViewData["Title"] = "دخول غير مسموح";
+    ViewData["Title"] = "غير مسموح بالوصول";
 }
-
-<header>
-
-    <div class="text-center">
-        <i class="bi bi-shield-exclamation fs-1 text-danger"></i>
+<section class="zh-page">
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card text-center">
+            <div class="zh-empty p-0 mb-2"><div class="icon" style="color:#D64545"><i class="bi bi-shield-exclamation"></i></div></div>
+            <h1>غير مسموح بالوصول</h1>
+            <p class="lead">ليس لديك صلاحية لفتح هذه الصفحة. إذا كنت تحتاج الوصول إليها تواصل مع مدير النظام لإضافة الصلاحية لمجموعتك.</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a href="javascript:history.back()" class="zh-btn zh-btn-light"><i class="bi bi-arrow-right"></i> رجوع</a>
+                <a href="/" class="zh-btn zh-btn-primary"><i class="bi bi-house-door"></i> الرئيسية</a>
+            </div>
+        </div>
     </div>
-    
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">You do not have access to this resource.</p>
-</header>
+</section>

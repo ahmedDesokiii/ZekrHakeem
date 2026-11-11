@@ -1,4 +1,4 @@
-using ZekrHakeem_v11.IRepository.ServicesRepository;
+﻿using ZekrHakeem_v11.IRepository.ServicesRepository;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting; // For IWebHostEnvironment if needed
@@ -49,11 +49,37 @@ namespace ZekrHakeem_v11
 
 
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(
-                options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
+                    options.Lockout.MaxFailedAccessAttempts = 6;
+                    options.Lockout.AllowedForNewUsers = true;
+                })
                             .AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddSignInManager<AppSignInManager>()
                             .AddDefaultUI()
                             .AddDefaultTokenProviders();
+
+            // ===== Users / Roles / Permissions (DB driven) + SignalR =====
+            builder.Services.AddMemoryCache();
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddSingleton<PresenceTracker>();
+            builder.Services.AddScoped<IPermissionService, PermissionService>();
+            builder.Services.AddScoped<IActivityLogger, ActivityLogger>();
+            builder.Services.AddScoped<IRealtimeNotifier, RealtimeNotifier>();
+            builder.Services.AddScoped<IUserAdminService, UserAdminService>();
+            builder.Services.AddScoped<IRoleAdminService, RoleAdminService>();
+            builder.Services.AddSignalR(o =>
+            {
+                o.EnableDetailedErrors = builder.Environment.IsDevelopment();
+            });
+            builder.Services.ConfigureApplicationCookie(o =>
+            {
+                o.LoginPath = "/Identity/Account/Login";
+                o.AccessDeniedPath = "/Identity/Account/AccessDenied";
+                o.SlidingExpiration = true;
+            });
 
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -140,6 +166,10 @@ namespace ZekrHakeem_v11
                     await Seeds.DefaultUsers.SeedSuervisorUserAsync(userManager, roleManager);
                     await Seeds.DefaultUsers.SeedAdminAsync(userManager, roleManager);
 
+                    // مزامنة الصلاحيات من الكود إلى قاعدة البيانات
+                    var db = services.GetRequiredService<ApplicationDbContext>();
+                    await ZekrHakeem_v11.Services.Security.PermissionSeeder.SyncAsync(db, roleManager, logger);
+
                     logger.LogInformation("Finished Seeding Default Data");
                     logger.LogInformation("Application Starting");
                 }
@@ -164,12 +194,15 @@ namespace ZekrHakeem_v11
 
             app.UseRouting();
             app.UseSession();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
+            app.MapHub<NotificationHub>("/hubs/notify");
+            app.MapHub<UsersAdminHub>("/hubs/users-admin");
 
             app.Run();
         }

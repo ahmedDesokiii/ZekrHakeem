@@ -1,0 +1,45 @@
+@{
+    ViewData["Title"] = "صلاحيات المجموعة";
+}
+
+<section class="zh-page">
+    <div class="zh-container">
+        <div class="zh-hero d-flex flex-wrap align-items-center justify-content-between gap-3" id="permHero">
+            <div>
+                <div class="zh-crumb"><a asp-controller="Roles" asp-action="Index">المجموعات</a><i class="bi bi-chevron-left"></i><span>الصلاحيات</span></div>
+                <h1><i class="bi bi-ui-checks-grid ms-2"></i>صلاحيات: <span id="roleName">…</span></h1>
+                <p id="permSummary">جارٍ التحميل…</p>
+                <span class="zh-live-pill mt-3 off" id="liveState"><span class="zh-pulse-dot"></span><span>جارٍ الاتصال…</span></span>
+            </div>
+            <div class="zh-hero-actions" id="permActions">
+                <button class="zh-btn zh-btn-glass" type="button" id="btnAll"><i class="bi bi-check2-all"></i> تحديد الكل</button>
+                <button class="zh-btn zh-btn-glass" type="button" id="btnNone"><i class="bi bi-x-square"></i> إلغاء الكل</button>
+                <button class="zh-btn zh-btn-glass" type="button" id="btnCollapse"><i class="bi bi-arrows-collapse"></i> طي</button>
+            </div>
+        </div>
+
+        <div class="zh-card zh-toolbar">
+            <div class="zh-search">
+                <i class="bi bi-search"></i>
+                <input class="zh-input" id="permFilter" type="search" placeholder="ابحث في الصلاحيات (عرض، حذف، الطلاب…)" />
+            </div>
+        </div>
+
+        <div id="superAdminNote"></div>
+        <div class="zh-matrix" id="matrix">
+            <div class="zh-skel" style="height:120px"></div><div class="zh-skel" style="height:120px"></div><div class="zh-skel" style="height:120px"></div>
+        </div>
+    </div>
+</section>
+
+<div class="zh-savebar" id="permSavebar">
+    <span><i class="bi bi-pencil-square ms-1"></i> لديك <b id="permChangedCount">0</b> تعديلات غير محفوظة</span>
+    <button class="zh-btn zh-btn-light zh-btn-sm" id="permDiscard" type="button">تراجع</button>
+    <button class="zh-btn zh-btn-gold zh-btn-sm" id="permSave" type="button"><i class="bi bi-check2"></i> حفظ وتطبيق</button>
+</div>
+
+@section Scripts {
+    <script>window.ZH_ROLE_ID = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["RoleId"] as string));</script>
+    <script src="~/js/zh-admin-common.js" asp-append-version="true"></script>
+    <script src="~/js/zh-role-permissions.js" asp-append-version="true"></script>
+}

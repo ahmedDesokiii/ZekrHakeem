@@ -1,10 +1,10 @@
-﻿@model string
-
+@model string
 @if (!String.IsNullOrEmpty(Model))
 {
-    var statusMessageClass = Model.StartsWith("Error") ? "danger" : "success";
-    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        @Model
+    var isError = Model.StartsWith("Error") || Model.StartsWith("خطأ") || Model.StartsWith("تعذر");
+    <div class="zh-alert @(isError ? "zh-alert-danger" : "zh-alert-success") mb-3 alert-dismissible fade show" role="alert">
+        <i class="bi @(isError ? "bi-exclamation-octagon-fill" : "bi-check-circle-fill")"></i>
+        <div class="flex-grow-1">@Model</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
     </div>
 }

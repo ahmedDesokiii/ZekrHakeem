@@ -1,429 +1,191 @@
-﻿@model MasterViewModel
-@{
-    ViewData["Title"] = "المستخدمين";
+﻿@{
+    ViewData["Title"] = "إدارة المستخدمين";
 }
 
-<section class="container-fluid users-page ">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
+<section class="zh-page">
+    <div class="zh-container">
 
-            <div class="card users-card shadow-sm my-4">
-
-                <!-- Header -->
-                <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2" style="background-image: linear-gradient(to bottom right, #FBF8EF, #B1F0F7);">
-                    <h4 class="mb-0 fw-bold">
-                        <i class="bi bi-people-fill ms-2"></i> المستخدمين
-                    </h4>
-
-                    <button class="btn btn-success"
-                            onclick="openUserModal('@Url.Action("AddUser", "Users")') ; Reset();">
-                        <i class="bi bi-plus-circle ms-2"></i>
-                        إضافة مستخدم
-                    </button>
-                </div>
-
-                <!-- Body -->
-                <div class="card-body px-3 px-md-4 px-xl-5">
-
-                    @if (!Model.UserVM.Any())
-                    {
-                        <div class="alert alert-warning m-3 text-center">
-                            <h5>لا يوجد مستخدمين</h5>
-                            <p class="mb-0">لم يتم إضافة مستخدمين حتى الآن</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <!-- ======================= Mobile Search Users  =============================== -->
-                        <div class="d-block d-md-none px-2 mb-2">
-                            <input type="text" id="userSearch" class="form-control shadow-sm"
-                                   placeholder="ابحث هنا..." />
-                        </div>
-
-                        <!-- ================= Users Cards (Mobile) ================= -->
-                        <div class="d-block d-md-none px-2" id="usersCardsContainer" style="max-height: 70vh; overflow-y: auto;">
-                            @foreach (var user in Model.UserVM)
-                            {
-                                <div class="card user-card mb-3 shadow-sm mt-2 position-relative"
-                                     data-name="@user.FullName.ToLower()"
-                                     data-username="@user.UserName.ToLower()"
-                                     data-phone="@user.PhoneNumber?.ToLower()"
-                                     data-roles="@string.Join(",", user.Roles).ToLower()"
-                                     style="transition: all 0.3s ease;">
-
-                                    <div class="card-header py-2 px-3 text-white d-flex align-items-center"
-                                         style="background: linear-gradient(135deg, #D8E983 0%, #54C392 50%, #15B392 100%);">
-                                        <i class="bi bi-person-circle fs-4 ms-2"></i>
-                                        <h6 class="fw-bold mb-0 text-truncate user-name" title="@user.FullName">@user.FullName</h6>
-                                    </div>
-
-                                    <div class="card-body py-2">
-                                        <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label mx-2">اسم المستخدم</span>
-                                            <span class="fw-bold user-username">@user.UserName</span>
-                                        </div>
-                                        <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label mx-2">التليفون</span>
-                                            <span class="fw-bold user-phone">@user.PhoneNumber</span>
-                                        </div>
-                                        <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label mx-2">رقم الهوية</span>
-                                            <span class="fw-bold user-identity">@user.IdentityNum</span>
-                                        </div>
-                                        <div class="data-row d-flex justify-content-between align-items-center">
-                                            <span class="data-label mx-2">البريد الالكتروني</span>
-                                            <span class="fw-bold user-email">@user.Email</span>
-                                        </div>
-                                        <div class="data-row d-flex flex-wrap align-items-center">
-                                            <span class="data-label mx-2">المجموعات</span>
-                                            <span class="fw-bold user-roles d-flex flex-wrap">
-                                                @foreach (var role in user.Roles)
-                                                {
-                                                    <span class="badge me-1 mb-1" style="background-color: rgba(25,135,84,0.1); color:#198754;">@role</span>
-                                                }
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div class="card-footer bg-light border-0 d-flex justify-content-around py-2 sticky-bottom">
-                                       <a href="javascript:void(0)"
-                                                   class="btn fw-bold btn-outline-dark py-0 bg-transparent border-0 mx-1 fs-4"
-                                                   title="مجموعات"
-                                                   onclick="openRolesModal('@user.Id')">
-
-                                                    <i class="bi bi-view-stacked"></i>
-                                                </a>
-
-                                                <button type="button"
-                                                        class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn"
-                                                        data-url="@Url.Action("EditUser", "Users", new { userId = user.Id })">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </button>
-
-                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
-                                                    <i class="bi bi-trash3-fill"></i>
-                                                </a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-
-                        <!-- ================= Users Table (Desktop) ================= -->
-                        <div class="d-none d-lg-block  d-md-block table-responsive px-2">
-                           
-                            <table id="tableUser" class="table table-hover users-table nowrap table-bordered border-primary-subtle align-middle">
-                                <thead>
-                                    <tr class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">
-                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">الاسم</th>
-                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">اسم المستخدم</th>
-                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">التليفون</th>
-                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">رقم الهوية</th>
-                                        <th class="text-center text-white py-2 d-none d-md-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">البريد الالكتروني</th>
-                                        <th class="text-center text-white py-2 d-none d-lg-table-cell" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">المجموعات</th>
-                                        <th class="text-center text-white py-2" style="background-color:#758A93; color:#fff; border-bottom:1px solid #5f7178;">إجراءات</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var user in Model.UserVM)
-                                    {
-                                        <tr>
-                                            <td data-label="الاسم" class="py-0 text-primary fw-bold">@user.FullName</td>
-                                            <td data-label="اسم المستخدم" class="py-0">@user.UserName</td>
-                                            <td data-label="التليفون" class="py-0 d-none d-md-table-cell text-center">@user.PhoneNumber</td>
-                                            <td data-label="رقم الهوية" class="py-0 d-none d-md-table-cell text-center">@user.IdentityNum</td>
-                                            <td data-label="البريد الالكتروني" class="py-0 d-none d-md-table-cell text-center">@user.Email</td>
-                                            <td data-label="المجموعات" class="py-0 d-none d-lg-table-cell">
-                                                @foreach (var role in user.Roles)
-                                                {
-                                                    <span class="py-2 badge me-1 my-1 fs-6 rounded-4 " style="background-color: rgba(25,135,84,0.1); color:#198754;">@role</span>
-                                                    <br class="p-0 m-0">
-                                                }
-                                            </td>
-                                            <td class="text-center actions py-0">
-                                                <a href="javascript:void(0)"
-                                                   class="btn fw-bold btn-outline-dark py-0 bg-transparent border-0 mx-1 fs-4"
-                                                   title="مجموعات"
-                                                   onclick="openRolesModal('@user.Id')">
-
-                                                    <i class="bi bi-view-stacked"></i>
-                                                </a>
-
-                                                <button type="button"
-                                                        class="btn btn-outline-dark border-0 py-0 fs-4 edit-user-btn"
-                                                        data-url="@Url.Action("EditUser", "Users", new { userId = user.Id })">
-                                                    <i class="bi bi-pencil-square"></i>
-                                                </button>
-
-                                                <a class="btn fw-bold btn-outline-dark py-0 bg-transparent text-dark border-0 mx-1 fs-4" title="حـذف" asp-controller="Users" asp-action="DeleteUser" asp-route-Id="@user.Id">
-                                                    <i class="bi bi-trash3-fill"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-
-                    }
-
-                </div>
+        <!-- Hero -->
+        <div class="zh-hero d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div>
+                <div class="zh-crumb"><a asp-controller="Home" asp-action="Index">الرئيسية</a><i class="bi bi-chevron-left"></i><span>الإدارة</span></div>
+                <h1><i class="bi bi-people-fill ms-2"></i>إدارة المستخدمين</h1>
+                <p>أضف المستخدمين، وزّعهم على المجموعات، وتحكم في صلاحياتهم لحظيًا.</p>
+                <span class="zh-live-pill mt-3 off" id="liveState"><span class="zh-pulse-dot"></span><span>جارٍ الاتصال…</span></span>
             </div>
+            <div class="zh-hero-actions">
+                <a class="zh-btn zh-btn-glass" asp-controller="Roles" asp-action="Index" data-cap="Roles.View" hidden><i class="bi bi-shield-lock"></i> المجموعات</a>
+                <button class="zh-btn zh-btn-glass" id="btnExport" type="button"><i class="bi bi-file-earmark-excel"></i> تصدير</button>
+                <button class="zh-btn zh-btn-gold" id="btnAddUser" type="button" data-cap="Users.Create" hidden><i class="bi bi-person-plus-fill"></i> مستخدم جديد</button>
+            </div>
+        </div>
 
+        <!-- Stats -->
+        <div class="zh-stats" id="stats">
+            <div class="zh-card zh-stat" data-status="" style="--c:#0F5E4F"><div class="zh-stat-icon"><i class="bi bi-people-fill"></i></div><div class="zh-stat-value" data-k="total">0</div><div class="zh-stat-label">كل المستخدمين</div></div>
+            <div class="zh-card zh-stat" data-status="online" style="--c:#15B392"><div class="zh-stat-icon"><i class="bi bi-broadcast"></i></div><div class="zh-stat-value" data-k="online">0</div><div class="zh-stat-label"><span class="zh-pulse-dot ms-1"></span> متصل الآن</div></div>
+            <div class="zh-card zh-stat" data-status="active" style="--c:#1D7AA8"><div class="zh-stat-icon"><i class="bi bi-person-check-fill"></i></div><div class="zh-stat-value" data-k="active">0</div><div class="zh-stat-label">حسابات مفعلة</div></div>
+            <div class="zh-card zh-stat" data-status="inactive" style="--c:#D64545"><div class="zh-stat-icon"><i class="bi bi-person-slash"></i></div><div class="zh-stat-value" data-k="inactive">0</div><div class="zh-stat-label">حسابات موقوفة</div></div>
+            <div class="zh-card zh-stat" data-status="unconfirmed" style="--c:#E5A023"><div class="zh-stat-icon"><i class="bi bi-envelope-exclamation-fill"></i></div><div class="zh-stat-value" data-k="unconfirmed">0</div><div class="zh-stat-label">بريد غير مؤكد</div></div>
+            <div class="zh-card zh-stat" data-status="" data-sort="created" style="--c:#C9A227"><div class="zh-stat-icon"><i class="bi bi-stars"></i></div><div class="zh-stat-value" data-k="newThisMonth">0</div><div class="zh-stat-label">جدد هذا الشهر</div></div>
+        </div>
+
+        <!-- Role distribution -->
+        <div class="zh-chips mb-3" id="roleFilters"></div>
+
+        <!-- Toolbar -->
+        <div class="zh-card zh-toolbar">
+            <div class="zh-search">
+                <i class="bi bi-search"></i>
+                <input class="zh-input" id="q" type="search" autocomplete="off" placeholder="ابحث بالاسم، اسم المستخدم، البريد، الجوال أو الهوية…" />
+                <kbd class="zh-hide-mobile">/</kbd>
+            </div>
+            <select class="zh-select" id="fRole" style="max-width:210px"><option value="">كل المجموعات</option></select>
+            <select class="zh-select zh-hide-mobile" id="fGender" style="max-width:140px">
+                <option value="">الكل</option><option value="male">ذكور</option><option value="female">إناث</option>
+            </select>
+            <select class="zh-select" id="fSort" style="max-width:190px">
+                <option value="name">ترتيب: الاسم</option>
+                <option value="username">ترتيب: اسم المستخدم</option>
+                <option value="created|desc">الأحدث إضافة</option>
+                <option value="lastLogin|desc">آخر دخول</option>
+            </select>
+            <div class="zh-segment zh-hide-mobile" id="viewToggle">
+                <button type="button" data-view="cards" class="active" title="بطاقات"><i class="bi bi-grid-3x2-gap-fill"></i></button>
+                <button type="button" data-view="table" title="جدول"><i class="bi bi-list-ul"></i></button>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="results"></div>
+
+        <div class="zh-pager">
+            <div class="zh-muted fw-bold" id="pageInfo"></div>
+            <div class="d-flex align-items-center gap-2">
+                <select class="zh-select" id="pageSize" style="width:auto">
+                    <option value="12">12</option><option value="24">24</option><option value="48">48</option><option value="96">96</option>
+                </select>
+                <div class="pages" id="pages"></div>
+            </div>
         </div>
     </div>
 </section>
 
-<div id="modalContainer"></div>
-<div id="rolesModalContainer"></div>
+<!-- ======================= Drawers ======================= -->
+<div class="zh-drawer-backdrop" id="drawerBackdrop"></div>
 
-@if (TempData["Msg"] != null)
-{
-    <script>
-        Swal.fire({
-            icon: '@TempData["MsgType"]',
-            title: '@TempData["MsgTitle"]',
-            text: '@TempData["Msg"]',
-            confirmButtonText: 'حسناً'
-        });
-    </script>
-}
+<!-- User details -->
+<aside class="zh-drawer wide" id="userDrawer" aria-hidden="true">
+    <div class="zh-drawer-head">
+        <h3>ملف المستخدم</h3>
+        <button class="zh-btn zh-btn-ghost zh-btn-icon" data-close><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="zh-drawer-body zh-scroll" id="userDrawerBody"></div>
+    <div class="zh-drawer-foot" id="userDrawerFoot"></div>
+</aside>
 
-@if (Model != null && Model.IsUserModalOpen)
-{
-    <script>
-        var myModal = new bootstrap.Modal(document.getElementById('userModal'));
-        myModal.show();
-    </script>
-}
+<!-- Add / Edit user -->
+<aside class="zh-drawer" id="formDrawer" aria-hidden="true">
+    <div class="zh-drawer-head">
+        <h3 id="formTitle">مستخدم جديد</h3>
+        <button class="zh-btn zh-btn-ghost zh-btn-icon" data-close><i class="bi bi-x-lg"></i></button>
+    </div>
+    <form class="zh-drawer-body zh-scroll" id="userForm" autocomplete="off" novalidate>
+        <input type="hidden" name="id" />
+        <div id="formErrors"></div>
+
+        <h6 class="fw-bold zh-muted mb-3"><i class="bi bi-person-vcard ms-1"></i> البيانات الأساسية</h6>
+        <div class="zh-field">
+            <label class="zh-label">الاسم الكامل <span class="req">*</span></label>
+            <input class="zh-input" name="fullName" required minlength="3" maxlength="200" />
+        </div>
+        <div class="row g-3">
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">اسم المستخدم <span class="req">*</span></label>
+                <input class="zh-input zh-ltr" name="userName" required minlength="3" />
+                <div class="zh-hint">حروف إنجليزية وأرقام بدون مسافات</div>
+            </div>
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">رقم الهوية <span class="req">*</span></label>
+                <input class="zh-input zh-ltr" name="identityNum" required maxlength="30" />
+            </div>
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">البريد الإلكتروني <span class="req">*</span></label>
+                <input class="zh-input zh-ltr" name="email" type="email" required />
+            </div>
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">الجوال</label>
+                <input class="zh-input zh-ltr" name="phoneNumber" type="tel" />
+            </div>
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">النوع</label>
+                <div class="zh-segment w-100" id="genderSeg">
+                    <button type="button" class="flex-fill" data-g="male"><i class="bi bi-gender-male"></i> ذكر</button>
+                    <button type="button" class="flex-fill" data-g="female"><i class="bi bi-gender-female"></i> أنثى</button>
+                </div>
+                <input type="hidden" name="gender" />
+            </div>
+            <div class="col-sm-6 zh-field mb-0">
+                <label class="zh-label">الجنسية</label>
+                <input class="zh-input" name="nationality" />
+            </div>
+        </div>
+
+        <h6 class="fw-bold zh-muted mt-4 mb-3"><i class="bi bi-key ms-1"></i> الدخول والأمان</h6>
+        <div class="zh-field">
+            <label class="zh-label" id="pwLabel">كلمة المرور <span class="req">*</span></label>
+            <div class="d-flex gap-2">
+                <div class="zh-input-group flex-grow-1">
+                    <input class="zh-input zh-ltr" name="password" type="password" autocomplete="new-password" />
+                    <button type="button" class="zh-input-action" data-toggle-pw title="إظهار"><i class="bi bi-eye"></i></button>
+                </div>
+                <button type="button" class="zh-btn zh-btn-light" id="btnGenPw" title="توليد كلمة مرور قوية"><i class="bi bi-magic"></i></button>
+            </div>
+            <div class="zh-strength" id="pwStrength"><span></span><span></span><span></span><span></span></div>
+            <div class="zh-hint" id="pwHint">6 خانات على الأقل: حرف كبير وصغير ورقم ورمز</div>
+        </div>
+        <label class="zh-switch mb-3">
+            <input type="checkbox" name="isActive" checked />
+            <span class="track"></span>
+            <span>الحساب مفعل ويمكنه تسجيل الدخول</span>
+        </label>
+
+        <div id="formRolesBlock">
+            <h6 class="fw-bold zh-muted mt-3 mb-3"><i class="bi bi-shield-check ms-1"></i> المجموعات</h6>
+            <div class="zh-role-pick" id="formRoles"></div>
+        </div>
+
+        <h6 class="fw-bold zh-muted mt-4 mb-3"><i class="bi bi-card-text ms-1"></i> معلومات إضافية</h6>
+        <div class="zh-field">
+            <label class="zh-label">العنوان</label>
+            <input class="zh-input" name="adress" />
+        </div>
+        <div class="zh-field">
+            <label class="zh-label">ملاحظات</label>
+            <textarea class="zh-textarea" name="notes" rows="2"></textarea>
+        </div>
+    </form>
+    <div class="zh-drawer-foot">
+        <button class="zh-btn zh-btn-light" data-close type="button">إلغاء</button>
+        <button class="zh-btn zh-btn-primary" id="btnSaveUser" type="button"><i class="bi bi-check2-circle"></i> حفظ</button>
+    </div>
+</aside>
+
+<div class="zh-savebar" id="permSavebar">
+    <span><i class="bi bi-pencil-square ms-1"></i> لديك <b id="permChangedCount">0</b> تعديلات غير محفوظة</span>
+    <button class="zh-btn zh-btn-light zh-btn-sm" id="permDiscard" type="button">تراجع</button>
+    <button class="zh-btn zh-btn-gold zh-btn-sm" id="permSave" type="button"><i class="bi bi-check2"></i> حفظ</button>
+</div>
 
 @section Scripts {
-     @if (!string.IsNullOrEmpty(Context.Session.GetString(Helper.MsgType)))
-    {
-        if (Context.Session.GetString(Helper.MsgType) == Helper.Success)
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'success'
-                });
-            </script>
-        }
-        else
-        {
-            <script>
-
-                Swal.fire({
-                    title: '@Context.Session.GetString(Helper.Title)',
-                    text: '@Html.Raw(@Context.Session.GetString(Helper.Msg))',
-                    confirmButtonText: 'Ok',
-                    icon: 'error'
-                });
-            </script>
-        }
-        Context.Session.SetString(Helper.MsgType, "");
-    }
-    @* <script src="~/js/Users.js"></script> *@
     <script>
-
-        function refreshUsersTable() {
-
-            if ($.fn.DataTable.isDataTable('#usersTable')) {
-
-                $('#usersTable').DataTable().ajax.reload(null, false);
-
-            }
-            else {
-
-                location.reload();
-
-            }
-
-        }
-
-    </script>
-
-    <script>
-        function openRolesModal(userId) {
-
-            $.get('/Users/ManageRoles', { userId: userId }, function (data) {
-
-                $('#rolesModalContainer').html(data);
-
-                var modal = new bootstrap.Modal(document.getElementById('manageRolesModal'));
-
-                modal.show();
-
-            });
-
-        }
-    </script>
-
-    <script>
-                const Reset = () => {
-
-            const form = document.getElementById("userForm");
-
-            if (form) {
-                form.reset(); // يمسح كل الحقول مرة واحدة
-            }
-
-            // optional: إزالة validation
-            form?.classList.remove("was-validated");
-
-            // optional: إزالة أي رسائل خطأ
-            document.querySelectorAll(".text-danger").forEach(e => e.innerText = "");
+        window.ZH_USERS = {
+            openUser: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["OpenUser"] as string)),
+            openTab: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewData["OpenTab"] as string)),
+            exportUrl: '@Url.Action("Export", "Users")',
+            meId: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(User.FindFirstValue(ClaimTypes.NameIdentifier)))
         };
-
     </script>
-    <script>
-                $('#UserName').on('input', function () {
-            this.value = this.value.toLowerCase().replace(/\s/g, '');
-        });
-    </script>
-    <script>
-        // لجميع أزرار التعديل في الديسكتوب
-        $(document).on('click', '.edit-user-btn', function () {
-            var url = $(this).data('url');
-            openUserModal(url);
-        });
-    </script>
-    <script>
-        // Open Add/Edit User Modal
-        function openUserModal(url) {
-            $("#modalContainer").empty();
-
-            $.get(url)
-                .done(function (data) {
-                    $("#modalContainer").html(data);
-
-                    // re-parse validation
-                    $.validator.unobtrusive.parse("#userModal");
-
-                    const modalEl = document.getElementById("userModal");
-                    let modal = bootstrap.Modal.getInstance(modalEl);
-                    if (!modal) {
-                        modal = new bootstrap.Modal(modalEl, { backdrop: 'static', keyboard: false });
-                    }
-                    modal.show();
-                })
-                .fail(function () {
-                    alert("حدث خطأ أثناء تحميل البيانات");
-                });
-        }
-
-        // Submit inside modal
-        $(document).on("submit", "#userModal form", function (e) {
-            e.preventDefault();
-            var form = $(this);
-            var submitBtn = form.find("button[type='submit']");
-            submitBtn.prop("disabled", true);
-
-            $.ajax({
-                url: form.attr("action"),
-                type: "POST",
-                data: form.serialize(),
-               success: function (res) {
-            if (res.success) {
-                window.location.href = res.redirectUrl;
-            } else {
-                $("#modalContainer").html(res);
-                $.validator.unobtrusive.parse("#userModal");
-            }
-        },
-                complete: function () { submitBtn.prop("disabled", false); }
-            });
-        });
-    </script>
-    <script>
-              $(document).on("submit", "#manageRolesForm", function (e) {
-            e.preventDefault();
-
-            var form = $(this);
-            var btn = $("#saveRolesBtn");
-            btn.prop("disabled", true);
-            btn.find(".btn-text").addClass("d-none");
-            btn.find(".btn-loading").removeClass("d-none");
-
-            $.ajax({
-                url: form.attr("action"),
-                type: "POST",
-                data: form.serialize(),
-           success: function(res) {
-            if(res.success){
-                var modalEl = document.getElementById('manageRolesModal');
-                var modal = bootstrap.Modal.getInstance(modalEl);
-                modal.hide();
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'تم الحفظ',
-                    text: res.message,
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-
-                // تحديث الصف المحدث
-                var row = $('#tableUsers').find('tr[data-userid="'+res.userId+'"]');
-
-                // تحديث المجموعات (Roles) داخل الصف مباشرة
-                var rolesHtml = '';
-                res.updatedRoles.forEach(role => {
-                    rolesHtml += `<span class="py-2 badge me-1 my-1 fs-6 rounded-4" style="background-color: rgba(25,135,84,0.1); color:#198754;">${role}</span><br class="p-0 m-0">`;
-                });
-
-                row.find('td[data-label="المجموعات"]').html(rolesHtml);
-
-                // Highlight الصف
-                row.addClass('updated-row');
-                setTimeout(() => row.removeClass('updated-row'), 2000);
-            }
-        },
-
-                error: function () {
-                    Swal.fire('خطأ', 'حدث خطأ أثناء الحفظ', 'error');
-                },
-                complete: function () {
-                    btn.prop("disabled", false);
-                    btn.find(".btn-text").removeClass("d-none");
-                    btn.find(".btn-loading").addClass("d-none");
-                }
-            });
-        });
-                if ($.fn.DataTable.isDataTable('#tableUser')) {
-            $('#tableUser').DataTable().ajax.reload(null, false); // يعيد تحميل بيانات الـ DataTable فقط
-        } else {
-             // fallback لو الجدول ليس DataTable، يعيد تحميل الصفحة بالكامل
-        }
-
-    </script>
-    <script>
-
-           // Search للموبايل
-        document.getElementById('userSearch')?.addEventListener('input', function () {
-            const query = this.value.toLowerCase();
-            const cards = document.querySelectorAll('#usersCardsContainer .user-card');
-
-            cards.forEach(card => {
-                const name = card.getAttribute('data-name') || '';
-                const username = card.getAttribute('data-username') || '';
-                const phone = card.getAttribute('data-phone') || '';
-                const roles = card.getAttribute('data-roles') || '';
-
-                // تحقق لو البحث موجود في أي من هذه الحقول
-                if (name.includes(query) || username.includes(query) || phone.includes(query) || roles.includes(query)) {
-                    card.style.display = ''; // عرض الكارد
-                } else {
-                    card.style.display = 'none'; // إخفاء الكارد
-                }
-            });
-        });
-    </script>
-
-     
-
-    
+    <script src="~/js/zh-admin-common.js" asp-append-version="true"></script>
+    <script src="~/js/zh-users-admin.js" asp-append-version="true"></script>
 }
-

@@ -2,44 +2,44 @@
 
 @* الحلقات *@
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownEpisodes" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" id="navbarDropdownEpisodes" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         @ResourceApp_Ar.LayoutPage_NavEpisodes_lnk
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownEpisodes">
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Episodes" asp-action="Episodes">حلقات أساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i></a></li>
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Episodes" asp-action="Episodes">حلقات أساسية <i class="bi bi-diagram-3-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Progs" asp-action="EpisodeProgs">حلقات نوعية <i class="bi bi-list-stars fs-5 px-2"></i></a></li>
     </ul>
 </li>
 
 @* الطلاب *@
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" id="navbarDropdownStudents" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         @ResourceApp_Ar.LayoutPage_NavStudents_lnk
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownStudents">
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">طلاب حلقات أساسية <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">طلاب حلقات نوعية <i class="bi bi-people fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Students" asp-action="EpisodesOfStudents">طلاب حلقات أساسية <i class="bi bi-people-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Progs" asp-action="EpisodeProgsOfStudentProgs">طلاب حلقات نوعية <i class="bi bi-people fs-5 px-2"></i></a></li>
     </ul>
 </li>
 
 @* التقارير *@
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" id="navbarDropdownReports" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         التقارير
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownReports">
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Reports" asp-action="SingleTeacherAttendanceByTeacher">حضور وانصراف المعلم <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Reports" asp-action="StudentsLastLessons_Teacher">الدروس المطلوبة من الطلاب <i class="bi bi-clipboard-data fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Reports" asp-action="SingleTeacherAttendanceByTeacher">حضور وانصراف المعلم <i class="bi bi-fingerprint fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Reports" asp-action="StudentsLastLessons_Teacher">الدروس المطلوبة من الطلاب <i class="bi bi-clipboard-data fs-5 px-2"></i></a></li>
     </ul>
 </li>
 
 @* خدمات أخرى *@
 <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle fs-5 fw-bold" style="color:darkgoldenrod;font-size:20px;" id="navbarDropdownServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" id="navbarDropdownServices" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         خدمات أخرى
     </a>
     <ul class="dropdown-menu" aria-labelledby="navbarDropdownServices">
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات أولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
-        <li><a class="dropdown-item text-dark fw-bold" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Demands" asp-action="Demands">طلبات أولياء الأمور <i class="bi bi-chat-left-quote-fill fs-5 px-2"></i></a></li>
+        <li><a class="dropdown-item" asp-area="" asp-controller="Plans" asp-action="Plans">الخطط التعليمية <i class="bi bi-journal-bookmark-fill fs-5 px-2"></i></a></li>
     </ul>
 </li>

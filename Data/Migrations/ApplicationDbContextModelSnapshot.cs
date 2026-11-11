@@ -170,6 +170,11 @@ namespace ZekrHakeem_v11.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(getutcdate())");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -197,6 +202,12 @@ namespace ZekrHakeem_v11.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastLoginAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -339,7 +350,7 @@ namespace ZekrHakeem_v11.Data.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            CreatedDate = new DateTime(2026, 5, 8, 8, 7, 50, 425, DateTimeKind.Local).AddTicks(4724),
+                            CreatedDate = new DateTime(2026, 11, 11, 22, 0, 35, 404, DateTimeKind.Local).AddTicks(8879),
                             CurrentState = 0,
                             Name = "C_RemoteM",
                             PauseState = 0,
@@ -348,7 +359,7 @@ namespace ZekrHakeem_v11.Data.Migrations
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            CreatedDate = new DateTime(2026, 5, 8, 8, 7, 50, 425, DateTimeKind.Local).AddTicks(4913),
+                            CreatedDate = new DateTime(2026, 11, 11, 22, 0, 35, 404, DateTimeKind.Local).AddTicks(9035),
                             CurrentState = 0,
                             Name = "C_RemoteW",
                             PauseState = 0,
@@ -945,7 +956,6 @@ namespace ZekrHakeem_v11.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("DistrictId")
-                        .IsRequired()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Latitude")
@@ -1443,6 +1453,221 @@ namespace ZekrHakeem_v11.Data.Migrations
                     b.ToTable("Progs");
                 });
 
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.AppModule", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Icon")
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.ToTable("AppModules");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.AppPermission", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("NameAr")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Key")
+                        .IsUnique();
+
+                    b.HasIndex("ModuleId");
+
+                    b.ToTable("AppPermissions");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.RoleInfo", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<bool>("IsDefaultForRegistration")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystem")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("NameAr")
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasKey("RoleId");
+
+                    b.ToTable("RoleInfos");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.RolePermission", b =>
+                {
+                    b.Property<string>("RoleId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GrantedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("RoleId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("RolePermissions");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.UserActivity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("nvarchar(60)");
+
+                    b.Property<string>("ActorId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ActorName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("(getutcdate())");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<string>("IpAddress")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<string>("UserAgent")
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId", "CreatedAt");
+
+                    b.ToTable("UserActivities");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.UserPermission", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("PermissionId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("GrantedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("GrantedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<bool>("IsGranted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("UserId", "PermissionId");
+
+                    b.HasIndex("PermissionId");
+
+                    b.ToTable("UserPermissions");
+                });
+
             modelBuilder.Entity("ZekrHakeem_v11.Models.Student", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1892,9 +2117,7 @@ namespace ZekrHakeem_v11.Data.Migrations
                 {
                     b.HasOne("ZekrHakeem_v11.Models.District", "District")
                         .WithMany("Locations")
-                        .HasForeignKey("DistrictId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("DistrictId");
 
                     b.HasOne("ZekrHakeem_v11.Models.Center", "LoCenter")
                         .WithMany("Locations")
@@ -2028,6 +2251,66 @@ namespace ZekrHakeem_v11.Data.Migrations
                     b.Navigation("ApplicationUser");
 
                     b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.AppPermission", b =>
+                {
+                    b.HasOne("ZekrHakeem_v11.Models.Security.AppModule", "Module")
+                        .WithMany("Permissions")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.RoleInfo", b =>
+                {
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithOne()
+                        .HasForeignKey("ZekrHakeem_v11.Models.Security.RoleInfo", "RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.RolePermission", b =>
+                {
+                    b.HasOne("ZekrHakeem_v11.Models.Security.AppPermission", "Permission")
+                        .WithMany("RolePermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.UserPermission", b =>
+                {
+                    b.HasOne("ZekrHakeem_v11.Models.Security.AppPermission", "Permission")
+                        .WithMany("UserPermissions")
+                        .HasForeignKey("PermissionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ZekrHakeem_v11.Models.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Permission");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Student", b =>
@@ -2216,6 +2499,18 @@ namespace ZekrHakeem_v11.Data.Migrations
             modelBuilder.Entity("ZekrHakeem_v11.Models.Prog", b =>
                 {
                     b.Navigation("EpisodeProgs");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.AppModule", b =>
+                {
+                    b.Navigation("Permissions");
+                });
+
+            modelBuilder.Entity("ZekrHakeem_v11.Models.Security.AppPermission", b =>
+                {
+                    b.Navigation("RolePermissions");
+
+                    b.Navigation("UserPermissions");
                 });
 
             modelBuilder.Entity("ZekrHakeem_v11.Models.Student", b =>

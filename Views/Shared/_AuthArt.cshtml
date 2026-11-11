@@ -1,0 +1,19 @@
+@model string
+<aside class="zh-auth-art">
+    <div>
+        <img src="~/images/zekr.png" alt="الذكر الحكيم" style="height:64px;filter:brightness(0) invert(1);opacity:.95" />
+    </div>
+    <div>
+        <div class="verse">
+            ﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾
+            <small>سورة الحجر — الآية ٩</small>
+        </div>
+        <ul>
+            <li><i class="bi bi-journal-bookmark-fill"></i> متابعة الحفظ والمراجعة لحظة بلحظة</li>
+            <li><i class="bi bi-people-fill"></i> حلقات ومعلمون وأولياء أمور في منصة واحدة</li>
+            <li><i class="bi bi-bar-chart-line-fill"></i> تقارير دقيقة للحضور والتقييم</li>
+            <li><i class="bi bi-phone-fill"></i> تعمل بسلاسة على الجوال والكمبيوتر</li>
+        </ul>
+    </div>
+    <div class="art-footer small opacity-75">@(string.IsNullOrEmpty(Model) ? "جمعية الذكر الحكيم لتحفيظ القرآن الكريم" : Model)</div>
+</aside>

@@ -1,15 +1,35 @@
-﻿@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
+    var me = await UserManager.GetUserAsync(User);
+    var initials = string.Concat((me?.FullName ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(w => w[0]));
+    var active = ViewData["ActivePage"] as string ?? System.IO.Path.GetFileNameWithoutExtension(ViewContext.ActionDescriptor.DisplayName);
+    string Cls(string page) => string.Equals(active, page, StringComparison.OrdinalIgnoreCase) ? "active" : "";
 }
-<ul class="nav nav-pills flex-column">
-    <li class="nav-item"><a class="nav-link @ManageNavPages.IndexNavClass(ViewContext)" id="profile" asp-page="./Index">Profile</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.EmailNavClass(ViewContext)" id="email" asp-page="./Email">Email</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.ChangePasswordNavClass(ViewContext)" id="change-password" asp-page="./ChangePassword">Password</a></li>
+<div class="me">
+    <span class="zh-avatar" style="--s:84px">
+        @if (me?.ProfilePicture != null)
+        {
+            <img src="@Url.Action("Avatar", "Users", new { area = "", id = me.Id })" alt="" />
+        }
+        else
+        {
+            @initials
+        }
+    </span>
+    <h5>@me?.FullName</h5>
+    <small>@me?.Email</small>
+</div>
+<nav>
+    <a class="@Cls(ManageNavPages.Index)" asp-page="./Index"><i class="bi bi-person-circle"></i> الملف الشخصي</a>
+    <a class="@Cls(ManageNavPages.Email)" asp-page="./Email"><i class="bi bi-envelope-at"></i> البريد الإلكتروني</a>
+    <a class="@Cls(ManageNavPages.ChangePassword)" asp-page="./ChangePassword"><i class="bi bi-key"></i> كلمة المرور</a>
+    <a class="@Cls(ManageNavPages.TwoFactorAuthentication)" asp-page="./TwoFactorAuthentication"><i class="bi bi-shield-lock"></i> التحقق بخطوتين</a>
     @if (hasExternalLogins)
     {
-        <li id="external-logins" class="nav-item"><a id="external-login" class="nav-link @ManageNavPages.ExternalLoginsNavClass(ViewContext)" asp-page="./ExternalLogins">External logins</a></li>
+        <a class="@Cls(ManageNavPages.ExternalLogins)" asp-page="./ExternalLogins"><i class="bi bi-link-45deg"></i> الحسابات المرتبطة</a>
     }
-    <li class="nav-item"><a class="nav-link @ManageNavPages.TwoFactorAuthenticationNavClass(ViewContext)" id="two-factor" asp-page="./TwoFactorAuthentication">Two-factor authentication</a></li>
-    <li class="nav-item"><a class="nav-link @ManageNavPages.PersonalDataNavClass(ViewContext)" id="personal-data" asp-page="./PersonalData">Personal data</a></li>
-</ul>
+    <a class="@Cls("Activity")" asp-page="./Activity"><i class="bi bi-clock-history"></i> نشاط حسابي</a>
+    <a class="@Cls(ManageNavPages.PersonalData)" asp-page="./PersonalData"><i class="bi bi-database-lock"></i> بياناتي</a>
+</nav>

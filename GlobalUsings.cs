@@ -29,3 +29,7 @@ global using ZekrHakeem_v11.ViewModels;
 global using Microsoft.AspNetCore.Mvc.Rendering;
 global using ZekrHakeem_v11.Areas.Identity.Pages.Account;
 
+global using ZekrHakeem_v11.Models.Security;
+global using ZekrHakeem_v11.Dtos.Security;
+global using ZekrHakeem_v11.Services.Security;
+global using ZekrHakeem_v11.Hubs;

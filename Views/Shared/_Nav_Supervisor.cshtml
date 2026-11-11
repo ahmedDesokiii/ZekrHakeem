@@ -1,29 +1,31 @@
-﻿@model MasterViewModel
+﻿@model object
 @{
-    var DemandsData = Model.DemandVM.Demands;
+    var dvm = (Model as MasterViewModel)?.DemandVM ?? new DemandViewModel();
+    var emptyDemands = new List<Demand>();
+    var DemandsData = (dvm.Demands ?? emptyDemands);
     int? notify = 0;
 }
 @if (User.IsInRole(Roles.Admin.ToString()))
 {
-    DemandsData = Model.DemandVM.Demands;
-    notify = Model.DemandVM.DemandsForMen_Notify.Count + Model.DemandVM.DemandsForWomen_Notify.Count;
+    DemandsData = (dvm.Demands ?? emptyDemands);
+    notify = (dvm.DemandsForMen_Notify ?? emptyDemands).Count + (dvm.DemandsForWomen_Notify ?? emptyDemands).Count;
 }
 else if (User.IsInRole(Roles.Supervisor.ToString()))
 {
-    DemandsData = Model.DemandVM.DemandsForMen;
-    notify = Model.DemandVM.DemandsForMen_Notify.Count;
+    DemandsData = (dvm.DemandsForMen ?? emptyDemands);
+    notify = (dvm.DemandsForMen_Notify ?? emptyDemands).Count;
 
 }
 else if (User.IsInRole(Roles.SupervisorWomen.ToString()))
 {
-    DemandsData = Model.DemandVM.DemandsForWomen;
-    notify = Model.DemandVM.DemandsForWomen_Notify.Count;
+    DemandsData = (dvm.DemandsForWomen ?? emptyDemands);
+    notify = (dvm.DemandsForWomen_Notify ?? emptyDemands).Count;
 
 }
 else if (User.IsInRole(Roles.Teacher.ToString()) || User.IsInRole(Roles.TeacherWomen.ToString()))
 {
-    DemandsData = Model.DemandVM.DemandsForTeacher;
-    notify = Model.DemandVM.DemandsForTeacher_Notify.Count;
+    DemandsData = (dvm.DemandsForTeacher ?? emptyDemands);
+    notify = (dvm.DemandsForTeacher_Notify ?? emptyDemands).Count;
 
 }
 

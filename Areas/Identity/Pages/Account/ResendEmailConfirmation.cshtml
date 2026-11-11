@@ -1,26 +1,27 @@
 ﻿@page
 @model ResendEmailConfirmationModel
 @{
-    ViewData["Title"] = "Resend email confirmation";
+    ViewData["Title"] = "إعادة إرسال رسالة التأكيد";
 }
-
-<h1>@ViewData["Title"]</h1>
-<h2>Enter your email.</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form method="post">
-            <div asp-validation-summary="All" class="text-danger" role="alert"></div>
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
-                <label asp-for="Input.Email" class="form-label"></label>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-            </div>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Resend</button>
-        </form>
+<section class="zh-page">
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card text-center">
+            <div class="zh-empty p-0 mb-2"><div class="icon" style="color:#1D7AA8"><i class="bi bi-arrow-repeat"></i></div></div>
+            <h1>إعادة إرسال رسالة التأكيد</h1>
+            <p class="lead">أدخل بريدك الإلكتروني وسنرسل لك رابط تأكيد جديد.</p>
+            <form method="post" class="text-start" novalidate>
+                <div asp-validation-summary="All" class="zh-alert zh-alert-danger mb-3 empty-hide" role="alert"></div>
+                <div class="zh-field">
+                    <label class="zh-label" asp-for="Input.Email">البريد الإلكتروني</label>
+                    <input asp-for="Input.Email" class="zh-input zh-ltr" autofocus placeholder="name@example.com" />
+                </div>
+                <button type="submit" class="zh-btn zh-btn-primary zh-btn-block" style="padding:.85rem"><i class="bi bi-send-fill"></i> إرسال</button>
+            </form>
+            <p class="mt-4 mb-0"><a asp-page="./Login" class="fw-bold text-decoration-none" style="color:var(--zh-emerald-700)"><i class="bi bi-arrow-right"></i> العودة لتسجيل الدخول</a></p>
+        </div>
     </div>
-</div>
-
+</section>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_AuthScripts" />
 }

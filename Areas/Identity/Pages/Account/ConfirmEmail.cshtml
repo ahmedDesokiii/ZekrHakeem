@@ -1,8 +1,22 @@
 ﻿@page
 @model ConfirmEmailModel
 @{
-    ViewData["Title"] = "Confirm email";
+    ViewData["Title"] = "تأكيد البريد الإلكتروني";
+    var ok = Model.StatusMessage?.StartsWith("Thank", StringComparison.OrdinalIgnoreCase) == true || Model.StatusMessage?.Contains("شكر") == true;
 }
-
-<h1>@ViewData["Title"]</h1>
-<partial name="_StatusMessage" model="Model.StatusMessage" />
+<section class="zh-page">
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card text-center">
+            <div class="zh-empty p-0 mb-2"><div class="icon" style="color:#15B392"><i class="bi bi-envelope-check-fill"></i></div></div>
+            <h1>تأكيد البريد الإلكتروني</h1>
+            <p class="lead">@(ok ? "تم تأكيد بريدك الإلكتروني بنجاح. يمكنك الآن تسجيل الدخول." : "تعذر تأكيد البريد الإلكتروني. قد يكون الرابط منتهي الصلاحية — اطلب رسالة جديدة.")</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a asp-page="./Login" class="zh-btn zh-btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</a>
+                @if (!ok)
+                {
+                    <a asp-page="./ResendEmailConfirmation" class="zh-btn zh-btn-light">إعادة الإرسال</a>
+                }
+            </div>
+        </div>
+    </div>
+</section>

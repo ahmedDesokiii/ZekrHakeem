@@ -55,7 +55,7 @@
                     await userManager.CreateAsync(defaultUser, "$Aa123123");
                     await userManager.AddToRoleAsync(defaultUser, Roles.Admin.ToString());
                 }
-                await roleManager.SeedClaimsForAdmin();
+                // الصلاحيات أصبحت في قاعدة البيانات (PermissionSeeder)
             }
         }
 
