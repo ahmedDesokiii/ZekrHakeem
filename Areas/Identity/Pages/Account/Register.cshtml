@@ -1,213 +1,129 @@
-﻿@page
-@using ZekrHakeem_v11.Resources
+@page
 @model RegisterModel
 @{
-    ViewData["Title"] = "انشاء حساب جديد";
+    ViewData["Title"] = "إنشاء حساب";
 }
 
-<section class="login-page mb-4" id="registerfrm" style="background-image: linear-gradient(to bottom , #FBF8EF, #B1F0F7);">
-    <div class="login-wrapper">
-        <div class="login-card">
-            <form id="registerForm"
-                  asp-route-returnUrl="@Model.ReturnUrl"
-                  method="post">
+<section class="zh-auth">
+    <partial name="_AuthArt" model="@string.Empty" />
 
-                <div class="text-center mb-4">
-                    <img src="~/images/zekr.png"
-                         alt="zh"
-                         style="height:120px;width:120px;object-fit:contain"
-                         class="mx-auto d-block" />
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card" style="max-width:560px">
+            <h1>انضم إلينا ✨</h1>
+            <p class="lead">أنشئ حسابك لمتابعة أبنائك أو حلقاتك بسهولة.</p>
 
-                    <h2 class="mt-2">@ResourceApp_Ar.Register_MainLoginTitle_lbl</h2>
+            <div class="zh-steps" id="steps"><span class="on"></span><span></span></div>
+            <div asp-validation-summary="ModelOnly" class="zh-alert zh-alert-danger mb-3 empty-hide" role="alert"></div>
+
+            <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post" novalidate>
+                <!-- step 1 -->
+                <div data-step="1">
+                    <h6 class="fw-bold zh-muted mb-3"><i class="bi bi-person-vcard ms-1"></i> بياناتك الشخصية</h6>
+                    <div class="zh-field">
+                        <label class="zh-label" asp-for="Input.FullName">الاسم الكامل <span class="req">*</span></label>
+                        <input asp-for="Input.FullName" class="zh-input" autocomplete="name" placeholder="الاسم الرباعي" />
+                        <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-sm-6 zh-field mb-0">
+                            <label class="zh-label" asp-for="Input.IdentityNum">رقم الهوية / الإقامة <span class="req">*</span></label>
+                            <input asp-for="Input.IdentityNum" class="zh-input zh-ltr" inputmode="numeric" />
+                            <span asp-validation-for="Input.IdentityNum" class="text-danger small"></span>
+                        </div>
+                        <div class="col-sm-6 zh-field mb-0">
+                            <label class="zh-label" asp-for="Input.PhoneNumber">رقم الجوال <span class="req">*</span></label>
+                            <input asp-for="Input.PhoneNumber" class="zh-input zh-ltr" type="tel" autocomplete="tel" placeholder="05xxxxxxxx" />
+                            <span asp-validation-for="Input.PhoneNumber" class="text-danger small"></span>
+                        </div>
+                    </div>
+                    <div class="zh-field mt-3">
+                        <label class="zh-label">النوع</label>
+                        <div class="zh-segment w-100" id="genderSeg">
+                            <button type="button" class="flex-fill" data-g="male"><i class="bi bi-gender-male"></i> ذكر</button>
+                            <button type="button" class="flex-fill" data-g="female"><i class="bi bi-gender-female"></i> أنثى</button>
+                        </div>
+                        <input type="hidden" asp-for="Input.Gender" />
+                    </div>
+                    <button type="button" class="zh-btn zh-btn-primary zh-btn-block mt-2" id="toStep2" style="padding:.85rem">
+                        التالي <i class="bi bi-arrow-left"></i>
+                    </button>
                 </div>
 
-                <div asp-validation-summary="ModelOnly"
-                     class="text-danger mb-3"
-                     role="alert"></div>
-
-                <!-- Full Name -->
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.FullName"
-                           id="FullName"
-                           class="form-control"
-                           placeholder=" "
-                           autocomplete="name" autofocus/>
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_FullName_lbl
-                    </label>
+                <!-- step 2 -->
+                <div data-step="2" hidden>
+                    <h6 class="fw-bold zh-muted mb-3"><i class="bi bi-shield-lock ms-1"></i> بيانات الدخول</h6>
+                    <div class="zh-field">
+                        <label class="zh-label" asp-for="Input.Email">البريد الإلكتروني <span class="req">*</span></label>
+                        <input asp-for="Input.Email" class="zh-input zh-ltr" autocomplete="email" placeholder="name@example.com" />
+                        <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                    </div>
+                    <div class="zh-field">
+                        <label class="zh-label" asp-for="Input.Password">كلمة المرور <span class="req">*</span></label>
+                        <div class="zh-input-group">
+                            <input asp-for="Input.Password" class="zh-input zh-ltr" autocomplete="new-password" data-strength />
+                            <button type="button" class="zh-input-action" data-toggle-pw aria-label="إظهار"><i class="bi bi-eye"></i></button>
+                        </div>
+                        <div class="zh-strength" id="pwStrength"><span></span><span></span><span></span><span></span></div>
+                        <div class="zh-pw-rules">
+                            <span data-rule="len"><i class="bi bi-circle"></i> 6 خانات على الأقل</span>
+                            <span data-rule="upper"><i class="bi bi-circle"></i> حرف إنجليزي كبير</span>
+                            <span data-rule="lower"><i class="bi bi-circle"></i> حرف إنجليزي صغير</span>
+                            <span data-rule="digit"><i class="bi bi-circle"></i> رقم</span>
+                            <span data-rule="sym"><i class="bi bi-circle"></i> رمز مثل $ @@ #</span>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    </div>
+                    <div class="zh-field">
+                        <label class="zh-label" asp-for="Input.ConfirmPassword">تأكيد كلمة المرور <span class="req">*</span></label>
+                        <input asp-for="Input.ConfirmPassword" class="zh-input zh-ltr" autocomplete="new-password" />
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="zh-btn zh-btn-light" id="backStep1"><i class="bi bi-arrow-right"></i> رجوع</button>
+                        <button id="registerSubmit" type="submit" class="zh-btn zh-btn-primary flex-grow-1" style="padding:.85rem">
+                            <i class="bi bi-person-check-fill"></i> إنشاء الحساب
+                        </button>
+                    </div>
                 </div>
-                <span asp-validation-for="Input.FullName" class="text-danger"></span>
-
-                <!-- Identity Number -->
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.IdentityNum"
-                           id="IdentityNum"
-                           class="form-control"
-                           placeholder=" " />
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_IdentityNum_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.IdentityNum" class="text-danger"></span>
-
-                <!-- Phone Number -->
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.PhoneNumber"
-                           id="PhoneNumber"
-                           class="form-control"
-                           placeholder=" "
-                           autocomplete="tel" />
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_PhoneNum_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
-
-                <!-- Gender -->
-                <div class="form-floating mb-3">
-                    <select asp-for="Input.Gender"
-                            id="Gender"
-                            class="form-select text-center">
-                        <option value="" disabled selected></option>
-                        <option value="male">ذكــر</option>
-                        <option value="female">أنثـى</option>
-                    </select>
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_Gender_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.Gender" class="text-danger"></span>
-
-                <!-- Email -->
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Email"
-                           id="Email"
-                           class="form-control"
-                           placeholder=" "
-                           autocomplete="email" />
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_Email_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.Email" class="text-danger"></span>
-
-                <!-- Password -->
-                <div class="form-floating mb-3">
-                    <input asp-for="Input.Password"
-                           id="Password"
-                           type="password"
-                           class="form-control"
-                           placeholder=" "
-                           autocomplete="new-password" />
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_Password_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.Password" class="text-danger"></span>
-
-                <!-- Confirm Password -->
-                <div class="form-floating mb-4">
-                    <input asp-for="Input.ConfirmPassword"
-                           id="ConfirmPassword"
-                           type="password"
-                           class="form-control"
-                           placeholder=" "
-                           autocomplete="new-password" />
-                    <label dir="rtl">
-                        @ResourceApp_Ar.Register_ConfirmPassword_lbl
-                    </label>
-                </div>
-                <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
-
-                <button type="submit"
-                        class="btn btn-login w-100">
-                    @ResourceApp_Ar.Register_btn
-                </button>
-
             </form>
+
+            <p class="text-center mt-4 mb-0 zh-muted">
+                لديك حساب بالفعل؟
+                <a asp-page="./Login" asp-route-returnUrl="@Model.ReturnUrl" class="fw-bold text-decoration-none" style="color:var(--zh-emerald-700)">سجّل الدخول</a>
+            </p>
         </div>
     </div>
 </section>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    <partial name="_AuthScripts" />
     <script>
-        window.addEventListener("load", () => {
-            const input = document.getElementById("FullName");
-            setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 100);
-        });
+        (function () {
+            const form = document.getElementById('registerForm');
+            const g = document.getElementById('Input_Gender');
+            const setG = v => { g.value = v; document.querySelectorAll('#genderSeg button').forEach(b => b.classList.toggle('active', b.dataset.g === v)); };
+            document.getElementById('genderSeg').onclick = e => { const b = e.target.closest('[data-g]'); if (b) setG(b.dataset.g); };
+            setG(g.value);
+
+            const steps = document.querySelectorAll('[data-step]');
+            const bars = document.querySelectorAll('#steps span');
+            const show = n => {
+                steps.forEach(s => s.hidden = s.dataset.step != n);
+                bars.forEach((b, i) => b.classList.toggle('on', i < n));
+                steps[n - 1].querySelector('input:not([type=hidden])')?.focus();
+            };
+            document.getElementById('toStep2').onclick = () => {
+                const $v = window.jQuery && jQuery(form).validate ? jQuery(form).validate() : null;
+                const fields = steps[0].querySelectorAll('input:not([type=hidden])');
+                let ok = true;
+                if ($v) fields.forEach(f => { if (!$v.element(f)) ok = false; });
+                if (ok) show(2);
+            };
+            document.getElementById('backStep1').onclick = () => show(1);
+            // if server returned errors in step 2 fields, open step 2
+            if (document.querySelector('[data-step="1"] .field-validation-error')) show(1);
+            else if (document.querySelector('[data-step="2"] .field-validation-error') || '@(Model.Input?.Email != null ? "1" : "")') show(2);
+        })();
     </script>
 }
-<style>
-
-    /* Page */
-    .login-page {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-    /* Wrapper */
-    .login-wrapper {
-        position: relative;
-        z-index: 3;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-
-    /* Card */
-    .login-card {
-        direction: rtl;
-        text-align: right;
-        background: #fff;
-        width: 100%;
-        max-width: 460px;
-        padding: 2rem;
-        border-radius: 14px;
-        border: 1px solid #e6e8eb;
-        box-shadow: 0 20px 40px rgba(0,0,0,.15), 0 2px 8px rgba(0,0,0,.08);
-        animation: slideFade .45s ease-out;
-    }
-
-    /* Fields */
-    .auth-field {
-        margin-bottom: 1rem;
-    }
-
-    .form-control,
-    .form-select {
-        height: 46px;
-    }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #328E6E;
-            box-shadow: 0 0 0 .15rem rgba(50,142,110,.25);
-        }
-
-    /* Button */
-    .btn-login {
-        background-color: #328E6E;
-        color: #fff;
-        border: none;
-        padding: .6rem;
-        font-weight: 600;
-        transition: transform .15s ease, box-shadow .15s ease;
-    }
-
-        .btn-login:hover {
-            box-shadow: 0 8px 18px rgba(0,0,0,.15);
-        }
-
-        .btn-login:active {
-            transform: scale(.97);
-        }
-
-   
-   
-</style>

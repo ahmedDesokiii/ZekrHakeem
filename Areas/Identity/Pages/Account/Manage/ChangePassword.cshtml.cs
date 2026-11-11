@@ -113,14 +113,16 @@ namespace ZekrHakeem_v11.Areas.Identity.Pages.Account.Manage
             {
                 foreach (var error in changePasswordResult.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError(string.Empty, error.Code == "PasswordMismatch"
+                        ? "كلمة المرور الحالية غير صحيحة"
+                        : UserAdminService.TranslateIdentityError(error));
                 }
                 return Page();
             }
 
             await _signInManager.RefreshSignInAsync(user);
             _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
+            StatusMessage = "تم تغيير كلمة المرور بنجاح";
 
             return RedirectToPage();
         }

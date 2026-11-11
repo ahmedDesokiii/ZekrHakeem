@@ -1,175 +1,83 @@
-﻿@page
-@using ZekrHakeem_v11.Resources
+@page
 @model LoginModel
-
 @{
     ViewData["Title"] = "تسجيل الدخول";
 }
-<section class="login-page mb-4" style="background-image: linear-gradient(to bottom , #FBF8EF, #B1F0F7);">
-    <div class="login-wrapper">
-        <div class="login-card">
 
-        <!-- Logo -->
-        <div class="text-center mb-4">
-            <img src="~/images/zekr.png"
-                 alt="zh"
-                 style="height:120px;width:120px;object-fit:contain"
-                 class="mx-auto d-block" />
+<section class="zh-auth">
+    <partial name="_AuthArt" model="@string.Empty" />
 
-            <h2 class="mt-2">@ResourceApp_Ar.LoginPage_MainLoginTitle_lbl</h2>
-        </div>
-        
-        <form method="post" id="account">
-            <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card">
+            <h1>أهلاً بعودتك 👋</h1>
+            <p class="lead">سجّل دخولك لمتابعة الحلقات والطلاب.</p>
 
-            <!-- Username -->
-            <div class="form-floating mb-3">
-                <input id="usrName" asp-for="Input.Email"
-                       class="form-control"
-                       placeholder=" "
-                       autocomplete="username" autofocus/>
-                <label dir="rtl">@ResourceApp_Ar.LoginPage_UserNameOrEmail_lbl</label>
-            </div>
-            
-            <!-- Password -->
-            <div class="form-floating mb-3">
-                <input asp-for="Input.Password"
-                       class="form-control"
-                       type="password"
-                       placeholder=" "
-                       autocomplete="current-password" />
-                <label>@ResourceApp_Ar.LoginPage_Password_lbl</label>
-            </div>
+            @if (TempData["AuthNotice"] is string notice)
+            {
+                <div class="zh-alert zh-alert-success mb-3"><i class="bi bi-check-circle-fill"></i><div>@notice</div></div>
+            }
+            <div asp-validation-summary="ModelOnly" class="zh-alert zh-alert-danger mb-3 empty-hide" role="alert"></div>
 
-            <!-- Remember + Forgot -->
-            <div class="d-flex justify-content-between align-items-center mb-3 small">
-                <div class="form-check">
-                    <input asp-for="Input.RememberMe" class="form-check-input" />
-                    <label class="form-check-label">
-                        @ResourceApp_Ar.LoginPage_RememberMe_lbl
-                    </label>
+            <form method="post" id="account" novalidate>
+                <div class="zh-field">
+                    <label class="zh-label" asp-for="Input.Email">اسم المستخدم أو البريد الإلكتروني</label>
+                    <div class="zh-input-group">
+                        <input asp-for="Input.Email" class="zh-input zh-ltr" autocomplete="username" autofocus placeholder="name@example.com" />
+                        <span class="zh-input-action d-grid place-items-center" style="pointer-events:none"><i class="bi bi-person"></i></span>
+                    </div>
+                    <span asp-validation-for="Input.Email" class="text-danger small"></span>
                 </div>
 
-                <a asp-page="/Account/ForgotPassword" class="text-muted text-decoration-none">
-                    @ResourceApp_Ar.LoginPage_ForgotPassword
-                </a>
-            </div>
+                <div class="zh-field">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="zh-label" asp-for="Input.Password">كلمة المرور</label>
+                        <a asp-page="./ForgotPassword" class="small fw-bold text-decoration-none" style="color:var(--zh-emerald-700)">نسيت كلمة المرور؟</a>
+                    </div>
+                    <div class="zh-input-group">
+                        <input asp-for="Input.Password" class="zh-input zh-ltr" autocomplete="current-password" placeholder="••••••••" />
+                        <button type="button" class="zh-input-action" data-toggle-pw aria-label="إظهار كلمة المرور"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                    <div class="zh-hint text-warning fw-bold" id="capsWarn" hidden><i class="bi bi-capslock-fill"></i> زر Caps Lock مفعل</div>
+                </div>
 
-            <!-- Submit -->
-          
-            <button type="submit"
-                    class="btn btn-login w-100">
-                @ResourceApp_Ar.LoginPage_Login_btn
-            </button>
-            <!-- Register -->
-            <p class="text-center mt-3 small">
-                هل لديك حساب؟
-                <a asp-page="./Register" class="fw-bold text-success text-decoration-none ">
-                    @ResourceApp_Ar.LoginPage_Register
-                </a>
+                <label class="zh-switch mb-4">
+                    <input asp-for="Input.RememberMe" />
+                    <span class="track"></span>
+                    <span>تذكرني على هذا الجهاز</span>
+                </label>
+
+                <button id="login-submit" type="submit" class="zh-btn zh-btn-primary zh-btn-block" style="padding:.85rem">
+                    <i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول
+                </button>
+            </form>
+
+            @if ((Model.ExternalLogins?.Count ?? 0) > 0)
+            {
+                <div class="zh-divider">أو الدخول بواسطة</div>
+                <form asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="d-grid gap-2" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">
+                    @foreach (var provider in Model.ExternalLogins!)
+                    {
+                        var ic = provider.Name switch { "Google" => "bi-google", "Facebook" => "bi-facebook", "Microsoft" => "bi-microsoft", _ => "bi-box-arrow-in-left" };
+                        <button type="submit" class="zh-btn zh-btn-light" name="provider" value="@provider.Name" title="@provider.DisplayName">
+                            <i class="bi @ic"></i> @provider.DisplayName
+                        </button>
+                    }
+                </form>
+            }
+
+            <p class="text-center mt-4 mb-0 zh-muted">
+                ليس لديك حساب؟
+                <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl" class="fw-bold text-decoration-none" style="color:var(--zh-emerald-700)">أنشئ حسابًا جديدًا</a>
             </p>
-        </form>
-        <div class="d-flex flex-row align-items-center justify-content-center mt-3">
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-google fs-4"></i>
-            </button>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-twitter fs-4"></i>
-            </button>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-youtube fs-4"></i>
-            </button>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-facebook fs-4"></i>
-            </button>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-whatsapp fs-4"></i>
-            </button>
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn border-0 btn-floating mx-1">
-                <i class="bi bi-twitter-x fs-4"></i>
-            </button>
+            <p class="text-center mt-2 mb-0 small">
+                <a asp-page="./ResendEmailConfirmation" class="zh-muted">لم يصلك بريد التأكيد؟</a>
+            </p>
         </div>
     </div>
-    </div>
 </section>
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script>
-        window.addEventListener("load", () => {
-            const input = document.getElementById("usrName");
-
-            setTimeout(() => {
-                input.focus();
-                input.select();
-            }, 100);
-        });
-    </script>
+    <partial name="_AuthScripts" />
 }
-<style>
-
-    /* Page */
-    .login-page {
-       
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-    }
-    /* Wrapper */
-    .login-wrapper {
-        position: relative;
-        z-index: 3;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-    }
-    /* Card */
-    .login-card {
-        direction: rtl;
-        text-align: right;
-        background: #fff;
-        width: 100%;
-        max-width: 460px;
-        padding: 2rem;
-        border-radius: 14px;
-        border: 1px solid #e6e8eb;
-        box-shadow: 0 20px 40px rgba(0,0,0,.15), 0 2px 8px rgba(0,0,0,.08);
-       
-    }
-
-    /* Fields */
-    .auth-field {
-        margin-bottom: 1rem;
-    }
-
-    .form-control,
-    .form-select {
-        height: 46px;
-    }
-
-        .form-control:focus,
-        .form-select:focus {
-            border-color: #328E6E;
-            box-shadow: 0 0 0 .15rem rgba(50,142,110,.25);
-        }
-
-    /* Button */
-    .btn-login {
-        background-color: #328E6E;
-        color: #fff;
-        border: none;
-        padding: .6rem;
-        font-weight: 600;
-        transition: transform .15s ease, box-shadow .15s ease;
-    }
-
-        .btn-login:hover {
-            box-shadow: 0 8px 18px rgba(0,0,0,.15);
-        }
-
-        .btn-login:active {
-            transform: scale(.97);
-        }
-
-</style>

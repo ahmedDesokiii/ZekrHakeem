@@ -1,144 +1,116 @@
-﻿#nullable disable
-
-using ZekrHakeem_v11.IRepository.ServicesRepository;
+#nullable disable
 
 namespace ZekrHakeem_v11.Areas.Identity.Pages.Account
 {
-
-
     [AllowAnonymous]
     public class LoginModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IActivityLogger _activity;
         private readonly ILogger<LoginModel> _logger;
-        private readonly IServicesRepository<Demand> _servicesDemand;
-        private readonly IServicesDemand _servicesOfDemand;
 
-        public LoginModel(SignInManager<ApplicationUser> signInManager, ILogger<LoginModel> logger, IServicesRepository<Demand> servicesDemand, IServicesDemand servicesOfDemand)
+        public LoginModel(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager,
+                          IActivityLogger activity, ILogger<LoginModel> logger)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
+            _activity = activity;
             _logger = logger;
-            _servicesDemand = servicesDemand;
-            _servicesOfDemand = servicesOfDemand;
         }
 
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [BindProperty]
         public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public IList<AuthenticationScheme> ExternalLogins { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public string ReturnUrl { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [TempData]
         public string ErrorMessage { get; set; }
 
-
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         public class InputModel
         {
-
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required(ErrorMessage = "ادخل اسم المستخدم أو الايميل بشكل صحيح !")]
-
+            [Required(ErrorMessage = "ادخل اسم المستخدم أو البريد الإلكتروني")]
             public string Email { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required(ErrorMessage = " ادخل كلمة بشكل صحيح ")]
-            [MinLength(6, ErrorMessage = "ادخل كلمة المرور لا تقل عن 6 حروف ")]
+            [Required(ErrorMessage = "ادخل كلمة المرور")]
             [DataType(DataType.Password)]
             public string Password { get; set; }
 
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Display(Name = "Remember me?")]
+            [Display(Name = "تذكرني")]
             public bool RememberMe { get; set; }
-
         }
-        public async Task OnGetAsync(string returnUrl = null)
+
+        public async Task<IActionResult> OnGetAsync(string returnUrl = null)
         {
+            if (User.Identity?.IsAuthenticated == true && string.IsNullOrEmpty(ErrorMessage))
+                return LocalRedirect(Url.Content("~/"));
+
             if (!string.IsNullOrEmpty(ErrorMessage))
-            {
                 ModelState.AddModelError(string.Empty, ErrorMessage);
-            }
+
             returnUrl ??= Url.Content("~/");
-
-            //if (returnUrl.Equals(@"/Identity/Account/ForgotPassword"))
-
-            // Clear the existing external cookie to ensure a clean login process
-
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
-
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-
             ReturnUrl = returnUrl;
-
+            return Page();
         }
+
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            var username = new EmailAddressAttribute().IsValid(Input.Email) ? new MailAddress(Input.Email).User : Input.Email;
+            ReturnUrl = returnUrl;
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return Page();
+
+            // الدخول باسم المستخدم أو البريد الإلكتروني
+            var login = Input.Email.Trim();
+            var user = await _userManager.FindByNameAsync(login)
+                       ?? (login.Contains('@') ? await _userManager.FindByEmailAsync(login) : null);
+
+            if (user == null)
             {
-
-                // This doesn't count login failures towards account lockout
-                // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-                var result = await _signInManager.PasswordSignInAsync(username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User logged in.");
-
-                    return LocalRedirect(returnUrl);
-                }
-                if (result.RequiresTwoFactor)
-                {
-                    return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("User account locked out.");
-                    return RedirectToPage("./Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "خطأ في ادخال اسم المستخدم أو كلمة المرور !");
-                    return Page();
-                }
+                ModelState.AddModelError(string.Empty, "اسم المستخدم أو كلمة المرور غير صحيحة");
+                return Page();
             }
+
+            if (!user.IsActive)
+            {
+                await _activity.LogAsync(ActivityActions.LoginFailed, user.Id, "محاولة دخول لحساب موقوف");
+                ModelState.AddModelError(string.Empty, "هذا الحساب موقوف. تواصل مع إدارة الجمعية لإعادة تفعيله.");
+                return Page();
+            }
+
+            var result = await _signInManager.PasswordSignInAsync(user, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+            if (result.Succeeded)
+            {
+                user.LastLoginAt = DateTime.UtcNow;
+                await _userManager.UpdateAsync(user);
+                await _activity.LogAsync(ActivityActions.Login, user.Id);
+                _logger.LogInformation("User {User} logged in.", user.UserName);
+                return LocalRedirect(returnUrl);
+            }
+            if (result.RequiresTwoFactor)
+                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, Input.RememberMe });
+            if (result.IsLockedOut)
+            {
+                await _activity.LogAsync(ActivityActions.LoginFailed, user.Id, "تم قفل الحساب مؤقتًا بسبب محاولات متكررة");
+                return RedirectToPage("./Lockout");
+            }
+            if (result.IsNotAllowed)
+            {
+                ModelState.AddModelError(string.Empty, "يجب تأكيد البريد الإلكتروني أولاً. راجع بريدك أو اطلب إعادة إرسال رسالة التأكيد.");
+                return Page();
+            }
+
+            await _activity.LogAsync(ActivityActions.LoginFailed, user.Id, "كلمة مرور غير صحيحة");
+            var left = _userManager.Options.Lockout.MaxFailedAccessAttempts - await _userManager.GetAccessFailedCountAsync(user);
+            ModelState.AddModelError(string.Empty, left is > 0 and <= 3
+                ? $"اسم المستخدم أو كلمة المرور غير صحيحة — متبقي {left} محاولات قبل القفل المؤقت"
+                : "اسم المستخدم أو كلمة المرور غير صحيحة");
             return Page();
         }
     }
 }
-
-
-
-

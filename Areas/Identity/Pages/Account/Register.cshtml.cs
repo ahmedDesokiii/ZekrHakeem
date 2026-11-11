@@ -10,14 +10,20 @@ namespace ZekrHakeem_v11.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationDbContext _db;
+        private readonly IActivityLogger _activity;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            ApplicationDbContext db,
+            IActivityLogger activity)
         {
+            _db = db;
+            _activity = activity;
             _userManager = userManager;
             _userStore = userStore;
             _emailStore = GetEmailStore();
@@ -113,74 +119,82 @@ namespace ZekrHakeem_v11.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnPostAsync(string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
+            ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return Page();
+
+            var email = Input.Email.Trim();
+            var identity = Input.IdentityNum.Trim();
+
+            if (await _userManager.FindByEmailAsync(email) != null)
+                ModelState.AddModelError("Input.Email", "البريد الإلكتروني مسجل من قبل — جرّب تسجيل الدخول أو استعادة كلمة المرور");
+            if (await _db.Users.AnyAsync(u => u.IdentityNum == identity))
+                ModelState.AddModelError("Input.IdentityNum", "رقم الهوية مسجل لحساب آخر");
+            if (!ModelState.IsValid) return Page();
+
+            var user = CreateUser();
+            user.FullName = Input.FullName.Trim();
+            user.IdentityNum = identity;
+            user.PhoneNumber = Input.PhoneNumber?.Trim();
+            user.Gender = Input.Gender ?? string.Empty;
+            user.CreatedAt = DateTime.UtcNow;
+            user.IsActive = true;
+
+            await _userStore.SetUserNameAsync(user, await BuildUniqueUserNameAsync(email), CancellationToken.None);
+            await _emailStore.SetEmailAsync(user, email, CancellationToken.None);
+
+            var result = await _userManager.CreateAsync(user, Input.Password);
+            if (!result.Succeeded)
             {
-                var user = CreateUser();
-                user.FullName = Input.FullName;
-                user.IdentityNum = Input.IdentityNum;
-                user.PhoneNumber = Input.PhoneNumber;
-                user.Gender = Input.Gender;
-
-                // take user name from Email
-                await _userStore.SetUserNameAsync(user, new MailAddress(Input.Email).User, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
-                var result = await _userManager.CreateAsync(user, Input.Password);
-
-                if (result.Succeeded)
-                {
-                    //default role of user
-                    if (Input.Email.Contains("@quranumluj.org.sa"))
-                    {
-                        await _userManager.AddToRoleAsync(user, Roles.Teacher.ToString());
-                    }
-                    else
-                    {
-                        await _userManager.AddToRoleAsync(user, Roles.Parent.ToString());
-                    }
-
-                    _logger.LogInformation("User created a new account with password.");
-
-
-                    // await _emailSender.SendEmailAsync(Input.Email, "Account Created", "Congratulations your account has been Successfully created");
-
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"فضلا لتأكيد الدخول للتطبيق رجاء الرابط :  <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>اضغط هنا لتأكيد الدخول!</a>.");
-
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        //await _signInManager.SignInAsync(user, isPersistent: true);
-                        //_userManager.Options.SignIn.RequireConfirmedEmail = true;
-                        return RedirectToPage("تم تسجيل الدخول بنجاح", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
-                }
-
                 foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
+                    ModelState.AddModelError(string.Empty, UserAdminService.TranslateIdentityError(error));
+                return Page();
             }
 
-            // If we got this far, something failed, redisplay form
-            return Page();
+            // المجموعة الافتراضية: معلم لبريد الجمعية، وإلا المجموعة المحددة كافتراضية في شاشة المجموعات
+            var roleName = email.EndsWith("@quranumluj.org.sa", StringComparison.OrdinalIgnoreCase)
+                ? Roles.Teacher.ToString()
+                : await (from i in _db.RoleInfos
+                         join r in _db.Roles on i.RoleId equals r.Id
+                         where i.IsDefaultForRegistration
+                         select r.Name).FirstOrDefaultAsync() ?? Roles.Parent.ToString();
+            await _userManager.AddToRoleAsync(user, roleName);
+
+            _logger.LogInformation("User created a new account with password.");
+            await _activity.LogAsync(ActivityActions.Register, user.Id, roleName);
+
+            var userId = await _userManager.GetUserIdAsync(user);
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page("/Account/ConfirmEmail", pageHandler: null,
+                values: new { area = "Identity", userId, code, returnUrl }, protocol: Request.Scheme);
+
+            try
+            {
+                await _emailSender.SendEmailAsync(email, "تأكيد حسابك في الذكر الحكيم",
+                    $"<div dir='rtl' style='font-family:Tahoma'>مرحبًا {HtmlEncoder.Default.Encode(user.FullName)}،<br/>لتفعيل حسابك اضغط على الرابط: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>تأكيد البريد الإلكتروني</a></div>");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to send confirmation email to {Email}", email);
+            }
+
+            if (_userManager.Options.SignIn.RequireConfirmedAccount)
+                return RedirectToPage("RegisterConfirmation", new { email, returnUrl });
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            return LocalRedirect(returnUrl);
+        }
+
+        private async Task<string> BuildUniqueUserNameAsync(string email)
+        {
+            var local = new MailAddress(email).User;
+            var baseName = new string(local.Where(c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_' or '-').ToArray());
+            if (baseName.Length < 3) baseName = "user" + baseName;
+            var name = baseName;
+            var i = 1;
+            while (await _userManager.FindByNameAsync(name) != null) name = $"{baseName}{++i}";
+            return name;
         }
 
         private ApplicationUser CreateUser()

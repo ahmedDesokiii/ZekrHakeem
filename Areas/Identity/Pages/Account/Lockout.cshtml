@@ -1,10 +1,18 @@
 ﻿@page
 @model LockoutModel
 @{
-    ViewData["Title"] = "Locked out";
+    ViewData["Title"] = "الحساب مقفل مؤقتًا";
 }
-
-<header>
-    <h1 class="text-danger">@ViewData["Title"]</h1>
-    <p class="text-danger">This account has been locked out, please try again later.</p>
-</header>
+<section class="zh-page">
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card text-center">
+            <div class="zh-empty p-0 mb-2"><div class="icon" style="color:#D64545"><i class="bi bi-lock-fill"></i></div></div>
+            <h1>الحساب مقفل مؤقتًا</h1>
+            <p class="lead">تم قفل الحساب بسبب تكرار محاولات الدخول الخاطئة. حاول مرة أخرى بعد 10 دقائق، أو أعد تعيين كلمة المرور.</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a asp-page="./ForgotPassword" class="zh-btn zh-btn-gold"><i class="bi bi-key"></i> استعادة كلمة المرور</a>
+                <a asp-page="./Login" class="zh-btn zh-btn-light">تسجيل الدخول</a>
+            </div>
+        </div>
+    </div>
+</section>

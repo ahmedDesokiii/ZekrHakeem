@@ -286,5 +286,25 @@
             public const string DeleteLog = "Permissions.Teachers.DeleteLog";
 
         }
+            public static class Users
+        {
+            public const string View = "Permissions.Users.View";
+            public const string Create = "Permissions.Users.Create";
+            public const string Edit = "Permissions.Users.Edit";
+            public const string Delete = "Permissions.Users.Delete";
+            public const string Lock = "Permissions.Users.Lock";
+            public const string ResetPassword = "Permissions.Users.ResetPassword";
+            public const string ManageRoles = "Permissions.Users.ManageRoles";
+            public const string ManagePermissions = "Permissions.Users.ManagePermissions";
+            public const string ViewActivity = "Permissions.Users.ViewActivity";
+        }
+        public static class Roles
+        {
+            public const string View = "Permissions.Roles.View";
+            public const string Create = "Permissions.Roles.Create";
+            public const string Edit = "Permissions.Roles.Edit";
+            public const string Delete = "Permissions.Roles.Delete";
+            public const string ManagePermissions = "Permissions.Roles.ManagePermissions";
+        }
     }
 }

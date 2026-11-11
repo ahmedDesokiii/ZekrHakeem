@@ -16,6 +16,11 @@
         [MaxLength(250)]
         public string? ExperienceDetails { get; set; }
 
+        /// <summary>الحساب مفعل؟ الحساب الموقوف لا يستطيع تسجيل الدخول</summary>
+        public bool IsActive { get; set; } = true;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? LastLoginAt { get; set; }
+
         //public Guid? NationalityId { get; set; }
         //[ForeignKey("NationalityId")]
         //public Nationality? Nationality { get; set; }

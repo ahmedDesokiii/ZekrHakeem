@@ -1,25 +1,18 @@
 ﻿@page
 @model RegisterConfirmationModel
 @{
-    ViewData["Title"] = "Register confirmation";
+    ViewData["Title"] = "تم إنشاء الحساب";
 }
-
-<h1>@ViewData["Title"]</h1>
-@{
-    <p>Please check your email to confirm your account.</p>
-
-    // if (@Model.DisplayConfirmAccountLink)
-    // {
-    //     <p>
-    //         This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
-    //         Normally this would be emailed: <a id="confirm-link" href="@Model.EmailConfirmationUrl">Click here to confirm your account</a>
-    //     </p>
-    // }
-    // else
-    // {
-    //     <p>
-    //         Please check your email to confirm your account.
-    //     </p>
-    // }
-}
-
+<section class="zh-page">
+    <div class="zh-auth-form">
+        <div class="zh-card zh-auth-card text-center">
+            <div class="zh-empty p-0 mb-2"><div class="icon" style="color:#15B392"><i class="bi bi-envelope-paper-heart-fill"></i></div></div>
+            <h1>تم إنشاء حسابك 🎉</h1>
+            <p class="lead">أرسلنا رسالة تأكيد إلى <b class="zh-ltr">@Model.Email</b>. افتح الرسالة واضغط على رابط التأكيد لتفعيل حسابك.</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a asp-page="./Login" class="zh-btn zh-btn-primary"><i class="bi bi-box-arrow-in-left"></i> تسجيل الدخول</a>
+                <a asp-page="./ResendEmailConfirmation" class="zh-btn zh-btn-light"><i class="bi bi-arrow-repeat"></i> إعادة إرسال الرسالة</a>
+            </div>
+        </div>
+    </div>
+</section>

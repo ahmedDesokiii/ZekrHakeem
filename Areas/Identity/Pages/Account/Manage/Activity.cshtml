@@ -1,0 +1,39 @@
+@page
+@model ActivityModel
+@{
+    ViewData["Title"] = "نشاط حسابي";
+    ViewData["ActivePage"] = "Activity";
+    string Icon(string a) => a switch
+    {
+        "Login" => "bi-box-arrow-in-left", "LoginFailed" => "bi-shield-exclamation", "Logout" => "bi-box-arrow-right",
+        "PasswordReset" => "bi-key", "ProfileUpdated" => "bi-person-gear", "Register" => "bi-stars", _ => "bi-dot"
+    };
+    string Color(string a) => a is "LoginFailed" or "UserDeactivated" ? "#D64545" : a == "PasswordReset" ? "#E5A023" : "#15B392";
+    string Device(string ua) => string.IsNullOrEmpty(ua) ? "" :
+        ua.Contains("Mobile") || ua.Contains("Android") || ua.Contains("iPhone") ? "جوال" : "كمبيوتر";
+}
+<h3 class="mb-1">نشاط حسابي</h3>
+<p class="zh-muted">آخر عمليات الدخول والتغييرات على حسابك. إذا لاحظت نشاطًا غريبًا غيّر كلمة المرور فورًا.</p>
+
+@if (!Model.Items.Any())
+{
+    <div class="zh-empty"><div class="icon"><i class="bi bi-clock-history"></i></div><h5>لا يوجد نشاط مسجل بعد</h5></div>
+}
+else
+{
+    <ul class="zh-timeline mt-3">
+        @foreach (var a in Model.Items)
+        {
+            <li style="--c:@Color(a.Action)">
+                <span class="ic"><i class="bi @Icon(a.Action)"></i></span>
+                <b>@a.ActionAr</b>
+                @if (!string.IsNullOrEmpty(a.Details)) { <span class="zh-muted"> — @a.Details</span> }
+                <small>
+                    @a.CreatedAt.ToLocalTime().ToString("yyyy/MM/dd hh:mm tt")
+                    @if (!string.IsNullOrEmpty(a.UserAgent)) { <span> · @Device(a.UserAgent)</span> }
+                    @if (!string.IsNullOrEmpty(a.IpAddress)) { <span class="zh-ltr"> · @a.IpAddress</span> }
+                </small>
+            </li>
+        }
+    </ul>
+}

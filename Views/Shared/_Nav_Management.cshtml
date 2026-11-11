@@ -1,0 +1,32 @@
+@using P = ZekrHakeem_v11.Constants.Permissions
+@inject ZekrHakeem_v11.Services.Security.IPermissionService PermissionService
+@{
+    var canUsers = await PermissionService.HasPermissionAsync(User, P.Users.View);
+    var canRoles = await PermissionService.HasPermissionAsync(User, P.Roles.View);
+    var canActivity = await PermissionService.HasPermissionAsync(User, P.Users.ViewActivity);
+    var ctrl = ViewContext.RouteData.Values["controller"]?.ToString();
+    var active = ctrl == "Users" || ctrl == "Roles" ? "active" : "";
+}
+@if (canUsers || canRoles)
+{
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle @active" id="navbarDropdownManagement" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-shield-lock-fill ms-1"></i> الإدارة
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownManagement">
+            @if (canUsers)
+            {
+                <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Index">المستخدمين <i class="bi bi-people-fill px-2"></i></a></li>
+            }
+            @if (canRoles)
+            {
+                <li><a class="dropdown-item" asp-area="" asp-controller="Roles" asp-action="Index">المجموعات والصلاحيات <i class="bi bi-shield-check px-2"></i></a></li>
+            }
+            @if (canActivity)
+            {
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="Activity">سجل النشاط <i class="bi bi-activity px-2"></i></a></li>
+            }
+        </ul>
+    </li>
+}

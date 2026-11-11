@@ -31,8 +31,8 @@ namespace ZekrHakeem_v11.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
-            [Required]
-            [EmailAddress]
+            [Required(ErrorMessage = "ادخل البريد الإلكتروني")]
+            [EmailAddress(ErrorMessage = "البريد الإلكتروني غير صحيح")]
             public string Email { get; set; }
         }
 
@@ -57,10 +57,12 @@ namespace ZekrHakeem_v11.Areas.Identity.Pages.Account
                     values: new { area = "Identity", code },
                     protocol: Request.Scheme);
 
-                await _emailSender.SendEmailAsync(
-                    Input.Email,
-                    "Reset Password",
-                    $"Please reset your password by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                try
+                {
+                    await _emailSender.SendEmailAsync(Input.Email, "استعادة كلمة المرور - الذكر الحكيم",
+                        $"<div dir='rtl' style='font-family:Tahoma'>لتعيين كلمة مرور جديدة اضغط على الرابط: <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>تعيين كلمة المرور</a><br/>إذا لم تطلب ذلك تجاهل هذه الرسالة.</div>");
+                }
+                catch { /* لا نكشف فشل الإرسال للمستخدم */ }
 
                 return RedirectToPage("./ForgotPasswordConfirmation");
             }
